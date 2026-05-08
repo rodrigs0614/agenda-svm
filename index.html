@@ -740,7 +740,7 @@ function refreshTaskList() {
       </div>
       <div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px">Assigné à</div><div style="display:flex;flex-wrap:wrap;gap:6px">${chips}</div></div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-        <span class="atag"><i class="ti ti-user-check"></i> Assigné par&nbsp;<strong>${t.assigner||'—'}</strong></span>
+        <span class="atag"><i class="ti ti-user-check"></i> Assigné par&nbsp;<strong>${t.assigner||'-'}</strong></span>
         ${t.assignedAt ? `<span class="meta">le ${fmtDate(t.assignedAt)}</span>` : ''}
         ${canEmail ? `<button class="bg_ bgb" onclick="previewEmail(${t.id})"><i class="ti ti-mail"></i> Notifier</button>` : `<span style="font-size:11px;color:var(--txl);font-style:italic">E-mail non configuré</span>`}
       </div>
@@ -1458,7 +1458,7 @@ if (restoreSession()) {
     </div>
     <div id="prog-task-title" style="font-size:13px;font-weight:600;padding:9px 12px;background:var(--n50);border-radius:var(--rsm);margin-bottom:14px"></div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
-      <label style="font-size:12px;color:var(--txm);font-weight:500">Avancement — <span id="prog-pct-lbl" style="color:var(--t500);font-weight:600">0%</span></label>
+      <label style="font-size:12px;color:var(--txm);font-weight:500">Avancement - <span id="prog-pct-lbl" style="color:var(--t500);font-weight:600">0%</span></label>
       <input type="range" id="prog-pct" min="0" max="100" value="0" oninput="document.getElementById('prog-pct-lbl').textContent=this.value+'%'" style="width:100%;accent-color:var(--t500)">
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
