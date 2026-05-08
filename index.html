@@ -306,6 +306,7 @@ const K_SESSION  = 'eccas_session_v1';
 let accounts = [];   // [{id, name, login, password, role, email, color_idx}]
 let tasks = [], presences = [], absences = [], cuts = [], archivedTasks = [], opTasks = [];
 let nextId = 100;
+let _localWrite = false;
 let currentUser = null;   // account object
 let selectedMembers = [];
 let modalTask = null, modalMsg = '';
@@ -365,15 +366,18 @@ function saveAccounts() {
   try{ localStorage.setItem(K_ACCOUNTS, JSON.stringify(accounts)); }catch(e){}
   try{ db.ref('accounts').set(accounts).catch(e=>{}); }catch(e){}
 }
+
 function saveData() {
   try{ localStorage.setItem(K_DATA, JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks})); }catch(e){}
   setSyncUI('pend','Sauvegarde…');
+  _localWrite = true;
   try{
     db.ref('data').set({tasks,presences,absences,cuts,archivedTasks,opTasks,_by:currentUser?currentUser.name:'',_ts:Date.now()})
-      .then(()=>setSyncUI('ok','Synchronisé'))
-      .catch(()=>setSyncUI('err','Hors ligne'));
-  }catch(e){ setSyncUI('err','Hors ligne'); }
+      .then(()=>{ setSyncUI('ok','Synchronisé'); setTimeout(()=>{ _localWrite=false; }, 3000); })
+      .catch(()=>{ setSyncUI('err','Hors ligne'); _localWrite=false; });
+  }catch(e){ setSyncUI('err','Hors ligne'); _localWrite=false; }
 }
+  
 
 function startRealtimeSync() {
   try {
@@ -386,24 +390,25 @@ function startRealtimeSync() {
         try{ localStorage.setItem(K_ACCOUNTS,JSON.stringify(accounts)); }catch(e){}
       }
     });
+
+
     db.ref('data').on('value', s=>{
       const d=s.val(); if(!d) return;
-      const byOther = d._by && currentUser && d._by !== currentUser.name;
+      if(_localWrite) return;
       tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[];
       const ids=[...tasks,...absences,...cuts].map(x=>x.id||0);
       nextId=ids.length?Math.max(...ids)+1:50;
       try{ localStorage.setItem(K_DATA,JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks})); }catch(e){}
-      if(byOther){
-        const active=document.querySelector('.sec.active');
-        if(active){
-          const id=active.id.replace('sec-','');
-          const fn={overview:renderOverview,tasks:renderTasks,presence:renderPresence,absences:renderAbsences,power:renderCuts}[id];
-          if(fn) fn();
-        }
-        updateBadges();
-        showToast('Mis à jour par '+d._by);
+      const active=document.querySelector('.sec.active');
+      if(active){
+        const id=active.id.replace('sec-','');
+        const fn={overview:renderOverview,tasks:renderTasks,presence:renderPresence,absences:renderAbsences,power:renderCuts,operational:renderOperational,archives:renderArchives}[id];
+        if(fn) fn();
       }
+      updateBadges();
+      showToast('Mis à jour par '+(d._by||'un membre'));
     });
+ 
   } catch(e) {
     setSyncUI('err','Hors ligne');
     console.warn('Firebase non disponible:', e);
