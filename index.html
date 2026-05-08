@@ -146,6 +146,87 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
 .slbl{font-size:11px;color:rgba(255,255,255,.6);}
 .toast{position:fixed;bottom:20px;right:20px;z-index:500;background:var(--t900);color:white;padding:10px 16px;border-radius:var(--rmd);font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;transform:translateY(60px);opacity:0;transition:all .3s;}
 .toast.show{transform:translateY(0);opacity:1;} .toast.err{background:var(--r700);}
+
+/* HEADER RESPONSIVE MOBILE */
+@media(max-width:768px) {
+  .header {
+    height: auto;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .header-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .h-title {
+    font-size: 12px;
+  }
+  .h-sub {
+    font-size: 10px;
+  }
+  .logo-mk {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .logo-mk img {
+    width: 100%;
+    height: 100%;
+  }
+  .h-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  #hdate {
+    font-size: 10px;
+    display: none;
+  }
+  #h-user-info {
+    font-size: 11px;
+    gap: 4px;
+  }
+  #h-user-info .av {
+    width: 22px;
+    height: 22px;
+    font-size: 9px;
+  }
+  #h-user-info .bdg {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+  #sdot {
+    width: 6px;
+    height: 6px;
+  }
+  #slbl {
+    display: none;
+  }
+  .header button {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  .header button i {
+    font-size: 13px;
+  }
+}
+
+@media(max-width:480px) {
+  .h-title {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+  }
+  #h-user-info span:not(.av):not(.bdg) {
+    display: none;
+  }
+}
 </style>
 </head>
 <body>
