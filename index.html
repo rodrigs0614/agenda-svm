@@ -438,7 +438,6 @@ function loadAll() {
     const raw=localStorage.getItem(K_DATA);
     if(raw){ const d=JSON.parse(raw); tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; }
   }catch(e){}
-  if(!tasks.length) initDefaultData();
   const ids=[...tasks,...absences,...cuts].map(x=>x.id||0);
   nextId=ids.length?Math.max(...ids)+1:50;
 }
