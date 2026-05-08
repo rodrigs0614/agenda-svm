@@ -199,6 +199,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     <button class="nav-btn" onclick="showSec('power',this)"><i class="ti ti-bolt-off"></i> Coupures <span class="nb" id="nb-cut" style="display:none">!</span></button>
     <button class="nav-btn" onclick="showSec('operational',this)"><i class="ti ti-clipboard-list"></i> Tâches opérationnelles</button>
     <button class="nav-btn" onclick="showSec('archives',this)"><i class="ti ti-archive"></i> Archives</button>
+    <button class="nav-btn" onclick="showSec('trash',this)"><i class="ti ti-trash"></i> Corbeille</button>
     <button class="nav-btn" id="nav-reports" style="display:none" onclick="showSec('reports',this)"><i class="ti ti-chart-bar"></i> Rapports</button>
     <button class="nav-btn" id="nav-settings" onclick="showSec('settings',this)"><i class="ti ti-settings"></i> Paramètres</button>
     <button class="nav-btn" id="nav-admin" onclick="showSec('admin',this)" style="display:none"><i class="ti ti-shield-lock"></i> Admin</button>
@@ -211,6 +212,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     <div id="sec-power" class="sec"></div>
     <div id="sec-operational" class="sec"></div>
     <div id="sec-archives" class="sec"></div>
+    <div id="sec-trash" class="sec"></div>
     <div id="sec-reports" class="sec"></div>
     <div id="sec-settings" class="sec"></div>
     <div id="sec-admin" class="sec"></div>
@@ -306,6 +308,7 @@ const K_SESSION  = 'eccas_session_v1';
 let accounts = [];   // [{id, name, login, password, role, email, color_idx}]
 let tasks = [], presences = [], absences = [], cuts = [], archivedTasks = [], opTasks = [];
 let nextId = 100;
+let trashedTasks = [];
 let _localWrite = false;
 let currentUser = null;   // account object
 let selectedMembers = [];
@@ -368,11 +371,11 @@ function saveAccounts() {
 }
 
 function saveData() {
-  try{ localStorage.setItem(K_DATA, JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks})); }catch(e){}
+  try{ localStorage.setItem(K_DATA, JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks})); }catch(e){}
   setSyncUI('pend','Sauvegarde…');
   _localWrite = true;
   try{
-    db.ref('data').set({tasks,presences,absences,cuts,archivedTasks,opTasks,_by:currentUser?currentUser.name:'',_ts:Date.now()})
+    db.ref('data').set({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,_by:currentUser?currentUser.name:'',_ts:Date.now()})
       .then(()=>{ setSyncUI('ok','Synchronisé'); setTimeout(()=>{ _localWrite=false; }, 3000); })
       .catch(()=>{ setSyncUI('err','Hors ligne'); _localWrite=false; });
   }catch(e){ setSyncUI('err','Hors ligne'); _localWrite=false; }
@@ -395,7 +398,7 @@ function startRealtimeSync() {
     db.ref('data').on('value', s=>{
       const d=s.val(); if(!d) return;
       if(_localWrite) return;
-      tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[];
+      tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; trashedTasks=d.trashedTasks||[];
       const ids=[...tasks,...absences,...cuts].map(x=>x.id||0);
       nextId=ids.length?Math.max(...ids)+1:50;
       try{ localStorage.setItem(K_DATA,JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks})); }catch(e){}
@@ -436,7 +439,7 @@ function loadAll() {
   }
   try{
     const raw=localStorage.getItem(K_DATA);
-    if(raw){ const d=JSON.parse(raw); tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; }
+    if(raw){ const d=JSON.parse(raw); tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; trashedTasks=d.trashedTasks||[]; }
   }catch(e){}
   const ids=[...tasks,...absences,...cuts].map(x=>x.id||0);
   nextId=ids.length?Math.max(...ids)+1:50;
@@ -551,7 +554,7 @@ function showSec(id, btn) {
   document.getElementById('sec-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
   else document.querySelectorAll('.nav-btn').forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active'); });
-  const renders = {overview:renderOverview, tasks:renderTasks, presence:renderPresence, absences:renderAbsences, power:renderCuts, operational:renderOperational, archives:renderArchives, reports:renderReports, settings:renderSettings, admin:renderAdmin};
+  const renders = {overview:renderOverview, tasks:renderTasks, presence:renderPresence, absences:renderAbsences, power:renderCuts, operational:renderOperational, archives:renderArchives, trash:renderTrash, reports:renderReports, settings:renderSettings, admin:renderAdmin};
   if (renders[id]) renders[id]();
   updateBadges();
 }
@@ -784,8 +787,14 @@ function addTask() {
 }
 
 function removeTask(id) {
-  if (!confirm('Supprimer cette tâche ?')) return;
-  tasks = tasks.filter(t => t.id !== id); saveData(); updateBadges(); refreshTaskList();
+  if (!confirm('Supprimer cette tâche ? Elle ira dans la corbeille pendant 7 jours.')) return;
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.trashedAt = new Date().toISOString().slice(0,10);
+  trashedTasks.unshift(t);
+  tasks = tasks.filter(x => x.id !== id);
+  saveData(); updateBadges(); refreshTaskList();
+  showToast('Tâche déplacée dans la corbeille.');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1436,7 +1445,91 @@ function saveProgress() {
   document.getElementById('prog-modal').style.display = 'none';
   showToast('Avancement mis à jour.');
 }
-  
+
+// ─── CORBEILLE ───
+function purgeExpiredTrash() {
+  const now = new Date();
+  trashedTasks = trashedTasks.filter(function(t) {
+    if (!t.trashedAt) return false;
+    const d = new Date(t.trashedAt);
+    const diff = (now - d) / (1000 * 60 * 60 * 24);
+    return diff < 7;
+  });
+}
+
+function renderTrash() {
+  var el = document.getElementById('sec-trash');
+  purgeExpiredTrash();
+  var now = new Date();
+
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">'
+    + '<div class="sect"><i class="ti ti-trash"></i> Corbeille (' + trashedTasks.length + ')</div>'
+    + (trashedTasks.length ? '<button class="bg_ bgd" onclick="emptyTrash()"><i class="ti ti-trash-x"></i> Vider la corbeille</button>' : '')
+    + '</div>';
+
+  if (!trashedTasks.length) {
+    html += '<div class="empty"><i class="ti ti-trash"></i>La corbeille est vide</div>';
+  } else {
+    html += '<div style="background:var(--r50);border:1px solid var(--r400);border-radius:var(--rmd);padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--r700)">'
+      + '<i class="ti ti-info-circle"></i> Les tâches sont supprimées définitivement après 7 jours.</div>';
+
+    trashedTasks.forEach(function(t) {
+      var daysLeft = 7;
+      if (t.trashedAt) {
+        var d = new Date(t.trashedAt);
+        var diff = (now - d) / (1000 * 60 * 60 * 24);
+        daysLeft = Math.max(0, Math.ceil(7 - diff));
+      }
+      var chips = (t.members||[]).map(function(m) {
+        var col = mc(m);
+        return '<span style="display:inline-flex;align-items:center;gap:4px;background:' + col.bg + ';color:' + col.fg + ';border-radius:20px;padding:3px 9px;font-size:11px;">' + av(m,'avxs') + ' ' + m + '</span>';
+      }).join('');
+
+      html += '<div class="csm" style="opacity:0.85">'
+        + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap">'
+        + '<div style="flex:1"><strong style="font-size:14px">' + t.title + '</strong>'
+        + '<div class="meta" style="margin-top:2px">Supprimée le ' + fmtDate(t.trashedAt) + ' · <span style="color:var(--r700);font-weight:500">Expire dans ' + daysLeft + ' jour' + (daysLeft > 1 ? 's' : '') + '</span></div>'
+        + '</div>'
+        + '<span class="bdg" style="background:var(--r50);color:var(--r700)"><i class="ti ti-trash" style="font-size:10px"></i> Corbeille</span>'
+        + '</div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">' + chips + '</div>'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">'
+        + '<span class="atag"><i class="ti ti-user-check"></i> Assigné par&nbsp;<strong>' + (t.assigner||'—') + '</strong></span>'
+        + (t.date ? '<span class="meta">Échéance : ' + fmtDate(t.date) + '</span>' : '')
+        + '</div>'
+        + '<div style="display:flex;justify-content:flex-end;gap:6px;margin-top:8px">'
+        + '<button class="bg_" style="border-color:var(--g700);color:var(--g700)" onclick="restoreTask(' + t.id + ')"><i class="ti ti-restore"></i> Restaurer</button>'
+        + '<button class="bg_ bgd" onclick="deleteForever(' + t.id + ')"><i class="ti ti-trash-x"></i> Supprimer définitivement</button>'
+        + '</div>'
+        + '</div>';
+    });
+  }
+  el.innerHTML = html;
+}
+
+function restoreTask(id) {
+  var t = trashedTasks.find(function(x){ return x.id === id; });
+  if (!t) return;
+  delete t.trashedAt;
+  tasks.unshift(t);
+  trashedTasks = trashedTasks.filter(function(x){ return x.id !== id; });
+  saveData(); updateBadges(); renderTrash();
+  showToast('Tâche restaurée.');
+}
+
+function deleteForever(id) {
+  if (!confirm('Supprimer définitivement ? Cette action est irréversible.')) return;
+  trashedTasks = trashedTasks.filter(function(x){ return x.id !== id; });
+  saveData(); renderTrash();
+  showToast('Tâche supprimée définitivement.');
+}
+
+function emptyTrash() {
+  if (!confirm('Vider la corbeille ? Toutes les tâches seront supprimées définitivement.')) return;
+  trashedTasks = [];
+  saveData(); renderTrash();
+  showToast('Corbeille vidée.');
+}
 
 // ═══════════════════════════════════════════════════════
 // BOOT
