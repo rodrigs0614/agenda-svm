@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agenda — Directive Technique ECCAS</title>
+<title>Agenda - Directive Technique ECCAS</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -220,7 +220,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
 <!-- MODAL EMAIL -->
 <div class="mov" id="email-modal" style="display:none" onclick="if(event.target===this)closeModal('email-modal')">
   <div class="mbox md">
-    <div class="mhd"><div class="mtt"><i class="ti ti-mail-forward"></i> Notification e-mail — Aperçu</div><button class="bg_" onclick="closeModal('email-modal')"><i class="ti ti-x"></i></button></div>
+    <div class="mhd"><div class="mtt"><i class="ti ti-mail-forward"></i> Notification e-mail - Aperçu</div><button class="bg_" onclick="closeModal('email-modal')"><i class="ti ti-x"></i></button></div>
     <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Destinataires</div><div style="display:flex;flex-wrap:wrap;gap:6px" id="em-recip"></div></div>
     <div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Contenu</div><div class="ep" id="em-preview"></div></div>
     <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
@@ -325,7 +325,7 @@ function av(name, cls = '') {
   const c = mc(name);
   return `<span class="av ${cls}" style="background:${c.bg};color:${c.fg}">${ini(name)}</span>`;
 }
-function fmtDate(d) { if (!d) return '—'; const [y,m,day] = d.split('-'); return `${day}/${m}/${y}`; }
+function fmtDate(d) { if (!d) return '-'; const [y,m,day] = d.split('-'); return `${day}/${m}/${y}`; }
 function daysDiff(f, t) { return Math.max(1, Math.round((new Date(t) - new Date(f)) / 86400000) + 1); }
 function calcDur(s, e) {
   if (!s || !e) return null;
@@ -466,7 +466,7 @@ function initDefaultData() {
   ];
   absences = [{id:10,member:'Mal Oumar',reason:'Mission terrain',from:'2026-05-10',to:'2026-05-18'}];
   cuts = [
-    {id:20,date:today,start:'08:00',end:'',note:'Coupure en cours — bâtiment entier'},
+    {id:20,date:today,start:'08:00',end:'',note:'Coupure en cours - bâtiment entier'},
     {id:21,date:'2026-05-06',start:'13:30',end:'15:00',note:'Maintenance ENERCA'},
   ];
   saveData();
@@ -570,11 +570,11 @@ function fillSelects() {
 
   // assigner
   const sa = document.getElementById('t-assigner');
-  if (sa) { sa.innerHTML = '<option value="">— Qui assigne ? —</option>'; allNames.forEach(m => { const o=document.createElement('option'); o.value=m; o.textContent=m; sa.appendChild(o); }); sa.value = currentUser.name; }
+  if (sa) { sa.innerHTML = '<option value="">- Qui assigne ? -</option>'; allNames.forEach(m => { const o=document.createElement('option'); o.value=m; o.textContent=m; sa.appendChild(o); }); sa.value = currentUser.name; }
   // p-member, a-member
   ['p-member','a-member'].forEach(id => {
     const s = document.getElementById(id); if (!s) return;
-    s.innerHTML = '<option value="">— Choisir —</option>';
+    s.innerHTML = '<option value="">- Choisir -</option>';
     names.forEach(m => { const o=document.createElement('option'); o.value=m; o.textContent=m; s.appendChild(o); });
   });
   // filter member
@@ -624,12 +624,12 @@ function renderOverview() {
     <div class="chf-av">${ini(admin ? admin.name : 'Admin')}</div>
     <div>
       <div style="font-size:11px;opacity:0.7;text-transform:uppercase;letter-spacing:0.06em">Chef de la Directive</div>
-      <div style="font-size:16px;font-weight:700">${admin ? admin.name : '—'}</div>
+      <div style="font-size:16px;font-weight:700">${admin ? admin.name : '-'}</div>
       <div style="font-size:12px;opacity:0.7;margin-top:2px">${TEAM} · ${memberNames().length} membres</div>
     </div>
   </div>`;
 
-  if (activeCut) html += `<div class="alrt alrt-cut"><i class="ti ti-bolt-off"></i><div><strong>Coupure électrique en cours</strong> — depuis ${activeCut.start}${activeCut.note?' · '+activeCut.note:''}</div></div>`;
+  if (activeCut) html += `<div class="alrt alrt-cut"><i class="ti ti-bolt-off"></i><div><strong>Coupure électrique en cours</strong> - depuis ${activeCut.start}${activeCut.note?' · '+activeCut.note:''}</div></div>`;
 
   html += `<div class="stgd">
     <div class="stc"><div class="stn">${tasks.length}</div><div class="stl">Travaux</div></div>
@@ -674,7 +674,7 @@ function renderTasks() {
       <div class="fi"><label>Assigné par *</label><select id="t-assigner"></select></div>
     </div>
     <div class="fi" style="margin-bottom:12px">
-      <label>Assigné à * <span style="font-size:11px;color:var(--t500);font-weight:400">— plusieurs membres possibles</span></label>
+      <label>Assigné à * <span style="font-size:11px;color:var(--t500);font-weight:400">- plusieurs membres possibles</span></label>
       <div class="mpk" id="members-picker"></div>
     </div>
     <div class="fg fg3">
@@ -739,7 +739,7 @@ function refreshTaskList() {
       </div>
       <div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px">Assigné à</div><div style="display:flex;flex-wrap:wrap;gap:6px">${chips}</div></div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-        <span class="atag"><i class="ti ti-user-check"></i> Assigné par&nbsp;<strong>${t.assigner||'—'}</strong></span>
+        <span class="atag"><i class="ti ti-user-check"></i> Assigné par&nbsp;<strong>${t.assigner||'-'}</strong></span>
         ${t.assignedAt ? `<span class="meta">le ${fmtDate(t.assignedAt)}</span>` : ''}
         ${canEmail ? `<button class="bg_ bgb" onclick="previewEmail(${t.id})"><i class="ti ti-mail"></i> Notifier</button>` : `<span style="font-size:11px;color:var(--txl);font-style:italic">E-mail non configuré</span>`}
       </div>
@@ -831,7 +831,7 @@ function renderPresence() {
   </div>
   <div class="sect" style="margin-bottom:14px"><i class="ti ti-users"></i> Situation du jour</div>`;
 
-  if (cp) html += `<div class="alrt alrt-inf"><i class="ti ti-star"></i><div><strong>${adminAcc.name}</strong> — ${PL[cp.status]}</div></div>`;
+  if (cp) html += `<div class="alrt alrt-inf"><i class="ti ti-star"></i><div><strong>${adminAcc.name}</strong> - ${PL[cp.status]}</div></div>`;
 
   html += '<div class="prg">';
   presences.filter(p => !adminAcc || p.member !== adminAcc.name).forEach((p,i) => {
@@ -902,7 +902,7 @@ function renderCuts() {
   const ac = cuts.find(c=>!c.end);
   const sorted = [...cuts].sort((a,b)=>b.date.localeCompare(a.date));
 
-  let html = ac ? `<div class="alrt alrt-cut" style="margin-bottom:14px"><i class="ti ti-bolt-off"></i><div style="flex:1"><strong>Coupure électrique en cours</strong> — depuis ${ac.start}${ac.note?' · '+ac.note:''}</div><button class="bg_ bgd" onclick="endCut(${ac.id})" style="flex-shrink:0"><i class="ti ti-player-stop"></i> Terminer</button></div>` : '';
+  let html = ac ? `<div class="alrt alrt-cut" style="margin-bottom:14px"><i class="ti ti-bolt-off"></i><div style="flex:1"><strong>Coupure électrique en cours</strong> - depuis ${ac.start}${ac.note?' · '+ac.note:''}</div><button class="bg_ bgd" onclick="endCut(${ac.id})" style="flex-shrink:0"><i class="ti ti-player-stop"></i> Terminer</button></div>` : '';
 
   html += `<div class="card">
     <div class="ftitle"><i class="ti ti-bolt-off"></i> Signaler une coupure</div>
@@ -930,7 +930,7 @@ function endCut(id){const c=cuts.find(x=>x.id===id);if(c){const n=new Date();c.e
 function removeCut(id){if(!confirm('Supprimer ?'))return;cuts=cuts.filter(c=>c.id!==id);saveData();updateBadges();renderCuts();}
 
 // ═══════════════════════════════════════════════════════
-// PARAMÈTRES (accessible à tous — e-mail perso + changer mdp)
+// PARAMÈTRES (accessible à tous - e-mail perso + changer mdp)
 // ═══════════════════════════════════════════════════════
 function renderSettings() {
   const el = document.getElementById('sec-settings');
