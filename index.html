@@ -1399,6 +1399,39 @@ function doSavePerms(){
   showToast('Droits mis a jour.');
 }
 
+// ─── PROGRESS MODAL ───
+var _progId = null;
+
+function openProgModal(id) {
+  var t = tasks.find(function(x){ return x.id === id; });
+  if (!t) return;
+  _progId = id;
+  document.getElementById('prog-task-title').textContent = t.title;
+  document.getElementById('prog-pct').value = t.pct || 0;
+  document.getElementById('prog-pct-lbl').textContent = (t.pct || 0) + '%';
+  document.getElementById('prog-status').value = t.status || 'progress';
+  document.getElementById('prog-blocker').value = t.blocker || '';
+  document.getElementById('prog-note').value = t.note || '';
+  document.getElementById('prog-modal').style.display = 'flex';
+}
+
+function saveProgress() {
+  var t = tasks.find(function(x){ return x.id === _progId; });
+  if (!t) return;
+  t.pct = parseInt(document.getElementById('prog-pct').value) || 0;
+  t.status = document.getElementById('prog-status').value;
+  t.blocker = document.getElementById('prog-blocker').value.trim();
+  t.note = document.getElementById('prog-note').value.trim();
+  t.lastUpdatedBy = currentUser.name;
+  t.lastUpdatedAt = new Date().toISOString().slice(0, 10);
+  if (t.status === 'done') t.pct = 100;
+  saveData();
+  updateBadges();
+  refreshTaskList();
+  document.getElementById('prog-modal').style.display = 'none';
+  showToast('Avancement mis à jour.');
+}
+  
 
 // ═══════════════════════════════════════════════════════
 // BOOT
@@ -1415,5 +1448,42 @@ if (restoreSession()) {
 }
 </script>
 <div class="toast" id="toast"></div>
+
+<!-- MODAL MISE A JOUR AVANCEMENT -->
+<div style="position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px" id="prog-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:white;border-radius:14px;padding:24px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div style="font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px"><i class="ti ti-edit" style="color:var(--t500)"></i> Mettre à jour la tâche</div>
+      <button onclick="document.getElementById('prog-modal').style.display='none'" style="background:transparent;border:1px solid var(--bds);border-radius:var(--rsm);padding:4px 8px;cursor:pointer;font-family:inherit"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="prog-task-title" style="font-size:13px;font-weight:600;padding:9px 12px;background:var(--n50);border-radius:var(--rsm);margin-bottom:14px"></div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+      <label style="font-size:12px;color:var(--txm);font-weight:500">Avancement — <span id="prog-pct-lbl" style="color:var(--t500);font-weight:600">0%</span></label>
+      <input type="range" id="prog-pct" min="0" max="100" value="0" oninput="document.getElementById('prog-pct-lbl').textContent=this.value+'%'" style="width:100%;accent-color:var(--t500)">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+      <label style="font-size:12px;color:var(--txm);font-weight:500">Statut</label>
+      <select id="prog-status" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit">
+        <option value="todo">À faire</option>
+        <option value="progress">En cours</option>
+        <option value="blocked">Bloqué</option>
+        <option value="done">Terminé</option>
+      </select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+      <label style="font-size:12px;color:var(--txm);font-weight:500">Difficultés / point bloquant</label>
+      <input type="text" id="prog-blocker" placeholder="Décrire les difficultés rencontrées…" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:18px">
+      <label style="font-size:12px;color:var(--txm);font-weight:500">Note de progression</label>
+      <textarea id="prog-note" rows="2" placeholder="Commentaire libre sur l'avancement…" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;resize:vertical"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="document.getElementById('prog-modal').style.display='none'" style="padding:7px 14px;border-radius:var(--rsm);border:1px solid var(--bds);background:transparent;font-size:13px;cursor:pointer;font-family:inherit">Annuler</button>
+      <button onclick="saveProgress()" style="padding:9px 18px;border-radius:var(--rsm);border:none;background:var(--t500);color:white;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+    </div>
+  </div>
+</div>
+  
 </body>
 </html>
