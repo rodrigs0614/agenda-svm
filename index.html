@@ -279,6 +279,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     <button class="nav-btn" onclick="showSec('absences',this)"><i class="ti ti-calendar-off"></i> Absences</button>
     <button class="nav-btn" onclick="showSec('power',this)"><i class="ti ti-bolt-off"></i> Coupures <span class="nb" id="nb-cut" style="display:none">!</span></button>
     <button class="nav-btn" onclick="showSec('operational',this)"><i class="ti ti-clipboard-list"></i> Tâches opérationnelles</button>
+    <button class="nav-btn" onclick="showSec('observations',this)"><i class="ti ti-notes"></i> Observations</button>
     <button class="nav-btn" onclick="showSec('archives',this)"><i class="ti ti-archive"></i> Archives</button>
     <button class="nav-btn" onclick="showSec('trash',this)"><i class="ti ti-trash"></i> Corbeille</button>
     <button class="nav-btn" id="nav-reports" style="display:none" onclick="showSec('reports',this)"><i class="ti ti-chart-bar"></i> Rapports</button>
@@ -292,6 +293,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     <div id="sec-absences" class="sec"></div>
     <div id="sec-power" class="sec"></div>
     <div id="sec-operational" class="sec"></div>
+    <div id="sec-observations" class="sec"></div>
     <div id="sec-archives" class="sec"></div>
     <div id="sec-trash" class="sec"></div>
     <div id="sec-reports" class="sec"></div>
@@ -390,6 +392,7 @@ let accounts = [];   // [{id, name, login, password, role, email, color_idx}]
 let tasks = [], presences = [], absences = [], cuts = [], archivedTasks = [], opTasks = [];
 let nextId = 100;
 let trashedTasks = [];
+let observations = [];
 let _localWrite = false;
 let currentUser = null;   // account object
 let selectedMembers = [];
@@ -452,11 +455,11 @@ function saveAccounts() {
 }
 
 function saveData() {
-  try{ localStorage.setItem(K_DATA, JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks})); }catch(e){}
+  try{ localStorage.setItem(K_DATA, JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,observations})); }catch(e){}
   setSyncUI('pend','Sauvegarde…');
   _localWrite = true;
   try{
-    db.ref('data').set({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,_by:currentUser?currentUser.name:'',_ts:Date.now()})
+    db.ref('data').set({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,observations,_by:currentUser?currentUser.name:'',_ts:Date.now()})
       .then(()=>{ setSyncUI('ok','Synchronisé'); setTimeout(()=>{ _localWrite=false; }, 3000); })
       .catch(()=>{ setSyncUI('err','Hors ligne'); _localWrite=false; });
   }catch(e){ setSyncUI('err','Hors ligne'); _localWrite=false; }
@@ -479,7 +482,7 @@ function startRealtimeSync() {
     db.ref('data').on('value', s=>{
       const d=s.val(); if(!d) return;
       if(_localWrite) return;
-      tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; trashedTasks=d.trashedTasks||[];
+      tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[];observations=d.observations||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; trashedTasks=d.trashedTasks||[];
       const ids=[...tasks,...absences,...cuts].map(x=>x.id||0);
       nextId=ids.length?Math.max(...ids)+1:50;
       try{ localStorage.setItem(K_DATA,JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks})); }catch(e){}
@@ -520,7 +523,7 @@ function loadAll() {
   }
   try{
     const raw=localStorage.getItem(K_DATA);
-    if(raw){ const d=JSON.parse(raw); tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; trashedTasks=d.trashedTasks||[]; }
+    if(raw){ const d=JSON.parse(raw); tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[];observations=d.observations||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; trashedTasks=d.trashedTasks||[]; }
   }catch(e){}
   const ids=[...tasks,...absences,...cuts].map(x=>x.id||0);
   nextId=ids.length?Math.max(...ids)+1:50;
@@ -635,7 +638,7 @@ function showSec(id, btn) {
   document.getElementById('sec-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
   else document.querySelectorAll('.nav-btn').forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active'); });
-  const renders = {overview:renderOverview, tasks:renderTasks, presence:renderPresence, absences:renderAbsences, power:renderCuts, operational:renderOperational, archives:renderArchives, trash:renderTrash, reports:renderReports, settings:renderSettings, admin:renderAdmin};
+  const renders = {overview:renderOverview, tasks:renderTasks, presence:renderPresence, absences:renderAbsences, power:renderCuts, operational:renderOperational, observations:renderObservations,archives:renderArchives, trash:renderTrash, reports:renderReports, settings:renderSettings, admin:renderAdmin};
   if (renders[id]) renders[id]();
   updateBadges();
 }
@@ -1458,6 +1461,27 @@ function renderReports(){
     });
     html+='</tbody></table>';
   }
+    // Observations du mois
+  var obsMois = observations.filter(function(o){ return o.date.slice(0,7) === ym; });
+  if (obsMois.length) {
+    html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-notes"></i> Observations du mois</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
+      + '<thead><tr style="background:var(--t500);color:white">'
+      + '<th style="padding:7px 10px">Date</th>'
+      + '<th style="padding:7px 10px">Auteur</th>'
+      + '<th style="padding:7px 10px">Catégorie</th>'
+      + '<th style="padding:7px 10px">Observation</th>'
+      + '</tr></thead><tbody>';
+    obsMois.forEach(function(o, i) {
+      html += '<tr style="background:' + (i%2?'var(--n50)':'white') + '">'
+        + '<td style="padding:7px 10px">' + fmtDate(o.date) + ' ' + o.time + '</td>'
+        + '<td style="padding:7px 10px"><strong>' + o.author + '</strong></td>'
+        + '<td style="padding:7px 10px">' + o.category + '</td>'
+        + '<td style="padding:7px 10px">' + o.text + '</td>'
+        + '</tr>';
+    });
+    html += '</tbody></table>';
+  }
   el.innerHTML=html;
 }
 
@@ -1612,6 +1636,103 @@ function emptyTrash() {
   showToast('Corbeille vidée.');
 }
 
+// ─── OBSERVATIONS ───
+function renderObservations() {
+  var el = document.getElementById('sec-observations');
+  var today = new Date().toISOString().slice(0,10);
+
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">'
+    + '<div class="sect"><i class="ti ti-notes"></i> Observations du jour</div>'
+    + '</div>'
+
+    + '<div class="card">'
+    + '<div class="ftitle"><i class="ti ti-pencil"></i> Nouvelle observation</div>'
+    + '<div class="fi" style="margin-bottom:10px">'
+    + '<label>Catégorie</label>'
+    + '<select id="obs-cat" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;background:var(--sf);color:var(--tx)">'
+    + '<option value="Visite">Visite</option>'
+    + '<option value="Imprévu">Imprévu</option>'
+    + '<option value="Réunion non planifiée">Réunion non planifiée</option>'
+    + '<option value="Incident technique">Incident technique</option>'
+    + '<option value="Information générale">Information générale</option>'
+    + '<option value="Autre">Autre</option>'
+    + '</select>'
+    + '</div>'
+    + '<div class="fi" style="margin-bottom:14px">'
+    + '<label>Observation *</label>'
+    + '<textarea id="obs-text" rows="3" placeholder="Décrivez l\'observation, l\'imprévu, la visite…" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;resize:vertical"></textarea>'
+    + '</div>'
+    + '<button class="bp" onclick="addObservation()"><i class="ti ti-plus"></i> Enregistrer l\'observation</button>'
+    + '</div>';
+
+  // Liste des observations
+  if (!observations.length) {
+    html += '<div class="empty"><i class="ti ti-notes"></i>Aucune observation enregistrée</div>';
+  } else {
+    // Grouper par date
+    var grouped = {};
+    observations.forEach(function(o) {
+      if (!grouped[o.date]) grouped[o.date] = [];
+      grouped[o.date].push(o);
+    });
+
+    // Afficher du plus récent au plus ancien
+    Object.keys(grouped).sort(function(a,b){ return b.localeCompare(a); }).forEach(function(date) {
+      html += '<div style="margin-bottom:6px;font-size:12px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;padding:6px 0;border-bottom:1px solid var(--bd);margin-top:16px">'
+        + '<i class="ti ti-calendar" style="color:var(--t500)"></i> ' + fmtDate(date)
+        + '</div>';
+
+      grouped[date].forEach(function(o) {
+        var c = mc(o.author);
+        html += '<div class="csm" style="margin-bottom:8px">'
+          + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">'
+          + '<span class="av avsm" style="background:' + c.bg + ';color:' + c.fg + ';flex-shrink:0">' + ini(o.author) + '</span>'
+          + '<div style="flex:1">'
+          + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">'
+          + '<strong style="font-size:13px">' + o.author + '</strong>'
+          + '<span class="bdg" style="background:var(--b50);color:var(--b800);font-size:10px">' + o.category + '</span>'
+          + '<span class="meta" style="font-size:11px">' + o.time + '</span>'
+          + '</div>'
+          + '<div style="font-size:13px;color:var(--tx);line-height:1.6">' + o.text + '</div>'
+          + '</div>'
+          + (isAdmin() || o.author === currentUser.name
+            ? '<button class="bg_ bgd" style="font-size:11px;padding:3px 8px;flex-shrink:0" onclick="deleteObservation(' + o.id + ')"><i class="ti ti-trash"></i></button>'
+            : '')
+          + '</div>'
+          + '</div>';
+      });
+    });
+  }
+
+  el.innerHTML = html;
+}
+
+function addObservation() {
+  var text = document.getElementById('obs-text').value.trim();
+  if (!text) { alert('Veuillez saisir une observation.'); return; }
+  var cat = document.getElementById('obs-cat').value;
+  var now = new Date();
+  observations.unshift({
+    id: nextId++,
+    author: currentUser.name,
+    date: now.toISOString().slice(0,10),
+    time: now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
+    category: cat,
+    text: text
+  });
+  saveData();
+  renderObservations();
+  showToast('Observation enregistrée.');
+}
+
+function deleteObservation(id) {
+  if (!confirm('Supprimer cette observation ?')) return;
+  observations = observations.filter(function(o){ return o.id !== id; });
+  saveData();
+  renderObservations();
+}
+  
+
 // ═══════════════════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════════════════
@@ -1663,6 +1784,8 @@ if (restoreSession()) {
     </div>
   </div>
 </div>
+
+
   
 </body>
 </html>
