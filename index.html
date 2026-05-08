@@ -716,6 +716,7 @@ function renderTasks() {
   refreshTaskList();
 }
 
+
 function refreshTaskList() {
   const fS = document.getElementById('filter-status')?.value || '';
   const fM = document.getElementById('filter-member')?.value || '';
@@ -739,16 +740,24 @@ function refreshTaskList() {
       </div>
       <div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px">Assigné à</div><div style="display:flex;flex-wrap:wrap;gap:6px">${chips}</div></div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-        <span class="atag"><i class="ti ti-user-check"></i> Assigné par&nbsp;<strong>${t.assigner||'-'}</strong></span>
+        <span class="atag"><i class="ti ti-user-check"></i> Assigné par&nbsp;<strong>${t.assigner||'—'}</strong></span>
         ${t.assignedAt ? `<span class="meta">le ${fmtDate(t.assignedAt)}</span>` : ''}
         ${canEmail ? `<button class="bg_ bgb" onclick="previewEmail(${t.id})"><i class="ti ti-mail"></i> Notifier</button>` : `<span style="font-size:11px;color:var(--txl);font-style:italic">E-mail non configuré</span>`}
       </div>
       <div class="row" style="margin-bottom:8px"><div class="pb"><div class="pf ${t.status}" style="width:${pct}%"></div></div><span class="meta" style="min-width:36px;text-align:right">${pct}%</span></div>
       ${t.blocker ? `<div class="blk"><i class="ti ti-alert-triangle"></i>${t.blocker}</div>` : ''}
-      ${canEdit ? `<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="bg_ bgd" onclick="removeTask(${t.id})"><i class="ti ti-trash"></i> Supprimer</button></div>` : ''}
+      ${t.note ? `<div style="font-size:12px;color:var(--txm);margin-top:7px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm);border-left:3px solid var(--n400)"><i class="ti ti-notes" style="font-size:11px"></i> ${t.note}</div>` : ''}
+      ${t.lastUpdatedBy ? `<div class="meta" style="margin-top:4px;font-size:11px">Mis à jour par <strong>${t.lastUpdatedBy}</strong> le ${fmtDate(t.lastUpdatedAt)}</div>` : ''}
+      <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:10px;flex-wrap:wrap">
+        ${(t.members||[]).includes(currentUser.name) ? `<button class="bg_" style="border-color:var(--b600);color:var(--b600)" onclick="openProgModal(${t.id})"><i class="ti ti-edit"></i> Mettre à jour</button>` : ''}
+        ${canEdit && t.status !== 'done' ? `<button class="bg_" style="border-color:var(--g700);color:var(--g700)" onclick="markDone(${t.id})"><i class="ti ti-circle-check"></i> Terminer</button>` : ''}
+        ${canEdit && t.status === 'done' ? `<button class="bg_" style="border-color:var(--n600);color:var(--n600)" onclick="archiveTask(${t.id})"><i class="ti ti-archive"></i> Archiver</button>` : ''}
+        ${canEdit ? `<button class="bg_ bgd" onclick="removeTask(${t.id})"><i class="ti ti-trash"></i> Supprimer</button>` : ''}
+      </div>
     </div>`;
   }).join('');
-}
+}  
+
 
 function addTask() {
   const title = document.getElementById('t-title').value.trim();
