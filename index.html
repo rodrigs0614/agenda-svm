@@ -734,14 +734,14 @@ function renderOverview() {
   const today = new Date().toISOString().slice(0,10);
   const upcoming = absences.filter(a=>a.to>=today);
   const activeCut = cuts.find(c=>!c.end);
-  const chef = accounts.find(a=>a.role==='chef' && a.active!==false); const admin = chef;
+  const chef = accounts.find(a=>a.role==='chef' && a.active!==false);
   const presentCount = presences.filter(p=>p.status==='present').length;
 
   let html = `<div class="chf-bn">
-    <div class="chf-av">${ini(admin ? admin.name : 'Admin')}</div>
+    <div class="chf-av">${ini(chef ? chef.name : 'Chef')}</div>
     <div>
       <div style="font-size:11px;opacity:0.7;text-transform:uppercase;letter-spacing:0.06em">Chef de la Directive</div>
-      <div style="font-size:16px;font-weight:700">${admin ? admin.name : '-'}</div>
+      <div style="font-size:16px;font-weight:700">${chef ? chef.name : '-'}</div>
       <div style="font-size:12px;opacity:0.7;margin-top:2px">${TEAM} · ${memberNames().length} membres</div>
     </div>
   </div>`;
@@ -755,10 +755,9 @@ function renderOverview() {
     <div class="stc"><div class="stn" style="color:var(--g700)">${done}</div><div class="stl">Terminés</div></div>
     <div class="stc"><div class="stn" style="color:var(--t500)">${presentCount}</div><div class="stl">Au bureau</div></div>
     <div class="stc"><div class="stn" style="color:var(--a700)">${upcoming.length}</div><div class="stl">Abs. prévues</div></div>
-  </div><div class="two">`;
+  </div>`;
 
-
- html += `<div class="two">`;
+  html += `<div class="two">`;
 
   // Bloqués
   const bt = tasks.filter(t=>t.status==='blocked');
@@ -773,25 +772,20 @@ function renderOverview() {
   presences.forEach(p => { html += `<div class="csm" style="margin-bottom:8px"><div class="row">${av(p.member)}<span style="flex:1;font-size:13px;font-weight:500">${p.member}</span><span class="bdg ${PC[p.status]}">${PL[p.status]}</span></div></div>`; });
   html += `</div>`;
 
-  // Priorités hautes — span sur 2 colonnes
-  var highPrio = tasks.filter(function(t){ return (t.priority||0) >= 4 && t.status !== 'done'; });
+  // Priorités hautes
+  const highPrio = tasks.filter(t => (t.priority||0) >= 4 && t.status !== 'done');
   if (highPrio.length) {
-    html += '<div style="grid-column:1/-1"><div class="sect" style="margin-bottom:12px;font-size:14px">'
-      + '<i class="ti ti-alert-triangle" style="color:#A32D2D"></i> Priorités hautes / maximales</div>';
-    highPrio.forEach(function(t) {
-      html += '<div class="csm" style="border-left:4px solid ' + ((t.priority||0)===5?'#A32D2D':'#E24B4A') + '">'
-        + '<div class="row" style="margin-bottom:6px">'
-        + prioBadge(t.priority)
-        + '<strong style="flex:1;font-size:13px">' + t.title + '</strong>'
-        + '<span class="bdg ' + SC[t.status] + '">' + SL[t.status] + '</span>'
-        + '</div>'
-        + '<div class="meta">' + (t.members||[]).join(', ') + (t.date ? ' · Échéance : ' + fmtDate(t.date) : '') + '</div>'
-        + '</div>';
+    html += `<div style="grid-column:1/-1"><div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-alert-triangle" style="color:#A32D2D"></i> Priorités hautes / maximales</div>`;
+    highPrio.forEach(t => {
+      html += `<div class="csm" style="border-left:4px solid ${(t.priority||0)===5?'#A32D2D':'#E24B4A'}">
+        <div class="row" style="margin-bottom:6px">${prioBadge(t.priority)}<strong style="flex:1;font-size:13px">${t.title}</strong><span class="bdg ${SC[t.status]}">${SL[t.status]}</span></div>
+        <div class="meta">${(t.members||[]).join(', ')}${t.date?' · Échéance : '+fmtDate(t.date):''}</div>
+      </div>`;
     });
-    html += '</div>';
+    html += `</div>`;
   }
 
-  // Travaux actifs — span sur 2 colonnes
+  // Travaux actifs
   const ip = tasks.filter(t=>t.status==='progress'||t.status==='todo');
   html += `<div style="grid-column:1/-1"><div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-activity" style="color:var(--t500)"></i> Travaux actifs</div>`;
   if (!ip.length) html += `<div class="empty"><i class="ti ti-checklist"></i>Aucun travail actif</div>`;
@@ -800,18 +794,8 @@ function renderOverview() {
   });
   html += `</div>`;
 
-  html += `</div>`; // fermeture two
+  html += `</div>`; // fermeture .two
 
-  document.getElementById('ov-root').innerHTML = html;
-}
-  
-  const ip = tasks.filter(t=>t.status==='progress'||t.status==='todo');
-  html += `<div style="margin-top:6px;grid-column:1/-1"><div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-activity" style="color:var(--t500)"></i> Travaux actifs</div>`;
-  if (!ip.length) html += `<div class="empty"><i class="ti ti-checklist"></i>Aucun travail actif</div>`;
-  ip.slice(0,6).forEach(t => {
-    html += `<div class="csm"><div class="row" style="margin-bottom:8px"><div class="avst">${(t.members||[]).slice(0,3).map(m=>av(m,'avsm')).join('')}</div><div style="flex:1"><strong style="font-size:13px">${t.title}</strong><div class="meta">${(t.members||[]).join(', ')}${t.date?' · échéance '+fmtDate(t.date):''}</div></div><span class="bdg ${SC[t.status]}">${SL[t.status]}</span></div><div class="row"><div class="pb"><div class="pf" style="width:${t.pct}%"></div></div><span class="meta" style="min-width:32px;text-align:right">${t.pct}%</span></div></div>`;
-  });
-  html += `</div>`;
   document.getElementById('ov-root').innerHTML = html;
 }
 
