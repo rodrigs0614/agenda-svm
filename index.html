@@ -1803,8 +1803,15 @@ function deleteObservation(id) {
   
 function renderMySpace() {
   var el = document.getElementById('sec-myspace');
-  // Sélecteur de membre visible uniquement pour admin et chef
+
+  // Déterminer quel membre afficher
   var viewedMember = currentUser.name;
+  var sel = document.getElementById('myspace-member-select');
+  if ((isAdmin() || isChef()) && sel) {
+    viewedMember = sel.value;
+  }
+
+  // Sélecteur visible uniquement pour admin et chef
   var selectorHtml = '';
   if (isAdmin() || isChef()) {
     var activeMembers = accounts.filter(function(a){ return a.active !== false; });
@@ -1812,20 +1819,21 @@ function renderMySpace() {
       + '<span style="font-size:13px;color:var(--txm);font-weight:500"><i class="ti ti-eye"></i> Consulter l\'espace de :</span>'
       + '<select id="myspace-member-select" onchange="renderMySpace()" style="padding:7px 12px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;background:var(--sf);color:var(--tx)">'
       + activeMembers.map(function(a){
-          return '<option value="'+a.name+'"'+(a.name===currentUser.name?' selected':'')+'>'+a.name+(a.name===currentUser.name?' (moi)':'')+'</option>';
+          return '<option value="'+a.name+'"'+(a.name===viewedMember?' selected':'')+'>'+a.name+(a.name===currentUser.name?' (moi)':'')+'</option>';
         }).join('')
       + '</select>'
       + '</div>';
   }
+
+  var isOwnSpace = (viewedMember === currentUser.name);
+
   var myTasks = tasks.filter(function(t) {
     return (t.members||[]).includes(viewedMember);
   }).sort(function(a, b) {
-    // D'abord par statut (bloqué > en cours > à faire > terminé)
     var order = {blocked:0, progress:1, todo:2, done:3};
     var sA = (order[a.status] !== undefined ? order[a.status] : 9);
     var sB = (order[b.status] !== undefined ? order[b.status] : 9);
     if (sA !== sB) return sA - sB;
-    // Puis par priorité décroissante
     return (b.priority||0) - (a.priority||0);
   });
 
@@ -1833,30 +1841,26 @@ function renderMySpace() {
     return (t.members||[]).includes(viewedMember);
   });
 
-  // Récupérer le membre sélectionné si admin/chef
-  if (isAdmin() || isChef()) {
-    var sel = document.getElementById('myspace-member-select');
-    if (sel) viewedMember = sel.value;
-  }
-
   var col = mc(viewedMember);
   var done = myTasks.filter(function(t){return t.status==='done';}).length;
   var inprog = myTasks.filter(function(t){return t.status==='progress';}).length;
   var blocked = myTasks.filter(function(t){return t.status==='blocked';}).length;
   var todo = myTasks.filter(function(t){return t.status==='todo';}).length;
 
-  var html = selectorHtml + '<div style="background:linear-gradient(135deg,var(--t900),var(--t700));border-radius:var(--rlg);padding:20px 24px;margin-bottom:20px;color:white;display:flex;align-items:center;gap:16px">'
+  // Bandeau
+  var html = selectorHtml
+    + '<div style="background:linear-gradient(135deg,var(--t900),var(--t700));border-radius:var(--rlg);padding:20px 24px;margin-bottom:20px;color:white;display:flex;align-items:center;gap:16px">'
     + '<span class="av avlg" style="background:'+col.bg+';color:'+col.fg+'">'+ini(viewedMember)+'</span>'
     + '<div>'
-    + '<div style="font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.06em">Mon espace</div>'
-    + '<div style="font-size:20px;font-weight:700;margin-top:2px">'+viewedMember+(viewedMember===currentUser.name?' <span style="font-size:12px;opacity:.7">(moi)</span>':'')+'</div>'
+    + '<div style="font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.06em">'+(isOwnSpace?'Mon espace':'Espace de')+'</div>'
+    + '<div style="font-size:20px;font-weight:700;margin-top:2px">'+viewedMember+(isOwnSpace?' <span style="font-size:12px;opacity:.7">(moi)</span>':'')+'</div>'
     + '<div style="font-size:12px;opacity:.7;margin-top:3px">'+TEAM+'</div>'
     + '</div>'
     + '</div>';
 
   // Statistiques
   html += '<div class="stgd" style="margin-bottom:20px">'
-    + '<div class="stc"><div class="stn">'+myTasks.length+'</div><div class="stl">Mes travaux</div></div>'
+    + '<div class="stc"><div class="stn">'+myTasks.length+'</div><div class="stl">Travaux</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--b600)">'+inprog+'</div><div class="stl">En cours</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--r400)">'+blocked+'</div><div class="stl">Bloqués</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--n400)">'+todo+'</div><div class="stl">À faire</div></div>'
@@ -1865,11 +1869,11 @@ function renderMySpace() {
     + '</div>';
 
   // Tâches actives
-  html += '<div class="sect" style="margin-bottom:14px"><i class="ti ti-list-check"></i> Mes tâches en cours</div>';
+  html += '<div class="sect" style="margin-bottom:14px"><i class="ti ti-list-check"></i> '+(isOwnSpace?'Mes tâches':'Tâches de '+viewedMember)+'</div>';
 
   var active = myTasks.filter(function(t){ return t.status !== 'done'; });
   if (!active.length) {
-    html += '<div class="empty"><i class="ti ti-circle-check"></i>Aucune tâche active — bien joué !</div>';
+    html += '<div class="empty"><i class="ti ti-circle-check"></i>'+(isOwnSpace?'Aucune tâche active — bien joué !':'Aucune tâche active.')+'</div>';
   } else {
     active.forEach(function(t) {
       var pct = Math.min(100, Math.max(0, t.pct||0));
@@ -1895,9 +1899,10 @@ function renderMySpace() {
         + '</div>'
         + (t.blocker?'<div class="blk"><i class="ti ti-alert-triangle"></i>'+t.blocker+'</div>':'')
         + (t.note?'<div style="font-size:12px;color:var(--txm);margin-top:6px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm);border-left:3px solid var(--n400)"><i class="ti ti-notes" style="font-size:11px"></i> '+t.note+'</div>':'')
-        + '<div style="display:flex;justify-content:flex-end;margin-top:10px">'
-        + '<button class="bg_" style="border-color:var(--b600);color:var(--b600)" onclick="openProgModal('+t.id+');showSec(\'myspace\')"><i class="ti ti-edit"></i> Mettre à jour</button>'
-        + '</div>'
+        // Bouton Mettre à jour uniquement sur son propre espace
+        + (isOwnSpace
+          ? '<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="bg_" style="border-color:var(--b600);color:var(--b600)" onclick="openProgModal('+t.id+')"><i class="ti ti-edit"></i> Mettre à jour</button></div>'
+          : '')
         + '</div>';
     });
   }
@@ -1905,7 +1910,7 @@ function renderMySpace() {
   // Tâches terminées
   var doneList = myTasks.filter(function(t){ return t.status === 'done'; });
   if (doneList.length) {
-    html += '<hr style="margin:20px 0"><div class="sect" style="margin-bottom:14px"><i class="ti ti-circle-check" style="color:var(--g700)"></i> Mes tâches terminées</div>';
+    html += '<hr style="margin:20px 0"><div class="sect" style="margin-bottom:14px"><i class="ti ti-circle-check" style="color:var(--g700)"></i> '+(isOwnSpace?'Mes tâches terminées':'Tâches terminées')+'</div>';
     doneList.forEach(function(t) {
       html += '<div class="csm" style="opacity:0.75;border-left:4px solid var(--g700)">'
         + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'
@@ -1920,7 +1925,7 @@ function renderMySpace() {
 
   // Tâches archivées
   if (myArchived.length) {
-    html += '<hr style="margin:20px 0"><div class="sect" style="margin-bottom:14px"><i class="ti ti-archive" style="color:var(--n600)"></i> Mes tâches archivées</div>';
+    html += '<hr style="margin:20px 0"><div class="sect" style="margin-bottom:14px"><i class="ti ti-archive" style="color:var(--n600)"></i> '+(isOwnSpace?'Mes tâches archivées':'Tâches archivées')+'</div>';
     myArchived.forEach(function(t) {
       html += '<div class="csm" style="opacity:0.6;border-left:4px solid var(--n400)">'
         + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'
@@ -1934,7 +1939,6 @@ function renderMySpace() {
 
   el.innerHTML = html;
 }
-
   
 // ═══════════════════════════════════════════════════════
 // BOOT
