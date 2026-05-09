@@ -305,6 +305,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     <button class="nav-btn" onclick="showSec('power',this)"><i class="ti ti-bolt-off"></i> Coupures <span class="nb" id="nb-cut" style="display:none">!</span></button>
     <button class="nav-btn" onclick="showSec('operational',this)"><i class="ti ti-clipboard-list"></i> Tâches opérationnelles</button>
     <button class="nav-btn" onclick="showSec('observations',this)"><i class="ti ti-notes"></i> Observations</button>
+    <button class="nav-btn" onclick="showSec('myspace',this)"><i class="ti ti-user-circle"></i> Mon espace</button>
     <button class="nav-btn" onclick="showSec('archives',this)"><i class="ti ti-archive"></i> Archives</button>
     <button class="nav-btn" onclick="showSec('trash',this)"><i class="ti ti-trash"></i> Corbeille</button>
     <button class="nav-btn" id="nav-reports" style="display:none" onclick="showSec('reports',this)"><i class="ti ti-chart-bar"></i> Rapports</button>
@@ -319,6 +320,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     <div id="sec-power" class="sec"></div>
     <div id="sec-operational" class="sec"></div>
     <div id="sec-observations" class="sec"></div>
+    <div id="sec-myspace" class="sec"></div>
     <div id="sec-archives" class="sec"></div>
     <div id="sec-trash" class="sec"></div>
     <div id="sec-reports" class="sec"></div>
@@ -663,7 +665,7 @@ function showSec(id, btn) {
   document.getElementById('sec-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
   else document.querySelectorAll('.nav-btn').forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active'); });
-  const renders = {overview:renderOverview, tasks:renderTasks, presence:renderPresence, absences:renderAbsences, power:renderCuts, operational:renderOperational, observations:renderObservations,archives:renderArchives, trash:renderTrash, reports:renderReports, settings:renderSettings, admin:renderAdmin};
+  const renders = {overview:renderOverview, tasks:renderTasks, presence:renderPresence, absences:renderAbsences, power:renderCuts, operational:renderOperational, observations:renderObservations,myspace:renderMySpace,archives:renderArchives, trash:renderTrash, reports:renderReports, settings:renderSettings, admin:renderAdmin};
   if (renders[id]) renders[id]();
   updateBadges();
 }
@@ -1799,7 +1801,141 @@ function deleteObservation(id) {
   renderObservations();
 }
   
+function renderMySpace() {
+  var el = document.getElementById('sec-myspace');
+  // Sélecteur de membre visible uniquement pour admin et chef
+  var viewedMember = currentUser.name;
+  var selectorHtml = '';
+  if (isAdmin() || isChef()) {
+    var activeMembers = accounts.filter(function(a){ return a.active !== false; });
+    selectorHtml = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">'
+      + '<span style="font-size:13px;color:var(--txm);font-weight:500"><i class="ti ti-eye"></i> Consulter l\'espace de :</span>'
+      + '<select id="myspace-member-select" onchange="renderMySpace()" style="padding:7px 12px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;background:var(--sf);color:var(--tx)">'
+      + activeMembers.map(function(a){
+          return '<option value="'+a.name+'"'+(a.name===currentUser.name?' selected':'')+'>'+a.name+(a.name===currentUser.name?' (moi)':'')+'</option>';
+        }).join('')
+      + '</select>'
+      + '</div>';
+  }
+  var myTasks = tasks.filter(function(t) {
+    return (t.members||[]).includes(viewedMember);
+  }).sort(function(a, b) {
+    // D'abord par statut (bloqué > en cours > à faire > terminé)
+    var order = {blocked:0, progress:1, todo:2, done:3};
+    var sA = (order[a.status] !== undefined ? order[a.status] : 9);
+    var sB = (order[b.status] !== undefined ? order[b.status] : 9);
+    if (sA !== sB) return sA - sB;
+    // Puis par priorité décroissante
+    return (b.priority||0) - (a.priority||0);
+  });
 
+  var myArchived = archivedTasks.filter(function(t) {
+    return (t.members||[]).includes(viewedMember);
+  });
+
+  // Récupérer le membre sélectionné si admin/chef
+  if (isAdmin() || isChef()) {
+    var sel = document.getElementById('myspace-member-select');
+    if (sel) viewedMember = sel.value;
+  }
+
+  var col = mc(viewedMember);
+  var done = myTasks.filter(function(t){return t.status==='done';}).length;
+  var inprog = myTasks.filter(function(t){return t.status==='progress';}).length;
+  var blocked = myTasks.filter(function(t){return t.status==='blocked';}).length;
+  var todo = myTasks.filter(function(t){return t.status==='todo';}).length;
+
+  var html = selectorHtml + '<div style="background:linear-gradient(135deg,var(--t900),var(--t700));border-radius:var(--rlg);padding:20px 24px;margin-bottom:20px;color:white;display:flex;align-items:center;gap:16px">'
+    + '<span class="av avlg" style="background:'+col.bg+';color:'+col.fg+'">'+ini(viewedMember)+'</span>'
+    + '<div>'
+    + '<div style="font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.06em">Mon espace</div>'
+    + '<div style="font-size:20px;font-weight:700;margin-top:2px">'+viewedMember+(viewedMember===currentUser.name?' <span style="font-size:12px;opacity:.7">(moi)</span>':'')+'</div>'
+    + '<div style="font-size:12px;opacity:.7;margin-top:3px">'+TEAM+'</div>'
+    + '</div>'
+    + '</div>';
+
+  // Statistiques
+  html += '<div class="stgd" style="margin-bottom:20px">'
+    + '<div class="stc"><div class="stn">'+myTasks.length+'</div><div class="stl">Mes travaux</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--b600)">'+inprog+'</div><div class="stl">En cours</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--r400)">'+blocked+'</div><div class="stl">Bloqués</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--n400)">'+todo+'</div><div class="stl">À faire</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--g700)">'+done+'</div><div class="stl">Terminés</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--n600)">'+myArchived.length+'</div><div class="stl">Archivés</div></div>'
+    + '</div>';
+
+  // Tâches actives
+  html += '<div class="sect" style="margin-bottom:14px"><i class="ti ti-list-check"></i> Mes tâches en cours</div>';
+
+  var active = myTasks.filter(function(t){ return t.status !== 'done'; });
+  if (!active.length) {
+    html += '<div class="empty"><i class="ti ti-circle-check"></i>Aucune tâche active — bien joué !</div>';
+  } else {
+    active.forEach(function(t) {
+      var pct = Math.min(100, Math.max(0, t.pct||0));
+      html += '<div class="csm" style="border-left:4px solid '
+        + (t.status==='blocked'?'var(--r400)':t.status==='progress'?'var(--b600)':'var(--n300)')
+        + '">'
+        + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap">'
+        + '<div style="flex:1"><strong style="font-size:14px">'+t.title+'</strong>'
+        + (t.date?'<div class="meta" style="margin-top:2px">Échéance : '+fmtDate(t.date)+'</div>':'')
+        + '</div>'
+        + '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
+        + '<span class="bdg '+SC[t.status]+'">'+SL[t.status]+'</span>'
+        + ((t.priority||0) > 0 ? prioBadge(t.priority) : '')
+        + '</div>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">'
+        + '<span class="atag"><i class="ti ti-user-check"></i> Assigné par&nbsp;<strong>'+(t.assigner||'—')+'</strong></span>'
+        + (t.assignedAt?'<span class="meta">le '+fmtDate(t.assignedAt)+'</span>':'')
+        + '</div>'
+        + '<div class="row" style="margin-bottom:6px">'
+        + '<div class="pb"><div class="pf '+t.status+'" style="width:'+pct+'%"></div></div>'
+        + '<span class="meta" style="min-width:36px;text-align:right">'+pct+'%</span>'
+        + '</div>'
+        + (t.blocker?'<div class="blk"><i class="ti ti-alert-triangle"></i>'+t.blocker+'</div>':'')
+        + (t.note?'<div style="font-size:12px;color:var(--txm);margin-top:6px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm);border-left:3px solid var(--n400)"><i class="ti ti-notes" style="font-size:11px"></i> '+t.note+'</div>':'')
+        + '<div style="display:flex;justify-content:flex-end;margin-top:10px">'
+        + '<button class="bg_" style="border-color:var(--b600);color:var(--b600)" onclick="openProgModal('+t.id+');showSec(\'myspace\')"><i class="ti ti-edit"></i> Mettre à jour</button>'
+        + '</div>'
+        + '</div>';
+    });
+  }
+
+  // Tâches terminées
+  var doneList = myTasks.filter(function(t){ return t.status === 'done'; });
+  if (doneList.length) {
+    html += '<hr style="margin:20px 0"><div class="sect" style="margin-bottom:14px"><i class="ti ti-circle-check" style="color:var(--g700)"></i> Mes tâches terminées</div>';
+    doneList.forEach(function(t) {
+      html += '<div class="csm" style="opacity:0.75;border-left:4px solid var(--g700)">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'
+        + '<strong style="font-size:13px">'+t.title+'</strong>'
+        + '<span class="bdg ddn"><i class="ti ti-circle-check" style="font-size:10px"></i> Terminé</span>'
+        + '</div>'
+        + (t.doneAt?'<div class="meta" style="margin-top:4px">Terminée le '+fmtDate(t.doneAt)+'</div>':'')
+        + (t.note?'<div style="font-size:12px;color:var(--txm);margin-top:6px;padding:6px 10px;background:var(--n50);border-radius:var(--rsm)"><i class="ti ti-notes" style="font-size:11px"></i> '+t.note+'</div>':'')
+        + '</div>';
+    });
+  }
+
+  // Tâches archivées
+  if (myArchived.length) {
+    html += '<hr style="margin:20px 0"><div class="sect" style="margin-bottom:14px"><i class="ti ti-archive" style="color:var(--n600)"></i> Mes tâches archivées</div>';
+    myArchived.forEach(function(t) {
+      html += '<div class="csm" style="opacity:0.6;border-left:4px solid var(--n400)">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'
+        + '<strong style="font-size:13px">'+t.title+'</strong>'
+        + '<span class="bdg darc"><i class="ti ti-archive" style="font-size:10px"></i> Archivée</span>'
+        + '</div>'
+        + (t.archivedAt?'<div class="meta" style="margin-top:4px">Archivée le '+fmtDate(t.archivedAt)+'</div>':'')
+        + '</div>';
+    });
+  }
+
+  el.innerHTML = html;
+}
+
+  
 // ═══════════════════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════════════════
