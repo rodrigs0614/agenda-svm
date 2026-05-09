@@ -1434,124 +1434,329 @@ function toggleOpB(ci){var b=document.getElementById('opb'+ci);if(b)b.style.disp
 function toggleOpI(ci,ii,v){if(!opTasks[ci]||!opTasks[ci].items[ii])return;opTasks[ci].items[ii].done=v;opTasks[ci].items[ii].doneAt=v?new Date().toISOString().slice(0,10):'';saveData();renderOperational();}
 function delOpCat(ci){if(!confirm('Supprimer cette categorie ?'))return;opTasks.splice(ci,1);saveData();renderOperational();}
 function delOpI(ci,ii){if(!opTasks[ci])return;opTasks[ci].items.splice(ii,1);saveData();renderOperational();}
-function addOpCat(){
-  var n=prompt('Nom de la categorie (ex: Veille Multirisque)');
-  if(!n||!n.trim())return;
-  var d=prompt('Description optionnelle')||'';
-  opTasks.push({name:n.trim(),description:d.trim(),items:[],createdBy:currentUser.name});
-  saveData();renderOperational();
-}
-function addOpTask(ci){
-  var t=prompt('Titre de la tache operationnelle');
-  if(!t||!t.trim())return;
-  var f=prompt('Frequence (ex: 1 fois/mois, chaque lundi...)')||'';
-  var r=prompt('Responsable principal (optionnel)')||'';
-  if(!opTasks[ci].items)opTasks[ci].items=[];
-  opTasks[ci].items.push({title:t.trim(),freq:f.trim(),responsible:r.trim(),done:false,doneAt:''});
-  saveData();renderOperational();
+
+var _opCatTarget = null;
+
+function addOpCat() {
+  document.getElementById('opcat-name').value = '';
+  document.getElementById('opcat-desc').value = '';
+  document.getElementById('opcat-err').style.display = 'none';
+  document.getElementById('opcat-modal').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('opcat-name').focus(); }, 100);
 }
 
-function renderReports(){
-  var el=document.getElementById('sec-reports');
-  if(!isAdmin()&&!isChef()){el.innerHTML='<div class="empty"><i class="ti ti-lock"></i>Acces reserve</div>';return;}
-  var now=new Date();
-  var ym=now.toISOString().slice(0,7);
-  var ml=now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
-  ml=ml.charAt(0).toUpperCase()+ml.slice(1);
-  var done=tasks.filter(function(t){return t.status==='done';}).length;
-  var blocked=tasks.filter(function(t){return t.status==='blocked';}).length;
-  var inprog=tasks.filter(function(t){return t.status==='progress';}).length;
-  var cM=cuts.filter(function(c){return c.date.slice(0,7)===ym;});
-  var aM=absences.filter(function(a){return a.from.slice(0,7)===ym||a.to.slice(0,7)===ym;});
-  var cMin=cM.reduce(function(acc,c){
+function doAddOpCat() {
+  var name = document.getElementById('opcat-name').value.trim();
+  var desc = document.getElementById('opcat-desc').value.trim();
+  var err = document.getElementById('opcat-err');
+  if (!name) {
+    err.textContent = 'Le nom de la catégorie est obligatoire.';
+    err.style.display = 'block';
+    return;
+  }
+  opTasks.push({
+    name: name,
+    description: desc,
+    items: [],
+    createdBy: currentUser.name,
+    createdAt: new Date().toISOString().slice(0,10)
+  });
+  saveData();
+  closeModal('opcat-modal');
+  renderOperational();
+  showToast('Catégorie "' + name + '" créée.');
+}
+
+function addOpTask(ci) {
+  _opCatTarget = ci;
+  var cat = opTasks[ci];
+  document.getElementById('optask-cat-name').innerHTML = '<i class="ti ti-folder" style="color:var(--t500)"></i> Catégorie : <strong>' + cat.name + '</strong>';
+  document.getElementById('optask-title').value = '';
+  document.getElementById('optask-freq').value = '';
+  document.getElementById('optask-note').value = '';
+  document.getElementById('optask-err').style.display = 'none';
+  // Remplir le select des membres
+  var respSel = document.getElementById('optask-resp');
+  respSel.innerHTML = '<option value="">— Optionnel —</option>';
+  accounts.filter(function(a){ return a.active !== false; }).forEach(function(a) {
+    var o = document.createElement('option');
+    o.value = a.name; o.textContent = a.name;
+    respSel.appendChild(o);
+  });
+  document.getElementById('optask-modal').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('optask-title').focus(); }, 100);
+}
+
+function doAddOpTask() {
+  var title = document.getElementById('optask-title').value.trim();
+  var freq = document.getElementById('optask-freq').value;
+  var resp = document.getElementById('optask-resp').value;
+  var note = document.getElementById('optask-note').value.trim();
+  var err = document.getElementById('optask-err');
+  if (!title) {
+    err.textContent = 'Le titre de la tâche est obligatoire.';
+    err.style.display = 'block';
+    return;
+  }
+  if (!opTasks[_opCatTarget].items) opTasks[_opCatTarget].items = [];
+  opTasks[_opCatTarget].items.push({
+    title: title,
+    freq: freq,
+    responsible: resp,
+    note: note,
+    done: false,
+    doneAt: ''
+  });
+  saveData();
+  closeModal('optask-modal');
+  renderOperational();
+  showToast('Tâche ajoutée à "' + opTasks[_opCatTarget].name + '".');
+}
+
+function renderReports() {
+  var el = document.getElementById('sec-reports');
+  if (!isAdmin() && !isChef()) {
+    el.innerHTML = '<div class="empty"><i class="ti ti-lock"></i>Accès réservé</div>';
+    return;
+  }
+
+  // Récupérer les filtres actuels
+  var periodType = (document.getElementById('rpt-period') || {}).value || 'monthly';
+  var dateFrom = (document.getElementById('rpt-from') || {}).value || '';
+  var dateTo = (document.getElementById('rpt-to') || {}).value || '';
+  var excludedIds = window._rptExcluded || [];
+
+  // Calculer les dates selon la période
+  var now = new Date();
+  if (!dateFrom || !dateTo) {
+    var df = new Date(now);
+    var dt = new Date(now);
+    if (periodType === 'weekly') {
+      var day = df.getDay() || 7;
+      df.setDate(df.getDate() - day + 1);
+      dt = new Date(df); dt.setDate(dt.getDate() + 6);
+    } else if (periodType === 'monthly') {
+      df = new Date(now.getFullYear(), now.getMonth(), 1);
+      dt = new Date(now.getFullYear(), now.getMonth()+1, 0);
+    } else if (periodType === 'quarterly') {
+      var q = Math.floor(now.getMonth()/3);
+      df = new Date(now.getFullYear(), q*3, 1);
+      dt = new Date(now.getFullYear(), q*3+3, 0);
+    } else if (periodType === 'annual') {
+      df = new Date(now.getFullYear(), 0, 1);
+      dt = new Date(now.getFullYear(), 11, 31);
+    } else {
+      df = new Date(now.getFullYear(), now.getMonth(), 1);
+      dt = new Date(now.getFullYear(), now.getMonth()+1, 0);
+    }
+    dateFrom = df.toISOString().slice(0,10);
+    dateTo = dt.toISOString().slice(0,10);
+  }
+
+  var periodLabel = {
+    weekly: 'Rapport hebdomadaire',
+    monthly: 'Rapport mensuel',
+    quarterly: 'Rapport trimestriel',
+    annual: 'Rapport annuel',
+    custom: 'Rapport personnalisé'
+  }[periodType] || 'Rapport';
+
+  var dfLabel = new Date(dateFrom).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
+  var dtLabel = new Date(dateTo).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
+
+  // Filtrer les données selon la période
+  var rptTasks = tasks.concat(archivedTasks).filter(function(t) {
+    if (excludedIds.includes(t.id)) return false;
+    var ref = t.doneAt || t.archivedAt || t.assignedAt || '';
+    if (!ref) return true;
+    return ref >= dateFrom && ref <= dateTo;
+  });
+
+  var rptAbsences = absences.filter(function(a) {
+    return !excludedIds.includes('abs_'+a.id) && (a.from <= dateTo && a.to >= dateFrom);
+  });
+
+  var rptObservations = observations.filter(function(o) {
+    return !excludedIds.includes('obs_'+o.id) && o.date >= dateFrom && o.date <= dateTo;
+  });
+
+  var rptCuts = cuts.filter(function(c) {
+    return !excludedIds.includes('cut_'+c.id) && c.date >= dateFrom && c.date <= dateTo;
+  });
+
+  var done = rptTasks.filter(function(t){return t.status==='done';}).length;
+  var blocked = rptTasks.filter(function(t){return t.status==='blocked';}).length;
+  var inprog = rptTasks.filter(function(t){return t.status==='progress';}).length;
+  var cMin = rptCuts.reduce(function(acc,c){
     if(!c.start||!c.end)return acc;
     var ps=function(s){var x=s.split(':');return parseInt(x[0])*60+(parseInt(x[1])||0);};
     return acc+ps(c.end)-ps(c.start);
   },0);
-  var stats=accounts.filter(function(a){return a.active!==false;}).map(function(a){
+
+  var stats = accounts.filter(function(a){return a.active!==false;}).map(function(a){
     return {
-      name:a.name,
-      total:tasks.filter(function(t){return(t.members||[]).includes(a.name);}).length,
-      done:tasks.filter(function(t){return(t.members||[]).includes(a.name)&&t.status==='done';}).length,
-      inprog:tasks.filter(function(t){return(t.members||[]).includes(a.name)&&t.status==='progress';}).length,
-      blocked:tasks.filter(function(t){return(t.members||[]).includes(a.name)&&t.status==='blocked';}).length
+      name: a.name,
+      total: rptTasks.filter(function(t){return(t.members||[]).includes(a.name);}).length,
+      done: rptTasks.filter(function(t){return(t.members||[]).includes(a.name)&&t.status==='done';}).length,
+      inprog: rptTasks.filter(function(t){return(t.members||[]).includes(a.name)&&t.status==='progress';}).length,
+      blocked: rptTasks.filter(function(t){return(t.members||[]).includes(a.name)&&t.status==='blocked';}).length
     };
   }).filter(function(s){return s.total>0;});
-  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">'
-    +'<div class="sect"><i class="ti ti-chart-bar"></i> Rapport '+ml+'</div>'
-    +'<button class="bp no-print" onclick="window.print()"><i class="ti ti-printer"></i> Imprimer / PDF</button></div>'
-    +'<div style="background:linear-gradient(135deg,var(--t900),var(--t700));border-radius:var(--rlg);padding:16px 20px;margin-bottom:18px;color:white">'
-    +'<div style="font-size:11px;opacity:.7;text-transform:uppercase">'+TEAM+'</div>'
-    +'<div style="font-size:16px;font-weight:700;margin-top:2px">Rapport mensuel '+ml+'</div>'
-    +'<div style="font-size:12px;opacity:.7;margin-top:4px">Genere le '+now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</div></div>'
-    +'<div class="stgd">'
-    +'<div class="stc"><div class="stn">'+(tasks.length+archivedTasks.length)+'</div><div class="stl">Total</div></div>'
-    +'<div class="stc"><div class="stn" style="color:var(--b600)">'+inprog+'</div><div class="stl">En cours</div></div>'
-    +'<div class="stc"><div class="stn" style="color:var(--r400)">'+blocked+'</div><div class="stl">Bloques</div></div>'
-    +'<div class="stc"><div class="stn" style="color:var(--g700)">'+done+'</div><div class="stl">Termines</div></div>'
-    +'<div class="stc"><div class="stn" style="color:var(--a700)">'+cM.length+'</div><div class="stl">Coupures</div>'
-    +(cMin>0?'<div style="font-size:11px;color:var(--txl)">'+Math.floor(cMin/60)+'h'+(cMin%60?cMin%60+'min':'')+'</div>':'')+'</div>'
-    +'<div class="stc"><div class="stn" style="color:var(--n600)">'+archivedTasks.length+'</div><div class="stl">Archives</div></div></div>';
-  html+='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px">'
-    +'<thead><tr style="background:var(--t500);color:white">'
-    +'<th style="padding:8px 12px;text-align:left">Membre</th>'
-    +'<th style="padding:8px 12px;text-align:center">Total</th>'
-    +'<th style="padding:8px 12px;text-align:center">Termines</th>'
-    +'<th style="padding:8px 12px;text-align:center">En cours</th>'
-    +'<th style="padding:8px 12px;text-align:center">Bloques</th>'
-    +'<th style="padding:8px 12px;text-align:left">Avancement</th>'
-    +'</tr></thead><tbody>';
+
+  var html = '';
+
+  // ── PANNEAU DE CONTRÔLE ──
+  html += '<div class="card no-print" style="margin-bottom:16px">'
+    + '<div class="ftitle"><i class="ti ti-adjustments"></i> Paramètres du rapport</div>'
+    + '<div class="fg" style="margin-bottom:12px">'
+    + '<div class="fi"><label>Type de période</label>'
+    + '<select id="rpt-period" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;background:var(--sf);color:var(--tx)">'
+    + '<option value="weekly"'+(periodType==='weekly'?' selected':'')+'>Hebdomadaire</option>'
+    + '<option value="monthly"'+(periodType==='monthly'?' selected':'')+'>Mensuel</option>'
+    + '<option value="quarterly"'+(periodType==='quarterly'?' selected':'')+'>Trimestriel</option>'
+    + '<option value="annual"'+(periodType==='annual'?' selected':'')+'>Annuel</option>'
+    + '<option value="custom"'+(periodType==='custom'?' selected':'')+'>Personnalisé</option>'
+    + '</select></div>'
+    + '<div class="fi"><label>Du</label><input type="date" id="rpt-from" value="'+dateFrom+'" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit"></div>'
+    + '<div class="fi"><label>Au</label><input type="date" id="rpt-to" value="'+dateTo+'" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit"></div>'
+    + '</div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'
+    + '<button class="bp" onclick="window.print()"><i class="ti ti-printer"></i> Imprimer / PDF</button>'
+    + (excludedIds.length ? '<button class="bg_" onclick="window._rptExcluded=[];renderReports()" style="border-color:var(--a700);color:var(--a700)"><i class="ti ti-refresh"></i> Réafficher tout ('+excludedIds.length+' exclus)</button>' : '')
+    + '</div>'
+    + '</div>';
+
+  // ── EN-TÊTE DU RAPPORT ──
+  html += '<div style="background:linear-gradient(135deg,var(--t900),var(--t700));border-radius:var(--rlg);padding:16px 20px;margin-bottom:18px;color:white">'
+    + '<div style="font-size:11px;opacity:.7;text-transform:uppercase">'+TEAM+'</div>'
+    + '<div style="font-size:18px;font-weight:700;margin-top:2px">'+periodLabel+'</div>'
+    + '<div style="font-size:12px;opacity:.7;margin-top:4px">Du '+dfLabel+' au '+dtLabel+'</div>'
+    + '<div style="font-size:11px;opacity:.6;margin-top:2px">Généré le '+now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</div>'
+    + '</div>';
+
+  // ── KPIs ──
+  html += '<div class="stgd">'
+    + '<div class="stc"><div class="stn">'+(rptTasks.length)+'</div><div class="stl">Total tâches</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--b600)">'+inprog+'</div><div class="stl">En cours</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--r400)">'+blocked+'</div><div class="stl">Bloquées</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--g700)">'+done+'</div><div class="stl">Terminées</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--a700)">'+rptCuts.length+'</div><div class="stl">Coupures</div>'
+    + (cMin>0?'<div style="font-size:11px;color:var(--txl)">'+Math.floor(cMin/60)+'h'+(cMin%60?cMin%60+'min':'')+'</div>':'')
+    + '</div>'
+    + '<div class="stc"><div class="stn" style="color:var(--p600)">'+rptObservations.length+'</div><div class="stl">Observations</div></div>'
+    + '</div>';
+
+  // ── CHARGE PAR MEMBRE ──
+  html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-users"></i> Charge par membre</div>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px">'
+    + '<thead><tr style="background:var(--t500);color:white">'
+    + '<th style="padding:8px 12px;text-align:left">Membre</th>'
+    + '<th style="padding:8px 12px;text-align:center">Total</th>'
+    + '<th style="padding:8px 12px;text-align:center">Terminées</th>'
+    + '<th style="padding:8px 12px;text-align:center">En cours</th>'
+    + '<th style="padding:8px 12px;text-align:center">Bloquées</th>'
+    + '<th style="padding:8px 12px;text-align:left">Avancement</th>'
+    + '</tr></thead><tbody>';
   stats.forEach(function(s,i){
-    var pct=s.total?Math.round(s.done/s.total*100):0;
-    html+='<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
-      +'<td style="padding:8px 12px"><div style="display:flex;align-items:center;gap:7px">'+av(s.name,'avxs')+'<strong>'+s.name+'</strong></div></td>'
-      +'<td style="padding:8px 12px;text-align:center;font-weight:600">'+s.total+'</td>'
-      +'<td style="padding:8px 12px;text-align:center;color:var(--g700)">'+s.done+'</td>'
-      +'<td style="padding:8px 12px;text-align:center;color:var(--b600)">'+s.inprog+'</td>'
-      +'<td style="padding:8px 12px;text-align:center;color:var(--r400)">'+s.blocked+'</td>'
-      +'<td style="padding:8px 12px"><div style="display:flex;align-items:center;gap:6px">'
-      +'<div style="flex:1;height:6px;background:var(--n100);border-radius:4px;overflow:hidden">'
-      +'<div style="width:'+pct+'%;height:100%;background:'+(pct===100?'var(--g700)':'var(--t500)')+'"></div></div>'
-      +'<span style="font-size:11px;color:var(--txm)">'+pct+'%</span></div></td></tr>';
+    var pct = s.total ? Math.round(s.done/s.total*100) : 0;
+    html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
+      + '<td style="padding:8px 12px"><div style="display:flex;align-items:center;gap:7px">'+av(s.name,'avxs')+'<strong>'+s.name+'</strong></div></td>'
+      + '<td style="padding:8px 12px;text-align:center;font-weight:600">'+s.total+'</td>'
+      + '<td style="padding:8px 12px;text-align:center;color:var(--g700)">'+s.done+'</td>'
+      + '<td style="padding:8px 12px;text-align:center;color:var(--b600)">'+s.inprog+'</td>'
+      + '<td style="padding:8px 12px;text-align:center;color:var(--r400)">'+s.blocked+'</td>'
+      + '<td style="padding:8px 12px"><div style="display:flex;align-items:center;gap:6px">'
+      + '<div style="flex:1;height:6px;background:var(--n100);border-radius:4px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+(pct===100?'var(--g700)':'var(--t500)')+'"></div></div>'
+      + '<span style="font-size:11px;color:var(--txm)">'+pct+'%</span></div></td>'
+      + '</tr>';
   });
-  html+='</tbody></table>';
-  if(aM.length){
-    html+='<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-calendar-off"></i> Absences du mois</div>'
-      +'<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
-      +'<thead><tr style="background:var(--t500);color:white">'
-      +'<th style="padding:7px 10px">Membre</th><th style="padding:7px 10px">Du</th>'
-      +'<th style="padding:7px 10px">Au</th><th style="padding:7px 10px">Motif</th></tr></thead><tbody>';
-    aM.forEach(function(a,i){
-      html+='<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
-        +'<td style="padding:7px 10px"><strong>'+a.member+'</strong></td>'
-        +'<td style="padding:7px 10px">'+fmtDate(a.from)+'</td>'
-        +'<td style="padding:7px 10px">'+fmtDate(a.to)+'</td>'
-        +'<td style="padding:7px 10px">'+a.reason+'</td></tr>';
-    });
-    html+='</tbody></table>';
-  }
-    // Observations du mois
-  var obsMois = observations.filter(function(o){ return o.date.slice(0,7) === ym; });
-  if (obsMois.length) {
-    html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-notes"></i> Observations du mois</div>'
+  html += '</tbody></table>';
+
+  // ── LISTE DES TÂCHES avec bouton exclure ──
+  html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-list-check"></i> Détail des tâches</div>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
+    + '<thead><tr style="background:var(--t500);color:white">'
+    + '<th style="padding:7px 10px;text-align:left">Tâche</th>'
+    + '<th style="padding:7px 10px;text-align:left">Assigné à</th>'
+    + '<th style="padding:7px 10px;text-align:center">Priorité</th>'
+    + '<th style="padding:7px 10px;text-align:center">Avancement</th>'
+    + '<th style="padding:7px 10px;text-align:center">Statut</th>'
+    + '<th class="no-print" style="padding:7px 10px;text-align:center">Action</th>'
+    + '</tr></thead><tbody>';
+  rptTasks.sort(function(a,b){
+    var o={blocked:0,progress:1,todo:2,done:3};
+    var sA=o[a.status]||9, sB=o[b.status]||9;
+    if(sA!==sB)return sA-sB;
+    return (b.priority||0)-(a.priority||0);
+  }).forEach(function(t,i){
+    html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
+      + '<td style="padding:7px 10px"><strong>'+t.title+'</strong>'
+      + (t.blocker?'<div style="color:var(--r700);font-size:11px;margin-top:2px"><i class="ti ti-alert-triangle"></i> '+t.blocker+'</div>':'')
+      + '</td>'
+      + '<td style="padding:7px 10px">'+(t.members||[]).join(', ')+'</td>'
+      + '<td style="padding:7px 10px;text-align:center">'+((t.priority||0)>0?prioBadge(t.priority):'—')+'</td>'
+      + '<td style="padding:7px 10px;text-align:center">'+(t.pct||0)+'%</td>'
+      + '<td style="padding:7px 10px;text-align:center"><span class="bdg '+SC[t.status]+'">'+SL[t.status]+'</span></td>'
+      + '<td class="no-print" style="padding:7px 10px;text-align:center">'
+      + '<button class="bg_ bgd" style="font-size:11px;padding:3px 8px" onclick="rptExclude('+t.id+')"><i class="ti ti-eye-off"></i> Exclure</button>'
+      + '</td>'
+      + '</tr>';
+  });
+  html += '</tbody></table>';
+
+  // ── ABSENCES ──
+  if (rptAbsences.length) {
+    html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-calendar-off"></i> Absences</div>'
       + '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
       + '<thead><tr style="background:var(--t500);color:white">'
-      + '<th style="padding:7px 10px">Date</th>'
-      + '<th style="padding:7px 10px">Auteur</th>'
-      + '<th style="padding:7px 10px">Catégorie</th>'
-      + '<th style="padding:7px 10px">Observation</th>'
+      + '<th style="padding:7px 10px">Membre</th><th style="padding:7px 10px">Du</th>'
+      + '<th style="padding:7px 10px">Au</th><th style="padding:7px 10px">Motif</th>'
+      + '<th class="no-print" style="padding:7px 10px">Action</th>'
       + '</tr></thead><tbody>';
-    obsMois.forEach(function(o, i) {
-      html += '<tr style="background:' + (i%2?'var(--n50)':'white') + '">'
-        + '<td style="padding:7px 10px">' + fmtDate(o.date) + ' ' + o.time + '</td>'
-        + '<td style="padding:7px 10px"><strong>' + o.author + '</strong></td>'
-        + '<td style="padding:7px 10px">' + o.category + '</td>'
-        + '<td style="padding:7px 10px">' + o.text + '</td>'
+    rptAbsences.forEach(function(a,i){
+      html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
+        + '<td style="padding:7px 10px"><strong>'+a.member+'</strong></td>'
+        + '<td style="padding:7px 10px">'+fmtDate(a.from)+'</td>'
+        + '<td style="padding:7px 10px">'+fmtDate(a.to)+'</td>'
+        + '<td style="padding:7px 10px">'+a.reason+'</td>'
+        + '<td class="no-print" style="padding:7px 10px;text-align:center">'
+        + '<button class="bg_ bgd" style="font-size:11px;padding:3px 8px" onclick="rptExclude(\'abs_'+a.id+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
+        + '</td>'
         + '</tr>';
     });
     html += '</tbody></table>';
   }
-  el.innerHTML=html;
+
+  // ── OBSERVATIONS ──
+  if (rptObservations.length) {
+    html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-notes"></i> Observations</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
+      + '<thead><tr style="background:var(--t500);color:white">'
+      + '<th style="padding:7px 10px">Date</th><th style="padding:7px 10px">Auteur</th>'
+      + '<th style="padding:7px 10px">Catégorie</th><th style="padding:7px 10px">Observation</th>'
+      + '<th class="no-print" style="padding:7px 10px">Action</th>'
+      + '</tr></thead><tbody>';
+    rptObservations.forEach(function(o,i){
+      html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
+        + '<td style="padding:7px 10px">'+fmtDate(o.date)+' '+o.time+'</td>'
+        + '<td style="padding:7px 10px"><strong>'+o.author+'</strong></td>'
+        + '<td style="padding:7px 10px">'+o.category+'</td>'
+        + '<td style="padding:7px 10px">'+o.text+'</td>'
+        + '<td class="no-print" style="padding:7px 10px;text-align:center">'
+        + '<button class="bg_ bgd" style="font-size:11px;padding:3px 8px" onclick="rptExclude(\'obs_'+o.id+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
+        + '</td>'
+        + '</tr>';
+    });
+    html += '</tbody></table>';
+  }
+
+  el.innerHTML = html;
+}
+
+function rptExclude(id) {
+  if (!window._rptExcluded) window._rptExcluded = [];
+  if (!window._rptExcluded.includes(id)) window._rptExcluded.push(id);
+  renderReports();
 }
 
 var ALL_PERMS=[
@@ -1991,7 +2196,74 @@ if (restoreSession()) {
     </div>
   </div>
 </div>
+<!-- MODAL NOUVELLE CATÉGORIE OP -->
+<div class="mov" id="opcat-modal" style="display:none" onclick="if(event.target===this)closeModal('opcat-modal')">
+  <div class="mbox sm">
+    <div class="mhd">
+      <div class="mtt"><i class="ti ti-folder-plus"></i> Nouvelle catégorie</div>
+      <button class="bg_" onclick="closeModal('opcat-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="fi" style="margin-bottom:12px">
+      <label>Nom de la catégorie *</label>
+      <input type="text" id="opcat-name" placeholder="Ex : Veille Multirisque, Rapports mensuels…">
+    </div>
+    <div class="fi" style="margin-bottom:18px">
+      <label>Description (optionnelle)</label>
+      <textarea id="opcat-desc" rows="2" placeholder="Brève description de cette catégorie…"></textarea>
+    </div>
+    <div id="opcat-err" style="color:var(--r700);font-size:12px;margin-bottom:10px;display:none"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="bg_" onclick="closeModal('opcat-modal')">Annuler</button>
+      <button class="bp" onclick="doAddOpCat()"><i class="ti ti-folder-plus"></i> Créer</button>
+    </div>
+  </div>
+</div>
 
+<!-- MODAL NOUVELLE TÂCHE OP -->
+<div class="mov" id="optask-modal" style="display:none" onclick="if(event.target===this)closeModal('optask-modal')">
+  <div class="mbox sm">
+    <div class="mhd">
+      <div class="mtt"><i class="ti ti-plus"></i> Ajouter une tâche</div>
+      <button class="bg_" onclick="closeModal('optask-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <p id="optask-cat-name" style="font-size:13px;color:var(--txm);margin-bottom:14px;padding:8px 12px;background:var(--n50);border-radius:var(--rsm)"></p>
+    <div class="fi" style="margin-bottom:12px">
+      <label>Titre de la tâche *</label>
+      <input type="text" id="optask-title" placeholder="Ex : Bulletin mensuel, Rapport de terrain…">
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <div class="fi">
+        <label>Fréquence</label>
+        <select id="optask-freq" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;background:var(--sf);color:var(--tx)">
+          <option value="">— Choisir —</option>
+          <option value="Quotidienne">Quotidienne</option>
+          <option value="Hebdomadaire">Hebdomadaire</option>
+          <option value="Bimensuelle">Bimensuelle</option>
+          <option value="Mensuelle">Mensuelle</option>
+          <option value="Trimestrielle">Trimestrielle</option>
+          <option value="Semestrielle">Semestrielle</option>
+          <option value="Annuelle">Annuelle</option>
+          <option value="Ponctuelle">Ponctuelle</option>
+        </select>
+      </div>
+      <div class="fi">
+        <label>Responsable principal</label>
+        <select id="optask-resp" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;background:var(--sf);color:var(--tx)">
+          <option value="">— Optionnel —</option>
+        </select>
+      </div>
+    </div>
+    <div class="fi" style="margin-bottom:18px">
+      <label>Note (optionnelle)</label>
+      <textarea id="optask-note" rows="2" placeholder="Précisions, instructions…"></textarea>
+    </div>
+    <div id="optask-err" style="color:var(--r700);font-size:12px;margin-bottom:10px;display:none"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="bg_" onclick="closeModal('optask-modal')">Annuler</button>
+      <button class="bp" onclick="doAddOpTask()"><i class="ti ti-plus"></i> Ajouter</button>
+    </div>
+  </div>
+</div>
 
   
 </body>
