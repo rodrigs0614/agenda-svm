@@ -1800,13 +1800,11 @@ function renderReports() {
     return;
   }
 
-  // Récupérer les filtres actuels
   var periodType = (document.getElementById('rpt-period') || {}).value || 'monthly';
   var dateFrom = (document.getElementById('rpt-from') || {}).value || '';
   var dateTo = (document.getElementById('rpt-to') || {}).value || '';
   var excludedIds = window._rptExcluded || [];
 
-  // Calculer les dates selon la période
   var now = new Date();
   if (!dateFrom || !dateTo) {
     var df = new Date(now);
@@ -1844,7 +1842,7 @@ function renderReports() {
   var dfLabel = new Date(dateFrom).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
   var dtLabel = new Date(dateTo).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
 
-  // Filtrer les données selon la période
+  // Filtrer les données
   var rptTasks = tasks.concat(archivedTasks).filter(function(t) {
     if (excludedIds.includes(t.id)) return false;
     var ref = t.doneAt || t.archivedAt || t.assignedAt || '';
@@ -1862,6 +1860,26 @@ function renderReports() {
 
   var rptCuts = cuts.filter(function(c) {
     return !excludedIds.includes('cut_'+c.id) && c.date >= dateFrom && c.date <= dateTo;
+  });
+
+  // ── rptOpDone calculé ICI avant les KPIs ──
+  var rptOpDone = [];
+  opTasks.forEach(function(cat) {
+    (cat.items||[]).forEach(function(it) {
+      (it.occurrences||[]).forEach(function(occ) {
+        if (occ.done && !excludedIds.includes('op_'+cat.name+'_'+it.title)) {
+          if (!occ.doneAt || (occ.doneAt >= dateFrom && occ.doneAt <= dateTo)) {
+            rptOpDone.push({
+              cat: cat.name,
+              title: it.title,
+              freqCount: it.freqCount||1,
+              responsible: it.responsible||'',
+              doneAt: occ.doneAt||''
+            });
+          }
+        }
+      });
+    });
   });
 
   var done = rptTasks.filter(function(t){return t.status==='done';}).length;
@@ -1906,7 +1924,7 @@ function renderReports() {
     + '</div>'
     + '</div>';
 
-  // ── EN-TÊTE DU RAPPORT ──
+  // ── EN-TÊTE ──
   html += '<div style="background:linear-gradient(135deg,var(--t900),var(--t700));border-radius:var(--rlg);padding:16px 20px;margin-bottom:18px;color:white">'
     + '<div style="font-size:11px;opacity:.7;text-transform:uppercase">'+TEAM+'</div>'
     + '<div style="font-size:18px;font-weight:700;margin-top:2px">'+periodLabel+'</div>'
@@ -1916,7 +1934,7 @@ function renderReports() {
 
   // ── KPIs ──
   html += '<div class="stgd">'
-    + '<div class="stc"><div class="stn">'+(rptTasks.length)+'</div><div class="stl">Total tâches</div></div>'
+    + '<div class="stc"><div class="stn">'+rptTasks.length+'</div><div class="stl">Total tâches</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--b600)">'+inprog+'</div><div class="stl">En cours</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--r400)">'+blocked+'</div><div class="stl">Bloquées</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--g700)">'+done+'</div><div class="stl">Terminées</div></div>'
@@ -1953,7 +1971,7 @@ function renderReports() {
   });
   html += '</tbody></table>';
 
-  // ── LISTE DES TÂCHES avec bouton exclure ──
+  // ── LISTE DES TÂCHES ──
   html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-list-check"></i> Détail des tâches</div>'
     + '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
     + '<thead><tr style="background:var(--t500);color:white">'
@@ -2030,54 +2048,36 @@ function renderReports() {
     });
     html += '</tbody></table>';
   }
-  // ── TÂCHES OPÉRATIONNELLES RÉALISÉES ──
-  var rptOpDone = [];
-  opTasks.forEach(function(cat) {
-    (cat.items||[]).forEach(function(it) {
-      if (it.done && !excludedIds.includes('op_'+cat.name+'_'+it.title)) {
-        if (!it.doneAt || (it.doneAt >= dateFrom && it.doneAt <= dateTo)) {
-          rptOpDone.push({
-            cat: cat.name,
-            title: it.title,
-            freq: it.freq||'',
-            responsible: it.responsible||'',
-            doneAt: it.doneAt||''
-          });
-        }
-      }
-    });
-  });
 
+  // ── TÂCHES OPÉRATIONNELLES RÉALISÉES ──
   if (rptOpDone.length) {
     html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-clipboard-check" style="color:var(--g700)"></i> Tâches opérationnelles réalisées</div>'
       + '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
       + '<thead><tr style="background:var(--t500);color:white">'
       + '<th style="padding:7px 10px;text-align:left">Catégorie</th>'
       + '<th style="padding:7px 10px;text-align:left">Tâche</th>'
-      + '<th style="padding:7px 10px;text-align:left">Fréquence</th>'
+      + '<th style="padding:7px 10px;text-align:center">Fréquence/mois</th>'
       + '<th style="padding:7px 10px;text-align:left">Responsable</th>'
       + '<th style="padding:7px 10px;text-align:center">Réalisée le</th>'
       + '<th class="no-print" style="padding:7px 10px;text-align:center">Action</th>'
       + '</tr></thead><tbody>';
-
-    rptOpDone.forEach(function(it, i) {
+    rptOpDone.forEach(function(it,i){
       html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
         + '<td style="padding:7px 10px"><span style="background:var(--t50);color:var(--t700);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:600"><i class="ti ti-folder" style="font-size:10px"></i> '+it.cat+'</span></td>'
         + '<td style="padding:7px 10px"><strong>'+it.title+'</strong></td>'
-        + '<td style="padding:7px 10px">'+(it.freq||'-')+'</td>'
-        + '<td style="padding:7px 10px">'+(it.responsible ? av(it.responsible,'avxs')+' '+it.responsible : '-')+'</td>'
+        + '<td style="padding:7px 10px;text-align:center">'+it.freqCount+'x</td>'
+        + '<td style="padding:7px 10px">'+(it.responsible?av(it.responsible,'avxs')+' '+it.responsible:'-')+'</td>'
         + '<td style="padding:7px 10px;text-align:center">'+(it.doneAt?fmtDate(it.doneAt):'-')+'</td>'
         + '<td class="no-print" style="padding:7px 10px;text-align:center">'
         + '<button class="bg_ bgd" style="font-size:11px;padding:3px 8px" onclick="rptExclude(\'op_'+it.cat.replace(/'/g,'')+'_'+it.title.replace(/'/g,'')+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
         + '</td>'
         + '</tr>';
     });
-
     html += '</tbody></table>';
   }
+
   el.innerHTML = html;
 }
-
 function rptExclude(id) {
   if (!window._rptExcluded) window._rptExcluded = [];
   if (!window._rptExcluded.includes(id)) window._rptExcluded.push(id);
