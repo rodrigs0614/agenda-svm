@@ -992,16 +992,16 @@ function buildEmailBody(task, msg) {
   var lines = [];
   lines.push('Vous avez été assigné(e) à la tâche suivante :');
   lines.push('');
-  lines.push('• Tâche : <strong>' + task.title + '</strong>');
-  lines.push('• Statut : ' + (SL[task.status]||task.status));
-  lines.push('• Avancement : ' + (task.pct||0) + '%');
-  if (task.date) lines.push('• Échéance : ' + fmtDate(task.date));
-  if (task.blocker) lines.push('• Point bloquant : ' + task.blocker);
+  lines.push('Tâche : ' + task.title);
+  lines.push('Statut : ' + (SL[task.status]||task.status));
+  lines.push('Avancement : ' + (task.pct||0) + '%');
+  if (task.date) lines.push('Échéance : ' + fmtDate(task.date));
+  if (task.blocker) lines.push('Point bloquant : ' + task.blocker);
   if (msg) {
     lines.push('');
     lines.push(msg);
   }
-  return lines.join('<br>');
+  return lines.join('\n');
 }
 
 function previewEmail(taskId) {
