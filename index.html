@@ -990,14 +990,17 @@ const EMAILJS_TEMPLATE = 'template_txp21nv';
 
 function buildEmailBody(task, msg) {
   var lines = [];
-  lines.push('Tâche : ' + task.title);
-  lines.push('Assigné par : ' + task.assigner);
-  lines.push('Assigné à : ' + (task.members||[]).join(', '));
-  lines.push('Statut : ' + (SL[task.status]||task.status));
-  lines.push('Avancement : ' + (task.pct||0) + '%');
-  if (task.date) lines.push('Échéance : ' + fmtDate(task.date));
-  if (task.blocker) lines.push('Point bloquant : ' + task.blocker);
-  if (msg) lines.push('<br>' + msg);
+  lines.push('Vous avez été assigné(e) à la tâche suivante :');
+  lines.push('');
+  lines.push('• Tâche : <strong>' + task.title + '</strong>');
+  lines.push('• Statut : ' + (SL[task.status]||task.status));
+  lines.push('• Avancement : ' + (task.pct||0) + '%');
+  if (task.date) lines.push('• Échéance : ' + fmtDate(task.date));
+  if (task.blocker) lines.push('• Point bloquant : ' + task.blocker);
+  if (msg) {
+    lines.push('');
+    lines.push(msg);
+  }
   return lines.join('<br>');
 }
 
