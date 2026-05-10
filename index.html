@@ -996,8 +996,8 @@ function buildEmailBody(task, msg) {
   lines.push('Avancement : ' + (task.pct||0) + '%');
   if (task.date) lines.push('Échéance : ' + fmtDate(task.date));
   if (task.blocker) lines.push('Point bloquant : ' + task.blocker);
-  if (msg) lines.push('\n' + msg);
-  return lines.join('\n');
+  if (msg) lines.push('<br>' + msg);
+  return lines.join('<br>');
 }
 
 function previewEmail(taskId) {
