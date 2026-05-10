@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('-p9NlfyK9gM6hOsmw');</script>
 <style>
 :root{
   --t50:#E1F5EE;--t100:#9FE1CB;--t500:#1D9E75;--t700:#0F6E56;--t900:#04342C;
@@ -332,13 +334,25 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
 <!-- MODAL EMAIL -->
 <div class="mov" id="email-modal" style="display:none" onclick="if(event.target===this)closeModal('email-modal')">
   <div class="mbox md">
-    <div class="mhd"><div class="mtt"><i class="ti ti-mail-forward"></i> Notification e-mail - Aperçu</div><button class="bg_" onclick="closeModal('email-modal')"><i class="ti ti-x"></i></button></div>
-    <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Destinataires</div><div style="display:flex;flex-wrap:wrap;gap:6px" id="em-recip"></div></div>
-    <div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Contenu</div><div class="ep" id="em-preview"></div></div>
+    <div class="mhd">
+      <div class="mtt"><i class="ti ti-mail-forward"></i> Notification e-mail</div>
+      <button class="bg_" onclick="closeModal('email-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Destinataires</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" id="em-recip"></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Message additionnel <span style="font-weight:400;text-transform:none">(optionnel)</span></div>
+      <textarea id="em-extra-msg" rows="2" placeholder="Ajouter un message personnalisé…" oninput="modalMsg=this.value;document.getElementById('em-preview').textContent=buildEmailBody(modalTask,this.value)" style="width:100%;padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;resize:vertical"></textarea>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Aperçu</div>
+      <div class="ep" id="em-preview"></div>
+    </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
-      <button class="bg_" onclick="closeModal('email-modal')">Fermer</button>
-      <button class="bg_ bgb" id="em-copy" onclick="copyEmail()"><i class="ti ti-copy"></i> Copier</button>
-      <button class="bp" onclick="openMailto()"><i class="ti ti-mail-forward"></i> Ouvrir messagerie</button>
+      <button class="bg_" onclick="closeModal('email-modal')">Annuler</button>
+      <button class="bp" id="em-send-btn" onclick="sendEmail()"><i class="ti ti-send"></i> Envoyer</button>
     </div>
   </div>
 </div>
@@ -970,36 +984,81 @@ function removeTask(id) {
 // ═══════════════════════════════════════════════════════
 // EMAIL
 // ═══════════════════════════════════════════════════════
+const EMAILJS_SERVICE = 'service_ktho09r';
+const EMAILJS_TEMPLATE = 'template_txp21nv';
+
 function buildEmailBody(task, msg) {
-  const date = new Date().toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const lines = ['Bonjour,','',`Une tâche vous a été assignée dans l'agenda de la ${TEAM}.`,'',
-    '══════════════════════════════════════',`  TÂCHE : ${task.title}`,'══════════════════════════════════════',
-    `  Assigné par   : ${task.assigner}`,`  Date           : ${date}`,`  Assigné à      : ${(task.members||[]).join(', ')}`,
-    `  Statut        : ${SL[task.status]||task.status}`,`  Avancement     : ${task.pct||0}%`,
-    ...(task.date?[`  Échéance       : ${fmtDate(task.date)}`]:[]),
-    ...(task.blocker?[`  Point bloquant : ${task.blocker}`]:[]),
-    '══════════════════════════════════════'
-  ];
-  if (msg) lines.push('', `Message de ${task.assigner} :`, '', '  '+msg, '');
-  lines.push('', 'Merci de mettre à jour l\'avancement dans l\'agenda.', '', `Cordialement,`, `${task.assigner}`, `${TEAM}`);
+  var lines = [];
+  lines.push('Tâche : ' + task.title);
+  lines.push('Assigné par : ' + task.assigner);
+  lines.push('Assigné à : ' + (task.members||[]).join(', '));
+  lines.push('Statut : ' + (SL[task.status]||task.status));
+  lines.push('Avancement : ' + (task.pct||0) + '%');
+  if (task.date) lines.push('Échéance : ' + fmtDate(task.date));
+  if (task.blocker) lines.push('Point bloquant : ' + task.blocker);
+  if (msg) lines.push('\n' + msg);
   return lines.join('\n');
 }
-function previewEmail(taskId) { const t=tasks.find(x=>x.id===taskId); if(!t)return; modalTask=t; modalMsg=''; openEmailModal(); }
+
+function previewEmail(taskId) {
+  var t = tasks.find(function(x){ return x.id === taskId; });
+  if (!t) return;
+  modalTask = t;
+  modalMsg = '';
+  openEmailModal();
+}
+
 function openEmailModal() {
-  const notif = (modalTask.members||[]).map(m=>accounts.find(a=>a.name===m)).filter(a=>a&&a.email);
-  document.getElementById('em-recip').innerHTML = notif.map(a => { const c=mc(a.name); return `<span style="display:inline-flex;align-items:center;gap:5px;background:${c.bg};color:${c.fg};border-radius:20px;padding:4px 10px;font-size:12px;">${av(a.name,'avxs')} ${a.name} <span style="opacity:0.6;font-size:10px">&lt;${a.email}&gt;</span></span>`; }).join('');
+  var notif = (modalTask.members||[]).map(function(m){
+    return accounts.find(function(a){ return a.name === m; });
+  }).filter(function(a){ return a && a.email; });
+
+  document.getElementById('em-recip').innerHTML = notif.map(function(a) {
+    var c = mc(a.name);
+    return '<span style="display:inline-flex;align-items:center;gap:5px;background:'+c.bg+';color:'+c.fg+';border-radius:20px;padding:4px 10px;font-size:12px;">'+av(a.name,'avxs')+' '+a.name+' <span style="opacity:0.6;font-size:10px">&lt;'+a.email+'&gt;</span></span>';
+  }).join('');
+
   document.getElementById('em-preview').textContent = buildEmailBody(modalTask, modalMsg);
+  document.getElementById('em-send-btn').disabled = false;
+  document.getElementById('em-send-btn').innerHTML = '<i class="ti ti-send"></i> Envoyer';
   document.getElementById('email-modal').style.display = 'flex';
 }
-function openMailto() {
-  const notif = (modalTask.members||[]).map(m=>accounts.find(a=>a.name===m)).filter(a=>a&&a.email);
-  window.location.href = `mailto:${notif.map(a=>a.email).join(',')}?subject=${encodeURIComponent('['+TEAM+'] Tâche assignée : '+modalTask.title)}&body=${encodeURIComponent(buildEmailBody(modalTask,modalMsg))}`;
-}
-function copyEmail() {
-  navigator.clipboard.writeText(document.getElementById('em-preview').textContent).then(() => {
-    const b=document.getElementById('em-copy'); b.innerHTML='<i class="ti ti-check"></i> Copié !';
-    setTimeout(()=>{b.innerHTML='<i class="ti ti-copy"></i> Copier';},2000);
-  }).catch(()=>alert('Copiez le texte manuellement.'));
+
+function sendEmail() {
+  var notif = (modalTask.members||[]).map(function(m){
+    return accounts.find(function(a){ return a.name === m; });
+  }).filter(function(a){ return a && a.email; });
+
+  if (!notif.length) { alert('Aucun destinataire avec e-mail configuré.'); return; }
+
+  var btn = document.getElementById('em-send-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Envoi en cours…';
+
+  var msg = buildEmailBody(modalTask, modalMsg);
+  var promises = notif.map(function(a) {
+    return emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      to_email: a.email,
+      to_name: a.name,
+      subject: modalTask.title,
+      message: msg,
+      from_name: currentUser.name
+    });
+  });
+
+  Promise.all(promises)
+    .then(function() {
+      btn.innerHTML = '<i class="ti ti-check"></i> Envoyé !';
+      btn.style.background = 'var(--g700)';
+      showToast('E-mail(s) envoyé(s) avec succès.');
+      setTimeout(function(){ closeModal('email-modal'); }, 1500);
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-send"></i> Envoyer';
+      console.error('EmailJS error:', err);
+      alert('Erreur lors de l\'envoi. Vérifiez la configuration EmailJS.\n' + JSON.stringify(err));
+    });
 }
 function closeModal(id) { document.getElementById(id).style.display='none'; }
 
