@@ -537,7 +537,7 @@ function loadAll() {
   // Toujours garantir les comptes par défaut, même si localStorage est vide
   if(!accounts.length){
     accounts = [
-      {id:'pascal',  name:'Dr. Pascal',  login:'pascal.chef',   password:'Chef2026!',  role:'chef',   email:'', color_idx:0, active:true},
+      {id:'pascal',  name:'Dr Pascal',  login:'pascal.chef',   password:'Chef2026!',  role:'chef',   email:'', color_idx:0, active:true},
       {id:'rodrigue',name:'Rodrigue',   login:'rodrigue.admin',password:'Admin2026!', role:'admin',  email:'', color_idx:1, active:true},
       {id:'joel',    name:'Joël',       login:'joel.dt',       password:'Dt2026!',    role:'member', email:'', color_idx:2, active:true},
       {id:'ludric',  name:'Ludric',     login:'ludric.dt',     password:'Dt2026!',    role:'member', email:'', color_idx:3, active:true},
@@ -559,7 +559,7 @@ function loadAll() {
   
 function initDefaultAccounts() {
   accounts = [
-    {id:'pascal',  name:'Dr. Pascal',  login:'pascal.chef',  password:'Chef2026!',  role:'chef',   email:'', color_idx:0, active:true},
+    {id:'pascal',  name:'Dr Pascal',  login:'pascal.chef',  password:'Chef2026!',  role:'chef',   email:'', color_idx:0, active:true},
     {id:'rodrigue',name:'Rodrigue',   login:'rodrigue.admin',password:'Admin2026!', role:'admin',  email:'', color_idx:1, active:true},
     {id:'joel',    name:'Joël',       login:'joel.dt',      password:'Dt2026!',    role:'member', email:'', color_idx:2, active:true},
     {id:'ludric',  name:'Ludric',     login:'ludric.dt',    password:'Dt2026!',    role:'member', email:'', color_idx:3, active:true},
@@ -574,11 +574,11 @@ function initDefaultAccounts() {
 function initDefaultData() {
   const today = new Date().toISOString().slice(0,10);
   tasks = [
-    {id:1,title:'Plan de travail Q2 2026',members:['Rodrigue','Joël'],assigner:'Dr. Pascal',date:'2026-05-30',status:'progress',pct:50,blocker:'',assignedAt:'2026-05-01'},
-    {id:2,title:'Rapport technique mensuel',members:['Ludric'],assigner:'Dr. Pascal',date:'2026-05-20',status:'blocked',pct:25,blocker:'En attente des données des sous-directions',assignedAt:'2026-05-03'},
+    {id:1,title:'Plan de travail Q2 2026',members:['Rodrigue','Joël'],assigner:'Dr Pascal',date:'2026-05-30',status:'progress',pct:50,blocker:'',assignedAt:'2026-05-01'},
+    {id:2,title:'Rapport technique mensuel',members:['Ludric'],assigner:'Dr Pascal',date:'2026-05-20',status:'blocked',pct:25,blocker:'En attente des données des sous-directions',assignedAt:'2026-05-03'},
     {id:3,title:'Mise à jour base documentaire',members:['Valère','Richard'],assigner:'Rodrigue',date:'2026-06-05',status:'todo',pct:0,blocker:'',assignedAt:'2026-05-07'},
-    {id:4,title:'Note de synthèse ECCAS',members:['Adéline'],assigner:'Dr. Pascal',date:'2026-05-15',status:'done',pct:100,blocker:'',assignedAt:'2026-04-28'},
-    {id:5,title:'Préparation réunion plénière',members:['Adéline','Mal Oumar'],assigner:'Dr. Pascal',date:'2026-05-25',status:'progress',pct:70,blocker:'',assignedAt:'2026-05-05'},
+    {id:4,title:'Note de synthèse ECCAS',members:['Adéline'],assigner:'Dr Pascal',date:'2026-05-15',status:'done',pct:100,blocker:'',assignedAt:'2026-04-28'},
+    {id:5,title:'Préparation réunion plénière',members:['Adéline','Mal Oumar'],assigner:'Dr Pascal',date:'2026-05-25',status:'progress',pct:70,blocker:'',assignedAt:'2026-05-05'},
   ];
   presences = [
     {member:'Rodrigue',status:'present'},{member:'Joël',status:'remote'},{member:'Adéline',status:'present'},
