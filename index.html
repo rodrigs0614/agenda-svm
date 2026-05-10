@@ -875,7 +875,7 @@ function renderTasks() {
       </div>
       <div id="email-fields" style="display:none;margin-top:12px">
         <p style="font-size:11px;color:var(--txm);margin-bottom:8px">Les e-mails se configurent dans <strong>Paramètres</strong>.</p>
-        <div class="fi"><label>Message additionnel</label><textarea id="t-msg" rows="2" placeholder="Message personnalisé…" style="font-size:12px;"></textarea></div>
+        <div class="fi"><label>Message additionnel</label><textarea id="t-msg" rows="2" placeholder="Message personnalisé…" style="font-size:12px;" oninput="modalMsg=this.value"></textarea></div>
       </div>
     </div>
     <button class="bp" onclick="addTask()"><i class="ti ti-plus"></i> Créer la tâche</button>
@@ -959,6 +959,7 @@ function addTask() {
   const pct = Math.min(100, Math.max(0, parseInt(document.getElementById('t-pct').value)||0));
   const notify = document.getElementById('t-notify').checked;
   const msg = document.getElementById('t-msg')?.value.trim() || '';
+  modalMsg = msg;
   const priority = parseInt(document.getElementById('t-priority').value) || 0;
   const task = { id:nextId++, title, members:[...selectedMembers], assigner, priority, date:document.getElementById('t-date').value, status:document.getElementById('t-status').value, pct, blocker:document.getElementById('t-blocker').value.trim(), assignedAt:new Date().toISOString().slice(0,10) };
   tasks.unshift(task); saveData(); updateBadges();
@@ -1017,6 +1018,10 @@ function openEmailModal() {
     var c = mc(a.name);
     return '<span style="display:inline-flex;align-items:center;gap:5px;background:'+c.bg+';color:'+c.fg+';border-radius:20px;padding:4px 10px;font-size:12px;">'+av(a.name,'avxs')+' '+a.name+' <span style="opacity:0.6;font-size:10px">&lt;'+a.email+'&gt;</span></span>';
   }).join('');
+
+  // ← Pré-remplir le message avec ce qui a été écrit dans le formulaire
+  var extraMsg = document.getElementById('em-extra-msg');
+  if (extraMsg) extraMsg.value = modalMsg;
 
   document.getElementById('em-preview').textContent = buildEmailBody(modalTask, modalMsg);
   document.getElementById('em-send-btn').disabled = false;
