@@ -748,6 +748,27 @@ function renderOverview() {
     </div>
   </div>`;
 
+  // Alertes opérationnelles dans la vue d'ensemble
+  var opAlerts = getOpAlerts(today);
+
+  if (opAlerts.critical.length) {
+    html += '<div style="background:#A32D2D;border-radius:var(--rmd);padding:14px 18px;margin-bottom:14px;color:white;animation:prio-pulse 1s infinite">'
+      + '<div style="font-size:14px;font-weight:700;margin-bottom:6px"><i class="ti ti-alarm"></i> ⚠ ALERTE — ' + opAlerts.critical.length + ' tâche(s) opérationnelle(s) à livrer aujourd\'hui ou demain !</div>'
+      + opAlerts.critical.map(function(a){
+          return '<div style="font-size:13px;opacity:.9">• <strong>'+a.cat+'</strong> — '+a.title+' · Échéance : '+fmtDate(a.date)+(a.responsible?' · '+a.responsible:'')+'</div>';
+        }).join('')
+      + '</div>';
+  }
+
+  if (opAlerts.warning.length) {
+    html += '<div style="background:var(--a50);border:2px solid var(--a400);border-radius:var(--rmd);padding:12px 16px;margin-bottom:14px">'
+      + '<div style="font-size:13px;font-weight:700;color:var(--a800);margin-bottom:6px"><i class="ti ti-alert-triangle"></i> ' + opAlerts.warning.length + ' tâche(s) opérationnelle(s) à livrer dans moins de 3 jours</div>'
+      + opAlerts.warning.map(function(a){
+          return '<div style="font-size:12px;color:var(--a700)">• <strong>'+a.cat+'</strong> — '+a.title+' · '+fmtDate(a.date)+' ('+a.daysLeft+' j)'+(a.responsible?' · '+a.responsible:'')+'</div>';
+        }).join('')
+      + '</div>';
+  }
+
   if (activeCut) html += `<div class="alrt alrt-cut"><i class="ti ti-bolt-off"></i><div><strong>Coupure électrique en cours</strong> - depuis ${activeCut.start}${activeCut.note?' · '+activeCut.note:''}</div></div>`;
 
   html += `<div class="stgd">
@@ -800,7 +821,7 @@ function renderOverview() {
 
   document.getElementById('ov-root').innerHTML = html;
 }
-
+  
 // ═══════════════════════════════════════════════════════
 // TASKS SECTION
 // ═══════════════════════════════════════════════════════
@@ -1386,50 +1407,142 @@ function deleteArchive(id){
   saveData();renderArchives();
 }
 
-function renderOperational(){
-  var el=document.getElementById('sec-operational');
-  var ce=canManage();
-  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">'
-    +'<div class="sect"><i class="ti ti-clipboard-list"></i> Taches operationnelles</div>'
-    +(ce?'<button class="bp" onclick="addOpCat()"><i class="ti ti-plus"></i> Nouvelle categorie</button>':'')
-    +'</div>'
-    +'<div style="background:var(--b50);border:1px solid rgba(24,95,165,0.3);border-radius:var(--rmd);padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--b800)">'
-    +'<i class="ti ti-info-circle"></i> Productions recurrentes attendues chaque mois.</div>';
-  if(!opTasks.length){
-    html+='<div class="empty"><i class="ti ti-clipboard-list"></i>Aucune tache operationnelle.</div>';
-  }else{
-    opTasks.forEach(function(cat,ci){
-      var done=(cat.items||[]).filter(function(it){return it.done;}).length;
-      var total=(cat.items||[]).length;
-      html+='<div class="op-cat">'
-        +'<div class="op-cat-hd" onclick="toggleOpB('+ci+')">'
-        +'<i class="ti ti-folder" style="color:var(--t500)"></i>'
-        +'<strong style="flex:1">'+cat.name+'</strong>'
-        +(total?'<span class="bdg ddn" style="font-size:10px">'+done+'/'+total+'</span>':'')
-        +(ce?'<button class="bg_" style="font-size:11px;margin-left:6px" onclick="event.stopPropagation();addOpTask('+ci+')"><i class="ti ti-plus"></i></button>'
-          +'<button class="bg_ bgd" style="font-size:11px" onclick="event.stopPropagation();delOpCat('+ci+')"><i class="ti ti-trash"></i></button>':'')
-        +'<i class="ti ti-chevron-down" style="font-size:13px;color:var(--txl)"></i></div>'
-        +'<div class="op-cat-body" id="opb'+ci+'">'
-        +(cat.description?'<div class="meta" style="margin-bottom:8px;font-style:italic">'+cat.description+'</div>':'')
-        +(!(cat.items||[]).length?'<div class="meta">Aucune tache dans cette categorie.</div>':'')
-        +(cat.items||[]).map(function(it,ii){
-          return '<div class="op-row">'
-            +(ce?'<input type="checkbox" '+(it.done?'checked':'')+' onchange="toggleOpI('+ci+','+ii+',this.checked)" style="width:16px;height:16px;accent-color:var(--t500);flex-shrink:0">'
-              :'<i class="ti '+(it.done?'ti-circle-check':'ti-circle')+'" style="color:'+(it.done?'var(--g700)':'var(--n400)')+';font-size:16px;flex-shrink:0"></i>')
-            +'<div style="flex:1">'
-            +'<div style="font-size:13px;'+(it.done?'text-decoration:line-through;color:var(--txl)':'')+'">'+it.title+'</div>'
-            +(it.freq?'<div class="meta">'+it.freq+'</div>':'')
-            +'</div>'
-            +(it.responsible?'<span class="meta" style="font-size:11px">'+it.responsible+'</span>':'')
-            +(ce?'<button class="bg_ bgd" style="font-size:11px;padding:3px 7px" onclick="delOpI('+ci+','+ii+')"><i class="ti ti-x"></i></button>':'')
-            +'</div>';
-        }).join('')
-        +'</div></div>';
+function renderOperational() {
+  var el = document.getElementById('sec-operational');
+  var ce = canManage();
+  var today = new Date().toISOString().slice(0,10);
+
+  // Calculer les alertes globales
+  var alerts = getOpAlerts(today);
+
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">'
+    + '<div class="sect" style="font-size:18px;font-weight:700"><i class="ti ti-clipboard-list" style="color:var(--t500)"></i> Tâches opérationnelles</div>'
+    + (ce ? '<button class="bp" onclick="addOpCat()"><i class="ti ti-plus"></i> Nouvelle catégorie</button>' : '')
+    + '</div>';
+
+  // Alertes urgentes en haut
+  if (alerts.critical.length) {
+    html += '<div style="background:#A32D2D;border-radius:var(--rmd);padding:14px 18px;margin-bottom:14px;color:white;animation:prio-pulse 1s infinite">'
+      + '<div style="font-size:14px;font-weight:700;margin-bottom:8px"><i class="ti ti-alarm"></i> ⚠ ALERTE — Tâche(s) à effectuer demain ou aujourd\'hui !</div>';
+    alerts.critical.forEach(function(a) {
+      var canDismiss = isAdmin() || isChef() || (currentUser.name === a.responsible);
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,0.1);border-radius:var(--rsm);padding:8px 12px;margin-bottom:6px;flex-wrap:wrap">'
+        + '<div>'
+        + '<strong style="font-size:13px">' + a.cat + ' — ' + a.title + '</strong>'
+        + '<div style="font-size:12px;opacity:.85;margin-top:2px">Échéance : ' + fmtDate(a.date) + (a.responsible ? ' · Responsable : ' + a.responsible : '') + '</div>'
+        + '</div>'
+        + (canDismiss && !a.done ? '<button onclick="dismissOpAlert(\'' + a.key + '\')" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:white;border-radius:var(--rsm);padding:4px 10px;cursor:pointer;font-size:12px;font-family:inherit"><i class="ti ti-x"></i> Fermer</button>' : '')
+        + '</div>';
+    });
+    html += '</div>';
+  }
+
+  if (alerts.warning.length) {
+    html += '<div style="background:var(--a50);border:2px solid var(--a400);border-radius:var(--rmd);padding:14px 18px;margin-bottom:14px">'
+      + '<div style="font-size:14px;font-weight:700;color:var(--a800);margin-bottom:8px"><i class="ti ti-alert-triangle"></i> Attention — Tâche(s) à livrer dans moins de 3 jours</div>';
+    alerts.warning.forEach(function(a) {
+      var canDismiss = isAdmin() || isChef() || (currentUser.name === a.responsible);
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:white;border-radius:var(--rsm);padding:8px 12px;margin-bottom:6px;flex-wrap:wrap">'
+        + '<div>'
+        + '<strong style="font-size:13px;color:var(--a800)">' + a.cat + ' — ' + a.title + '</strong>'
+        + '<div style="font-size:12px;color:var(--a700);margin-top:2px">Échéance : ' + fmtDate(a.date) + ' (' + a.daysLeft + ' jour(s)) ' + (a.responsible ? ' · ' + a.responsible : '') + '</div>'
+        + '</div>'
+        + (canDismiss && !a.done ? '<button onclick="dismissOpAlert(\'' + a.key + '\')" style="background:var(--a50);border:1px solid var(--a400);color:var(--a800);border-radius:var(--rsm);padding:4px 10px;cursor:pointer;font-size:12px;font-family:inherit"><i class="ti ti-x"></i> Fermer</button>' : '')
+        + '</div>';
+    });
+    html += '</div>';
+  }
+
+  html += '<div style="background:var(--b50);border:1px solid rgba(24,95,165,0.3);border-radius:var(--rmd);padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--b800)">'
+    + '<i class="ti ti-info-circle"></i> Productions récurrentes attendues. Les occurrences sont réparties automatiquement dans le mois.</div>';
+
+  if (!opTasks.length) {
+    html += '<div class="empty" style="font-size:16px"><i class="ti ti-clipboard-list"></i>Aucune tâche opérationnelle.<br><span style="font-size:13px">Cliquez sur "Nouvelle catégorie" pour commencer.</span></div>';
+  } else {
+    opTasks.forEach(function(cat, ci) {
+      var totalItems = (cat.items||[]).length;
+      var totalOcc = 0, doneOcc = 0;
+      (cat.items||[]).forEach(function(it){
+        (it.occurrences||[]).forEach(function(o){
+          totalOcc++;
+          if(o.done) doneOcc++;
+        });
+      });
+
+      html += '<div style="background:white;border:1px solid var(--bd);border-radius:var(--rlg);margin-bottom:16px;overflow:hidden;box-shadow:var(--sh)">'
+        // En-tête catégorie
+        + '<div style="background:var(--t900);padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="toggleOpB('+ci+')">'
+        + '<i class="ti ti-folder-open" style="color:var(--t100);font-size:18px"></i>'
+        + '<div style="flex:1">'
+        + '<div style="color:white;font-size:15px;font-weight:700">'+cat.name+'</div>'
+        + (cat.description?'<div style="color:var(--t100);font-size:12px;margin-top:2px">'+cat.description+'</div>':'')
+        + '</div>'
+        + (totalOcc ? '<span style="background:rgba(255,255,255,0.2);color:white;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600">'+doneOcc+'/'+totalOcc+'</span>' : '')
+        + (ce ? '<button class="bg_" style="font-size:12px;background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:white;margin-left:6px" onclick="event.stopPropagation();addOpTask('+ci+')"><i class="ti ti-plus"></i> Ajouter</button>' : '')
+        + (ce ? '<button style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);border-radius:var(--rsm);padding:4px 8px;cursor:pointer;font-size:12px;margin-left:4px" onclick="event.stopPropagation();delOpCat('+ci+')"><i class="ti ti-trash"></i></button>' : '')
+        + '<i class="ti ti-chevron-down" style="color:var(--t100);font-size:14px;margin-left:6px"></i>'
+        + '</div>'
+        // Corps catégorie
+        + '<div id="opb'+ci+'" style="padding:16px 18px">';
+
+      if (!totalItems) {
+        html += '<div style="color:var(--txl);font-size:13px;text-align:center;padding:12px">Aucune tâche — cliquez sur "Ajouter" pour commencer.</div>';
+      } else {
+        (cat.items||[]).forEach(function(it, ii) {
+          var occs = it.occurrences || [];
+          var doneCount = occs.filter(function(o){return o.done;}).length;
+          var nextOcc = occs.find(function(o){return !o.done && !o.dismissed;});
+
+          html += '<div style="background:var(--n50);border:1px solid var(--bd);border-radius:var(--rmd);padding:14px 16px;margin-bottom:12px">'
+            // Titre tâche
+            + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap">'
+            + '<div style="flex:1">'
+            + '<div style="font-size:15px;font-weight:700;color:var(--tx)">'+it.title+'</div>'
+            + '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">'
+            + '<span style="font-size:12px;color:var(--txm)"><i class="ti ti-repeat" style="font-size:11px"></i> '+it.freqCount+'x / mois</span>'
+            + (it.responsible ? '<span style="font-size:12px;color:var(--txm)"><i class="ti ti-user" style="font-size:11px"></i> '+it.responsible+'</span>' : '')
+            + (nextOcc ? '<span style="font-size:12px;color:var(--b600);font-weight:600"><i class="ti ti-calendar-event" style="font-size:11px"></i> Prochaine : '+fmtDate(nextOcc.date)+'</span>' : '')
+            + '</div>'
+            + '</div>'
+            + '<div style="display:flex;align-items:center;gap:6px">'
+            + '<span style="background:'+(doneCount===occs.length&&occs.length?'var(--g50)':'var(--b50)')+';color:'+(doneCount===occs.length&&occs.length?'var(--g700)':'var(--b800)')+';border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600">'+doneCount+'/'+occs.length+'</span>'
+            + (ce ? '<button style="background:var(--r50);border:1px solid var(--r400);color:var(--r700);border-radius:var(--rsm);padding:3px 8px;cursor:pointer;font-size:11px" onclick="delOpI('+ci+','+ii+')"><i class="ti ti-trash"></i></button>' : '')
+            + '</div>'
+            + '</div>'
+            // Occurrences
+            + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">';
+
+          occs.forEach(function(occ, oi) {
+            var daysLeft = Math.ceil((new Date(occ.date) - new Date(today)) / (1000*60*60*24));
+            var isUrgent = !occ.done && !occ.dismissed && daysLeft <= 1;
+            var isWarning = !occ.done && !occ.dismissed && daysLeft > 1 && daysLeft <= 3;
+            var bg = occ.done ? '#EAF3DE' : isUrgent ? '#FCEBEB' : isWarning ? '#FAEEDA' : 'white';
+            var border = occ.done ? 'var(--g700)' : isUrgent ? 'var(--r400)' : isWarning ? 'var(--a400)' : 'var(--bd)';
+
+            html += '<div style="background:'+bg+';border:2px solid '+border+';border-radius:var(--rmd);padding:10px 12px;'+(isUrgent?'animation:prio-pulse 1s infinite':'')+'">'
+              + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+              + '<input type="checkbox" '+(occ.done?'checked':'')+' '+(occ.done?'disabled':'')+' onchange="toggleOpOcc('+ci+','+ii+','+oi+',this.checked)" style="width:18px;height:18px;accent-color:var(--t500);flex-shrink:0;cursor:pointer">'
+              + '<div style="flex:1">'
+              + '<div style="font-size:13px;font-weight:600;color:'+(occ.done?'var(--g700)':isUrgent?'var(--r700)':'var(--tx)')+'">Occurrence '+(oi+1)+'</div>'
+              + '<div style="font-size:11px;color:var(--txm)">'+fmtDate(occ.date)+'</div>'
+              + '</div>'
+              + '</div>'
+              + (occ.done ? '<div style="font-size:11px;color:var(--g700);font-weight:500"><i class="ti ti-circle-check"></i> Effectuée le '+fmtDate(occ.doneAt)+'</div>' : '')
+              + (isUrgent ? '<div style="font-size:11px;color:var(--r700);font-weight:700"><i class="ti ti-alarm"></i> '+( daysLeft <= 0 ? 'Aujourd\'hui !' : 'Demain !')+'</div>' : '')
+              + (isWarning ? '<div style="font-size:11px;color:var(--a700);font-weight:600"><i class="ti ti-clock"></i> Dans '+daysLeft+' jour(s)</div>' : '')
+              + '</div>';
+          });
+
+          html += '</div></div>'; // fin occurrences + item
+        });
+      }
+
+      html += '</div></div>'; // fin corps + catégorie
     });
   }
-  el.innerHTML=html;
-}
 
+  el.innerHTML = html;
+}
 function toggleOpB(ci){var b=document.getElementById('opb'+ci);if(b)b.style.display=b.style.display==='none'?'':'none';}
 function toggleOpI(ci,ii,v){if(!opTasks[ci]||!opTasks[ci].items[ii])return;opTasks[ci].items[ii].done=v;opTasks[ci].items[ii].doneAt=v?new Date().toISOString().slice(0,10):'';saveData();renderOperational();}
 function delOpCat(ci){if(!confirm('Supprimer cette categorie ?'))return;opTasks.splice(ci,1);saveData();renderOperational();}
@@ -1468,49 +1581,68 @@ function doAddOpCat() {
 }
 
 function addOpTask(ci) {
-  _opCatTarget = ci;
-  var cat = opTasks[ci];
-  document.getElementById('optask-cat-name').innerHTML = '<i class="ti ti-folder" style="color:var(--t500)"></i> Catégorie : <strong>' + cat.name + '</strong>';
-  document.getElementById('optask-title').value = '';
-  document.getElementById('optask-freq').value = '';
-  document.getElementById('optask-note').value = '';
-  document.getElementById('optask-err').style.display = 'none';
-  // Remplir le select des membres
-  var respSel = document.getElementById('optask-resp');
-  respSel.innerHTML = '<option value="">— Optionnel —</option>';
+  _opCatIndex = ci;
+  document.getElementById('opitem-title').value = '';
+  document.getElementById('opitem-freq-count').value = '1';
+  document.getElementById('opitem-startdate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('opitem-err').style.display = 'none';
+  document.getElementById('opitem-catname').textContent = opTasks[ci].name;
+  var sel = document.getElementById('opitem-resp');
+  sel.innerHTML = '<option value="">— Optionnel —</option>';
   accounts.filter(function(a){ return a.active !== false; }).forEach(function(a) {
     var o = document.createElement('option');
     o.value = a.name; o.textContent = a.name;
-    respSel.appendChild(o);
+    sel.appendChild(o);
   });
-  document.getElementById('optask-modal').style.display = 'flex';
-  setTimeout(function(){ document.getElementById('optask-title').focus(); }, 100);
+  document.getElementById('opitem-modal').style.display = 'flex';
 }
 
 function doAddOpTask() {
-  var title = document.getElementById('optask-title').value.trim();
-  var freq = document.getElementById('optask-freq').value;
-  var resp = document.getElementById('optask-resp').value;
-  var note = document.getElementById('optask-note').value.trim();
-  var err = document.getElementById('optask-err');
-  if (!title) {
-    err.textContent = 'Le titre de la tâche est obligatoire.';
-    err.style.display = 'block';
-    return;
+  var title = document.getElementById('opitem-title').value.trim();
+  var count = parseInt(document.getElementById('opitem-freq-count').value) || 1;
+  var startDate = document.getElementById('opitem-startdate').value;
+  var resp = document.getElementById('opitem-resp').value;
+  var err = document.getElementById('opitem-err');
+  if (!title) { err.textContent = 'Le titre est obligatoire.'; err.style.display = 'block'; return; }
+  if (!startDate) { err.textContent = 'La date de début est obligatoire.'; err.style.display = 'block'; return; }
+  if (count < 1 || count > 31) { err.textContent = 'La fréquence doit être entre 1 et 31.'; err.style.display = 'block'; return; }
+
+  // Calculer les dates des occurrences dans le mois
+  var start = new Date(startDate);
+  var year = start.getFullYear();
+  var month = start.getMonth();
+  var endOfMonth = new Date(year, month + 1, 0); // dernier jour du mois
+
+  var totalDays = (endOfMonth - start) / (1000 * 60 * 60 * 24);
+  var interval = count > 1 ? totalDays / (count - 1) : 0;
+
+  var occurrences = [];
+  for (var i = 0; i < count; i++) {
+    var d = new Date(start);
+    d.setDate(d.getDate() + Math.round(i * interval));
+    if (d > endOfMonth) d = new Date(endOfMonth);
+    occurrences.push({
+      date: d.toISOString().slice(0,10),
+      done: false,
+      doneAt: '',
+      dismissed: false  // pour fermer l'alerte sans cocher
+    });
   }
-  if (!opTasks[_opCatTarget].items) opTasks[_opCatTarget].items = [];
-  opTasks[_opCatTarget].items.push({
+
+  if (!opTasks[_opCatIndex].items) opTasks[_opCatIndex].items = [];
+  opTasks[_opCatIndex].items.push({
     title: title,
-    freq: freq,
+    freqCount: count,
+    startDate: startDate,
     responsible: resp,
-    note: note,
-    done: false,
-    doneAt: ''
+    occurrences: occurrences,
+    createdAt: new Date().toISOString().slice(0,10)
   });
+
   saveData();
-  closeModal('optask-modal');
+  closeModal('opitem-modal');
   renderOperational();
-  showToast('Tâche ajoutée à "' + opTasks[_opCatTarget].name + '".');
+  showToast('Tâche opérationnelle créée avec ' + count + ' occurrence(s).');
 }
 
 function renderReports() {
@@ -1644,6 +1776,7 @@ function renderReports() {
     + (cMin>0?'<div style="font-size:11px;color:var(--txl)">'+Math.floor(cMin/60)+'h'+(cMin%60?cMin%60+'min':'')+'</div>':'')
     + '</div>'
     + '<div class="stc"><div class="stn" style="color:var(--p600)">'+rptObservations.length+'</div><div class="stl">Observations</div></div>'
+    + '<div class="stc"><div class="stn" style="color:var(--g700)">'+rptOpDone.length+'</div><div class="stl">Op. réalisées</div></div>'
     + '</div>';
 
   // ── CHARGE PAR MEMBRE ──
@@ -1749,7 +1882,51 @@ function renderReports() {
     });
     html += '</tbody></table>';
   }
+  // ── TÂCHES OPÉRATIONNELLES RÉALISÉES ──
+  var rptOpDone = [];
+  opTasks.forEach(function(cat) {
+    (cat.items||[]).forEach(function(it) {
+      if (it.done && !excludedIds.includes('op_'+cat.name+'_'+it.title)) {
+        if (!it.doneAt || (it.doneAt >= dateFrom && it.doneAt <= dateTo)) {
+          rptOpDone.push({
+            cat: cat.name,
+            title: it.title,
+            freq: it.freq||'',
+            responsible: it.responsible||'',
+            doneAt: it.doneAt||''
+          });
+        }
+      }
+    });
+  });
 
+  if (rptOpDone.length) {
+    html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-clipboard-check" style="color:var(--g700)"></i> Tâches opérationnelles réalisées</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
+      + '<thead><tr style="background:var(--t500);color:white">'
+      + '<th style="padding:7px 10px;text-align:left">Catégorie</th>'
+      + '<th style="padding:7px 10px;text-align:left">Tâche</th>'
+      + '<th style="padding:7px 10px;text-align:left">Fréquence</th>'
+      + '<th style="padding:7px 10px;text-align:left">Responsable</th>'
+      + '<th style="padding:7px 10px;text-align:center">Réalisée le</th>'
+      + '<th class="no-print" style="padding:7px 10px;text-align:center">Action</th>'
+      + '</tr></thead><tbody>';
+
+    rptOpDone.forEach(function(it, i) {
+      html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
+        + '<td style="padding:7px 10px"><span style="background:var(--t50);color:var(--t700);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:600"><i class="ti ti-folder" style="font-size:10px"></i> '+it.cat+'</span></td>'
+        + '<td style="padding:7px 10px"><strong>'+it.title+'</strong></td>'
+        + '<td style="padding:7px 10px">'+(it.freq||'—')+'</td>'
+        + '<td style="padding:7px 10px">'+(it.responsible ? av(it.responsible,'avxs')+' '+it.responsible : '—')+'</td>'
+        + '<td style="padding:7px 10px;text-align:center">'+(it.doneAt?fmtDate(it.doneAt):'—')+'</td>'
+        + '<td class="no-print" style="padding:7px 10px;text-align:center">'
+        + '<button class="bg_ bgd" style="font-size:11px;padding:3px 8px" onclick="rptExclude(\'op_'+it.cat.replace(/'/g,'')+'_'+it.title.replace(/'/g,'')+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
+        + '</td>'
+        + '</tr>';
+    });
+
+    html += '</tbody></table>';
+  }
   el.innerHTML = html;
 }
 
@@ -2144,6 +2321,58 @@ function renderMySpace() {
 
   el.innerHTML = html;
 }
+
+function getOpAlerts(today) {
+  var critical = [], warning = [];
+  opTasks.forEach(function(cat) {
+    (cat.items||[]).forEach(function(it) {
+      (it.occurrences||[]).forEach(function(occ, oi) {
+        if (occ.done || occ.dismissed) return;
+        var daysLeft = Math.ceil((new Date(occ.date) - new Date(today)) / (1000*60*60*24));
+        var key = 'op_'+cat.name+'_'+it.title+'_'+oi;
+        var entry = { key:key, cat:cat.name, title:it.title, date:occ.date, responsible:it.responsible||'', daysLeft:daysLeft, done:occ.done };
+        if (daysLeft <= 1) critical.push(entry);
+        else if (daysLeft <= 3) warning.push(entry);
+      });
+    });
+  });
+  return { critical:critical, warning:warning };
+}
+
+function toggleOpOcc(ci, ii, oi, checked) {
+  var occ = opTasks[ci].items[ii].occurrences[oi];
+  occ.done = checked;
+  occ.doneAt = checked ? new Date().toISOString().slice(0,10) : '';
+  saveData();
+  renderOperational();
+
+  // Afficher la prochaine échéance
+  if (checked) {
+    var next = opTasks[ci].items[ii].occurrences.find(function(o){ return !o.done; });
+    if (next) showToast('✓ Tâche effectuée ! Prochaine livraison : ' + fmtDate(next.date));
+    else showToast('✓ Toutes les occurrences de ce mois sont effectuées !');
+  }
+}
+
+function dismissOpAlert(key) {
+  // key format: op_catName_itemTitle_occIndex
+  var parts = key.split('_');
+  var oi = parseInt(parts[parts.length-1]);
+  var itemTitle = parts.slice(2, parts.length-1).join('_');
+  var catName = parts[1];
+  opTasks.forEach(function(cat) {
+    if (cat.name !== catName) return;
+    (cat.items||[]).forEach(function(it) {
+      if (it.title !== itemTitle) return;
+      if (it.occurrences && it.occurrences[oi]) {
+        it.occurrences[oi].dismissed = true;
+      }
+    });
+  });
+  saveData();
+  renderOperational();
+  showToast('Alerte fermée.');
+}
   
 // ═══════════════════════════════════════════════════════
 // BOOT
@@ -2219,52 +2448,35 @@ if (restoreSession()) {
   </div>
 </div>
 
-<!-- MODAL NOUVELLE TÂCHE OP -->
-<div class="mov" id="optask-modal" style="display:none" onclick="if(event.target===this)closeModal('optask-modal')">
+<!-- MODAL NOUVELLE TÂCHE OPÉRATIONNELLE -->
+<div class="mov" id="opitem-modal" style="display:none" onclick="if(event.target===this)closeModal('opitem-modal')">
   <div class="mbox sm">
     <div class="mhd">
-      <div class="mtt"><i class="ti ti-plus"></i> Ajouter une tâche</div>
-      <button class="bg_" onclick="closeModal('optask-modal')"><i class="ti ti-x"></i></button>
+      <div class="mtt"><i class="ti ti-clipboard-plus"></i> Ajouter une tâche</div>
+      <button class="bg_" onclick="closeModal('opitem-modal')"><i class="ti ti-x"></i></button>
     </div>
-    <p id="optask-cat-name" style="font-size:13px;color:var(--txm);margin-bottom:14px;padding:8px 12px;background:var(--n50);border-radius:var(--rsm)"></p>
+    <div style="background:var(--t50);border:1px solid var(--t100);border-radius:var(--rsm);padding:8px 12px;margin-bottom:14px;font-size:12px;color:var(--t700)">
+      <i class="ti ti-folder"></i> Catégorie : <strong id="opitem-catname"></strong>
+    </div>
     <div class="fi" style="margin-bottom:12px">
       <label>Titre de la tâche *</label>
-      <input type="text" id="optask-title" placeholder="Ex : Bulletin mensuel, Rapport de terrain…">
+      <input type="text" id="opitem-title" placeholder="ex : Rapport mensuel de veille…">
     </div>
-    <div class="fg" style="margin-bottom:12px">
-      <div class="fi">
-        <label>Fréquence</label>
-        <select id="optask-freq" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;background:var(--sf);color:var(--tx)">
-          <option value="">— Choisir —</option>
-          <option value="Quotidienne">Quotidienne</option>
-          <option value="Hebdomadaire">Hebdomadaire</option>
-          <option value="Bimensuelle">Bimensuelle</option>
-          <option value="Mensuelle">Mensuelle</option>
-          <option value="Trimestrielle">Trimestrielle</option>
-          <option value="Semestrielle">Semestrielle</option>
-          <option value="Annuelle">Annuelle</option>
-          <option value="Ponctuelle">Ponctuelle</option>
-        </select>
-      </div>
-      <div class="fi">
-        <label>Responsable principal</label>
-        <select id="optask-resp" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;background:var(--sf);color:var(--tx)">
-          <option value="">— Optionnel —</option>
-        </select>
-      </div>
+    <div class="fi" style="margin-bottom:12px">
+      <label>Fréquence <span style="font-size:11px;color:var(--txl)">(optionnelle)</span></label>
+      <input type="text" id="opitem-freq" placeholder="ex : 1 fois/mois, chaque lundi, hebdomadaire…">
     </div>
     <div class="fi" style="margin-bottom:18px">
-      <label>Note (optionnelle)</label>
-      <textarea id="optask-note" rows="2" placeholder="Précisions, instructions…"></textarea>
+      <label>Responsable principal <span style="font-size:11px;color:var(--txl)">(optionnel)</span></label>
+      <select id="opitem-resp"></select>
     </div>
-    <div id="optask-err" style="color:var(--r700);font-size:12px;margin-bottom:10px;display:none"></div>
+    <div id="opitem-err" style="color:var(--r700);font-size:12px;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="bg_" onclick="closeModal('optask-modal')">Annuler</button>
-      <button class="bp" onclick="doAddOpTask()"><i class="ti ti-plus"></i> Ajouter</button>
+      <button class="bg_" onclick="closeModal('opitem-modal')">Annuler</button>
+      <button class="bp" onclick="doAddOpTask()"><i class="ti ti-plus"></i> Ajouter la tâche</button>
     </div>
   </div>
 </div>
-
   
 </body>
 </html>
