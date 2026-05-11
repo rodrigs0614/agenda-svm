@@ -585,25 +585,6 @@ function initDefaultAccounts() {
   saveAccounts();
 }
 
-function initDefaultData() {
-  const today = new Date().toISOString().slice(0,10);
-  tasks = [
-    {id:1,title:'Plan de travail Q2 2026',members:['Rodrigue','Joël'],assigner:'Dr. Pascal',date:'2026-05-30',status:'progress',pct:50,blocker:'',assignedAt:'2026-05-01'},
-    {id:2,title:'Rapport technique mensuel',members:['Ludric'],assigner:'Dr. Pascal',date:'2026-05-20',status:'blocked',pct:25,blocker:'En attente des données des sous-directions',assignedAt:'2026-05-03'},
-    {id:3,title:'Mise à jour base documentaire',members:['Valère','Richard'],assigner:'Rodrigue',date:'2026-06-05',status:'todo',pct:0,blocker:'',assignedAt:'2026-05-07'},
-    {id:4,title:'Note de synthèse ECCAS',members:['Adéline'],assigner:'Dr. Pascal',date:'2026-05-15',status:'done',pct:100,blocker:'',assignedAt:'2026-04-28'},
-    {id:5,title:'Préparation réunion plénière',members:['Adéline','Mal Oumar'],assigner:'Dr. Pascal',date:'2026-05-25',status:'progress',pct:70,blocker:'',assignedAt:'2026-05-05'},
-  ];
-  presences = [
-    {member:'Rodrigue',status:'present'},{member:'Joël',status:'remote'},{member:'Adéline',status:'present'},
-  ];
-  absences = [{id:10,member:'Mal Oumar',reason:'Mission terrain',from:'2026-05-10',to:'2026-05-18'}];
-  cuts = [
-    {id:20,date:today,start:'08:00',end:'',note:'Coupure en cours - bâtiment entier'},
-    {id:21,date:'2026-05-06',start:'13:30',end:'15:00',note:'Maintenance ENERCA'},
-  ];
-  saveData();
-}
 
 // ═══════════════════════════════════════════════════════
 // AUTH
