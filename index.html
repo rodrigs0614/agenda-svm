@@ -495,81 +495,145 @@ function saveAccounts() {
   try{ db.ref('accounts').set(accounts).catch(e=>{}); }catch(e){}
 }
 
+  
 function saveData() {
-  try{ localStorage.setItem(K_DATA, JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,observations})); }catch(e){}
+  // PROTECTION : ne jamais sauvegarder si toutes les données sont vides
+  if (!tasks.length && !absences.length && !cuts.length && !archivedTasks.length && !opTasks.length) {
+    console.warn('saveData() bloqué - données vides, sauvegarde annulée.');
+    return;
+  }
+  
+  try { localStorage.setItem(K_DATA, JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,observations})); } catch(e) {}
   setSyncUI('pend','Sauvegarde…');
   _localWrite = true;
-  try{
+  try {
     db.ref('data').set({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,observations,_by:currentUser?currentUser.name:'',_ts:Date.now()})
       .then(()=>{ setSyncUI('ok','Synchronisé'); setTimeout(()=>{ _localWrite=false; }, 3000); })
       .catch(()=>{ setSyncUI('err','Hors ligne'); _localWrite=false; });
-  }catch(e){ setSyncUI('err','Hors ligne'); _localWrite=false; }
-}
-  
-
-function startRealtimeSync() {
-  try {
-    db.ref('.info/connected').on('value', s=>{
-      setSyncUI(s.val()?'ok':'err', s.val()?'En ligne':'Hors ligne');
-    });
-    db.ref('accounts').on('value', s=>{
-      const d=s.val(); if(d && Array.isArray(d) && d.length){
-        accounts=d;
-        try{ localStorage.setItem(K_ACCOUNTS,JSON.stringify(accounts)); }catch(e){}
-      }
-    });
-
-
-    db.ref('data').on('value', s=>{
-      const d=s.val(); if(!d) return;
-      if(_localWrite) return;
-      tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[];observations=d.observations||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; trashedTasks=d.trashedTasks||[];
-      const ids=[...tasks,...absences,...cuts].map(x=>x.id||0);
-      nextId=ids.length?Math.max(...ids)+1:50;
-      try{ localStorage.setItem(K_DATA,JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks})); }catch(e){}
-      const active=document.querySelector('.sec.active');
-      if(active){
-        const id=active.id.replace('sec-','');
-        const fn={overview:renderOverview,tasks:renderTasks,presence:renderPresence,absences:renderAbsences,power:renderCuts,operational:renderOperational,archives:renderArchives}[id];
-        if(fn) fn();
-      }
-      updateBadges();
-      showToast('Mis à jour par '+(d._by||'un membre'));
-    });
- 
-  } catch(e) {
-    setSyncUI('err','Hors ligne');
-    console.warn('Firebase non disponible:', e);
-  }
+  } catch(e) { setSyncUI('err','Hors ligne'); _localWrite=false; }
 }
 
 function loadAll() {
-  try{
-    const raw=localStorage.getItem(K_ACCOUNTS);
-    if(raw) accounts=JSON.parse(raw);
-  }catch(e){}
-  // Toujours garantir les comptes par défaut, même si localStorage est vide
-  if(!accounts.length){
+  try {
+    const raw = localStorage.getItem(K_ACCOUNTS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.length) accounts = parsed;
+    }
+  } catch(e) {}
+
+  // Comptes par défaut UNIQUEMENT si vraiment vide
+  if (!accounts.length) {
     accounts = [
-      {id:'pascal',  name:'Dr. Pascal',  login:'pascal.chef',   password:'Chef2026!',  role:'chef',   email:'', color_idx:0, active:true},
-      {id:'rodrigue',name:'Rodrigue',   login:'rodrigue.admin',password:'Admin2026!', role:'admin',  email:'', color_idx:1, active:true},
-      {id:'joel',    name:'Joël',       login:'joel.dt',       password:'Dt2026!',    role:'member', email:'', color_idx:2, active:true},
-      {id:'ludric',  name:'Ludric',     login:'ludric.dt',     password:'Dt2026!',    role:'member', email:'', color_idx:3, active:true},
-      {id:'valere',  name:'Valère',     login:'valere.dt',     password:'Dt2026!',    role:'member', email:'', color_idx:4, active:true},
-      {id:'maloumar',name:'Mal Oumar',  login:'maloumar.dt',   password:'Dt2026!',    role:'member', email:'', color_idx:5, active:true},
-      {id:'richard', name:'Richard',    login:'richard.dt',    password:'Dt2026!',    role:'member', email:'', color_idx:6, active:true},
-      {id:'adeline', name:'Adéline',    login:'adeline.dt',    password:'Dt2026!',    role:'member', email:'', color_idx:7, active:true},
+      {id:'pascal',   name:'Dr. Pascal', login:'pascal.chef',    password:'Chef2026!',  role:'chef',   email:'', color_idx:0, active:true},
+      {id:'rodrigue', name:'Rodrigue',   login:'rodrigue.admin', password:'Admin2026!', role:'admin',  email:'', color_idx:1, active:true},
+      {id:'joel',     name:'Joël',       login:'joel.dt',        password:'Dt2026!',    role:'member', email:'', color_idx:2, active:true},
+      {id:'ludric',   name:'Ludric',     login:'ludric.dt',      password:'Dt2026!',    role:'member', email:'', color_idx:3, active:true},
+      {id:'valere',   name:'Valère',     login:'valere.dt',      password:'Dt2026!',    role:'member', email:'', color_idx:4, active:true},
+      {id:'maloumar', name:'Mal Oumar',  login:'maloumar.dt',    password:'Dt2026!',    role:'member', email:'', color_idx:5, active:true},
+      {id:'richard',  name:'Richard',    login:'richard.dt',     password:'Dt2026!',    role:'member', email:'', color_idx:6, active:true},
+      {id:'adeline',  name:'Adéline',    login:'adeline.dt',     password:'Dt2026!',    role:'member', email:'', color_idx:7, active:true},
     ];
-    try{ localStorage.setItem(K_ACCOUNTS,JSON.stringify(accounts)); }catch(e){}
+    try { localStorage.setItem(K_ACCOUNTS, JSON.stringify(accounts)); } catch(e) {}
   }
-  try{
-    const raw=localStorage.getItem(K_DATA);
-    if(raw){ const d=JSON.parse(raw); tasks=d.tasks||[]; presences=d.presences||[]; absences=d.absences||[]; cuts=d.cuts||[];observations=d.observations||[]; archivedTasks=d.archivedTasks||[]; opTasks=d.opTasks||[]; trashedTasks=d.trashedTasks||[]; }
-  }catch(e){}
-  const ids=[...tasks,...absences,...cuts].map(x=>x.id||0);
-  nextId=ids.length?Math.max(...ids)+1:50;
+
+  // Charger les données depuis localStorage
+  try {
+    const raw = localStorage.getItem(K_DATA);
+    if (raw) {
+      const d = JSON.parse(raw);
+      // Ne charger QUE si les données sont valides et non vides
+      if (d && typeof d === 'object') {
+        tasks         = Array.isArray(d.tasks)         ? d.tasks         : [];
+        presences     = Array.isArray(d.presences)     ? d.presences     : [];
+        absences      = Array.isArray(d.absences)      ? d.absences      : [];
+        cuts          = Array.isArray(d.cuts)          ? d.cuts          : [];
+        observations  = Array.isArray(d.observations)  ? d.observations  : [];
+        archivedTasks = Array.isArray(d.archivedTasks) ? d.archivedTasks : [];
+        opTasks       = Array.isArray(d.opTasks)       ? d.opTasks       : [];
+        trashedTasks  = Array.isArray(d.trashedTasks)  ? d.trashedTasks  : [];
+      }
+    }
+  } catch(e) {}
+
+  const ids = [...tasks, ...absences, ...cuts].map(x => x.id || 0);
+  nextId = ids.length ? Math.max(...ids) + 1 : 50;
 }
 
+function startRealtimeSync() {
+  try {
+    db.ref('.info/connected').on('value', s => {
+      setSyncUI(s.val() ? 'ok' : 'err', s.val() ? 'En ligne' : 'Hors ligne');
+    });
+
+    db.ref('accounts').on('value', s => {
+      const d = s.val();
+      // Ne mettre à jour les comptes QUE si Firebase retourne des données valides
+      if (d && Array.isArray(d) && d.length >= 1) {
+        accounts = d;
+        try { localStorage.setItem(K_ACCOUNTS, JSON.stringify(accounts)); } catch(e) {}
+      }
+    });
+
+    db.ref('data').on('value', s => {
+      if (_localWrite) return;
+      const d = s.val();
+
+      // PROTECTION : ne rien faire si Firebase retourne null ou vide
+      if (!d || typeof d !== 'object') return;
+
+      // PROTECTION : ne pas écraser des données existantes avec des données vides
+      const fbTasks = Array.isArray(d.tasks) ? d.tasks : [];
+      if (fbTasks.length === 0 && tasks.length > 0) {
+        // Firebase semble vide mais on a des données locales - ne pas écraser
+        console.warn('Firebase a retourné des tâches vides alors que des données locales existent. Ignoré.');
+        return;
+      }
+
+      tasks         = Array.isArray(d.tasks)         ? d.tasks         : [];
+      presences     = Array.isArray(d.presences)     ? d.presences     : [];
+      absences      = Array.isArray(d.absences)      ? d.absences      : [];
+      cuts          = Array.isArray(d.cuts)          ? d.cuts          : [];
+      observations  = Array.isArray(d.observations)  ? d.observations  : [];
+      archivedTasks = Array.isArray(d.archivedTasks) ? d.archivedTasks : [];
+      opTasks       = Array.isArray(d.opTasks)       ? d.opTasks       : [];
+      trashedTasks  = Array.isArray(d.trashedTasks)  ? d.trashedTasks  : [];
+
+      const ids = [...tasks, ...absences, ...cuts].map(x => x.id || 0);
+      nextId = ids.length ? Math.max(...ids) + 1 : 50;
+
+      // Sauvegarder dans localStorage comme backup
+      try {
+        localStorage.setItem(K_DATA, JSON.stringify({
+          tasks, presences, absences, cuts,
+          archivedTasks, opTasks, trashedTasks, observations
+        }));
+      } catch(e) {}
+
+      // Rafraîchir la vue active
+      const active = document.querySelector('.sec.active');
+      if (active) {
+        const id = active.id.replace('sec-', '');
+        const fn = {
+          overview: renderOverview, tasks: renderTasks,
+          presence: renderPresence, absences: renderAbsences,
+          power: renderCuts, operational: renderOperational,
+          archives: renderArchives, myspace: renderMySpace
+        }[id];
+        if (fn) fn();
+      }
+      updateBadges();
+      if (d._by && d._by !== currentUser.name) {
+        showToast('Mis à jour par ' + d._by);
+      }
+    });
+
+  } catch(e) {
+    setSyncUI('err', 'Hors ligne');
+    console.warn('Firebase non disponible:', e);
+  }
+}
+  
   
 function initDefaultAccounts() {
   accounts = [
