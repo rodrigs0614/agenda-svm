@@ -163,10 +163,10 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     min-width: 0;
   }
   .h-title {
-    font-size: 12px;
+    font-size: 14px;
   }
   .h-sub {
-    font-size: 10px;
+    font-size: 12px;
   }
   .logo-mk {
     width: 28px;
@@ -257,7 +257,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
 }
 .ov-layout {
   display: grid;
-  grid-template-columns: 260px minmax(0, 980px) 220px;
+  grid-template-columns: 320px minmax(0, 980px) 200px;
   gap: 16px;
   align-items: start;
   width: 100%;
@@ -985,6 +985,25 @@ function renderOverview() {
           + '<span style="font-size:12px;font-weight:500;flex:1">' + p.member + '</span>'
           + '</div>';
       });
+
+    // Absences signalées
+      var today2 = new Date().toISOString().slice(0,10);
+      var activeAbsences = absences.filter(function(a){ return a.from <= today2 && a.to >= today2; });
+      if (activeAbsences.length) {
+        sideRight += '<div style="margin-top:14px">'
+          + '<div style="font-size:12px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px">'
+          + '<i class="ti ti-calendar-off" style="color:var(--r400)"></i> Absences du jour</div>';
+        activeAbsences.forEach(function(a) {
+          sideRight += '<div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--r50);border:1px solid var(--r400);border-radius:var(--rsm);margin-bottom:4px">'
+            + av(a.member, 'avsm')
+            + '<div style="flex:1">'
+            + '<div style="font-size:12px;font-weight:500;color:var(--r700)">' + a.member + '</div>'
+            + '<div style="font-size:10px;color:var(--r700)">jusqu\'au ' + fmtDate(a.to) + (a.reason?' · '+a.reason:'') + '</div>'
+            + '</div>'
+            + '</div>';
+        });
+    sideRight += '</div>';
+  }
       sideRight += '</div>';
     });
   }
@@ -1961,41 +1980,72 @@ function addOpCat() {
   document.getElementById('opcat-custom-fields').style.display = 'none';
   document.getElementById('opcat-modal').style.display = 'flex';
 }
-
 function onOpcatSelect() {
   var sel = document.getElementById('opcat-predefined').value;
   var customFields = document.getElementById('opcat-custom-fields');
-  var nameInput = document.getElementById('opcat-name');
   var colorInput = document.getElementById('opcat-color');
 
   if (sel === 'autre') {
     customFields.style.display = 'block';
-    nameInput.value = '';
+    document.getElementById('opcat-name-custom').value = '';
     colorInput.value = '#1D9E75';
   } else if (sel) {
     var found = OPCATS_PREDEFINED.find(function(c){ return c.name === sel; });
-    if (found) {
-      nameInput.value = found.name;
-      colorInput.value = found.color;
-    }
+    if (found) colorInput.value = found.color;
     customFields.style.display = 'none';
   } else {
     customFields.style.display = 'none';
-    nameInput.value = '';
   }
 }
-  
+function notifyOpTask(ci, ii) {
+  var cat = opTasks[ci];
+  var it = cat.items[ii];
+  if (!it.responsible) { showToast('Aucun responsable défini.', true); return; }
+
+  var acc = accounts.find(function(a){ return a.name === it.responsible; });
+  if (!acc || !acc.email) {
+    showToast(it.responsible + ' n\'a pas d\'e-mail configuré. Configurez l\'e-mail dans Paramètres.', true);
+    return;
+  }
+
+  var nextOcc = (it.occurrences||[]).find(function(o){ return !o.done; });
+  var msg = 'Vous êtes responsable de la tâche opérationnelle suivante :\n\n'
+    + 'Catégorie : ' + cat.name + '\n'
+    + 'Tâche : ' + it.title + '\n'
+    + 'Fréquence : ' + it.freqCount + 'x / mois\n'
+    + (nextOcc ? 'Prochaine échéance : ' + fmtDate(nextOcc.date) : 'Toutes les occurrences sont effectuées.');
+
+  showToast('Envoi en cours…');
+
+  emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+    to_email: acc.email,
+    to_name: acc.name,
+    subject: '[Tâche opérationnelle] ' + it.title,
+    message: msg,
+    from_name: currentUser.name
+  }).then(function() {
+    showToast('Notification envoyée à ' + acc.name + ' ✓');
+  }).catch(function(err) {
+    showToast('Erreur envoi email. Vérifiez la config EmailJS.', true);
+    console.error(err);
+  });
+}
 function doAddOpCat() {
   var sel = document.getElementById('opcat-predefined').value;
-  var name = document.getElementById('opcat-name').value.trim();
   var desc = document.getElementById('opcat-desc').value.trim();
   var color = document.getElementById('opcat-color').value || '#1D9E75';
   var err = document.getElementById('opcat-err');
+  var name = '';
 
   if (!sel) { err.textContent = 'Choisissez une catégorie.'; err.style.display = 'block'; return; }
-  if (!name) { err.textContent = 'Le nom est obligatoire.'; err.style.display = 'block'; return; }
 
-  // Vérifier si la catégorie existe déjà
+  if (sel === 'autre') {
+    name = document.getElementById('opcat-name-custom').value.trim();
+    if (!name) { err.textContent = 'Le nom est obligatoire.'; err.style.display = 'block'; return; }
+  } else {
+    name = sel;
+  }
+
   if (opTasks.find(function(c){ return c.name === name; })) {
     err.textContent = 'Cette catégorie existe déjà.'; err.style.display = 'block'; return;
   }
@@ -2281,6 +2331,23 @@ function renderReports() {
       + '</tr>';
   });
   html += '</tbody></table>';
+
+  // ── PRÉSENCES ──
+  if (presences.length) {
+    html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-map-pin"></i> Présences</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
+      + '<thead><tr style="background:var(--t500);color:white">'
+      + '<th style="padding:7px 10px">Membre</th>'
+      + '<th style="padding:7px 10px;text-align:center">Statut</th>'
+      + '</tr></thead><tbody>';
+    presences.forEach(function(p, i) {
+      html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
+        + '<td style="padding:7px 10px"><div style="display:flex;align-items:center;gap:7px">'+av(p.member,'avxs')+'<strong>'+p.member+'</strong></div></td>'
+        + '<td style="padding:7px 10px;text-align:center"><span class="bdg '+PC[p.status]+'">'+PL[p.status]+'</span></td>'
+        + '</tr>';
+    });
+    html += '</tbody></table>';
+  }
 
   // ── ABSENCES ──
   if (rptAbsences.length) {
@@ -2878,20 +2945,22 @@ if (restoreSession()) {
     <div id="opcat-custom-fields" style="display:none">
       <div class="fi" style="margin-bottom:12px">
         <label>Nom de la catégorie *</label>
-        <input type="text" id="opcat-name" placeholder="Ex : Rapport spécial…">
+        <input type="text" id="opcat-name-custom" placeholder="Ex : Rapport spécial…">
       </div>
-      <div class="fi" style="margin-bottom:12px">
-        <label>Couleur</label>
-        <div style="display:flex;align-items:center;gap:10px">
-          <input type="color" id="opcat-color" value="#1D9E75" style="width:48px;height:36px;padding:2px;border:1px solid var(--bds);border-radius:var(--rsm);cursor:pointer;background:white">
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <span onclick="document.getElementById('opcat-color').value='#1D9E75'" style="width:22px;height:22px;border-radius:50%;background:#1D9E75;cursor:pointer" title="Vert"></span>
-            <span onclick="document.getElementById('opcat-color').value='#185FA5'" style="width:22px;height:22px;border-radius:50%;background:#185FA5;cursor:pointer" title="Bleu"></span>
-            <span onclick="document.getElementById('opcat-color').value='#A32D2D'" style="width:22px;height:22px;border-radius:50%;background:#A32D2D;cursor:pointer" title="Rouge"></span>
-            <span onclick="document.getElementById('opcat-color').value='#854F0B'" style="width:22px;height:22px;border-radius:50%;background:#854F0B;cursor:pointer" title="Orange"></span>
-            <span onclick="document.getElementById('opcat-color').value='#534AB7'" style="width:22px;height:22px;border-radius:50%;background:#534AB7;cursor:pointer" title="Violet"></span>
-            <span onclick="document.getElementById('opcat-color').value='#3B6D11'" style="width:22px;height:22px;border-radius:50%;background:#3B6D11;cursor:pointer" title="Vert foncé"></span>
-          </div>
+    </div>
+
+    <!-- Couleur toujours visible -->
+    <div class="fi" style="margin-bottom:12px">
+      <label>Couleur de surbrillance du bloc</label>
+      <div style="display:flex;align-items:center;gap:10px">
+        <input type="color" id="opcat-color" value="#1D9E75" style="width:48px;height:36px;padding:2px;border:1px solid var(--bds);border-radius:var(--rsm);cursor:pointer;background:white">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span onclick="document.getElementById('opcat-color').value='#1D9E75'" style="width:22px;height:22px;border-radius:50%;background:#1D9E75;cursor:pointer" title="Vert"></span>
+          <span onclick="document.getElementById('opcat-color').value='#185FA5'" style="width:22px;height:22px;border-radius:50%;background:#185FA5;cursor:pointer" title="Bleu"></span>
+          <span onclick="document.getElementById('opcat-color').value='#A32D2D'" style="width:22px;height:22px;border-radius:50%;background:#A32D2D;cursor:pointer" title="Rouge"></span>
+          <span onclick="document.getElementById('opcat-color').value='#854F0B'" style="width:22px;height:22px;border-radius:50%;background:#854F0B;cursor:pointer" title="Orange"></span>
+          <span onclick="document.getElementById('opcat-color').value='#534AB7'" style="width:22px;height:22px;border-radius:50%;background:#534AB7;cursor:pointer" title="Violet"></span>
+          <span onclick="document.getElementById('opcat-color').value='#3B6D11'" style="width:22px;height:22px;border-radius:50%;background:#3B6D11;cursor:pointer" title="Vert foncé"></span>
         </div>
       </div>
     </div>
