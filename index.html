@@ -257,12 +257,20 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
 }
 .ov-layout {
   display: grid;
-  grid-template-columns: 520px minmax(0, 980px) 100px;
+  grid-template-columns: 420px minmax(0, 980px) 150px;
   gap: 16px;
   align-items: start;
   width: 100%;
   padding: 22px 24px;
   box-sizing: border-box;
+}
+.ov-sidebar-right {
+  position: sticky;
+  top: 72px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  margin-right: -24px;
+  padding-right: 24px;
 }
 .ov-sidebar-left {
   position: sticky;
@@ -855,7 +863,7 @@ function renderOverview() {
         var daysLeft = Math.ceil((new Date(occ.date) - new Date(today)) / (1000*60*60*24));
         var cardClass = daysLeft <= 1 ? 'urgent' : daysLeft <= 3 ? 'warning' : '';
         var catColor = cat.color || 'var(--t500)';
-        sideLeft += '<div class="op-mini-card ' + cardClass + '" style="border-left-color:' + catColor + '">'
+        sideLeft += '<div class="op-mini-card ' + cardClass + '" style="background:'+(it.color||'white')+';border-left-color:' + catColor + '">'
           + '<div style="font-size:11px;font-weight:700;color:' + catColor + ';margin-bottom:3px">'
           + '<i class="ti ti-folder" style="font-size:10px"></i> ' + cat.name + '</div>'
           + '<div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:4px">' + it.title + '</div>'
@@ -885,24 +893,16 @@ function renderOverview() {
 
   // Alertes opérationnelles
   if (opAlerts.critical.length) {
-    main += '<div style="background:#A32D2D;border-radius:var(--rmd);padding:14px 18px;margin-bottom:14px;color:white;animation:prio-pulse 1s infinite">'
-      + '<div style="font-size:14px;font-weight:700;margin-bottom:6px"><i class="ti ti-alarm"></i> ⚠ ALERTE — '
+    main += '<div style="background:#A32D2D;border-radius:var(--rmd);padding:12px 18px;margin-bottom:14px;color:white;animation:prio-pulse 1s infinite">'
+      + '<div style="font-size:14px;font-weight:700"><i class="ti ti-alarm"></i> ⚠ ALERTE — '
       + opAlerts.critical.length + ' tâche(s) opérationnelle(s) à livrer aujourd\'hui ou demain !</div>'
-      + opAlerts.critical.map(function(a){
-          return '<div style="font-size:13px;opacity:.9">• <strong>' + a.cat + '</strong> — ' + a.title
-            + ' · Échéance : ' + fmtDate(a.date) + (a.responsible?' · '+a.responsible:'') + '</div>';
-        }).join('')
       + '</div>';
   }
 
   if (opAlerts.warning.length) {
     main += '<div style="background:var(--a50);border:2px solid var(--a400);border-radius:var(--rmd);padding:12px 16px;margin-bottom:14px">'
-      + '<div style="font-size:13px;font-weight:700;color:var(--a800);margin-bottom:6px"><i class="ti ti-alert-triangle"></i> '
+      + '<div style="font-size:13px;font-weight:700;color:var(--a800)"><i class="ti ti-alert-triangle"></i> '
       + opAlerts.warning.length + ' tâche(s) opérationnelle(s) à livrer dans moins de 3 jours</div>'
-      + opAlerts.warning.map(function(a){
-          return '<div style="font-size:12px;color:var(--a700)">• <strong>' + a.cat + '</strong> — '
-            + a.title + ' · ' + fmtDate(a.date) + ' (' + a.daysLeft + ' j)' + (a.responsible?' · '+a.responsible:'') + '</div>';
-        }).join('')
       + '</div>';
   }
 
@@ -1002,8 +1002,6 @@ function renderOverview() {
             + '</div>'
             + '</div>';
         });
-    sideRight += '</div>';
-  }
       sideRight += '</div>';
     });
   }
@@ -1904,8 +1902,8 @@ function renderOperational() {
           var occs = it.occurrences || [];
           var doneCount = occs.filter(function(o){return o.done;}).length;
           var nextOcc = occs.find(function(o){return !o.done && !o.dismissed;});
-
-          html += '<div style="background:var(--n50);border:1px solid var(--bd);border-radius:var(--rmd);padding:14px 16px;margin-bottom:12px">'
+          
+          html += '<div style="background:'+(it.color||'var(--n50)')+';border:1px solid var(--bd);border-radius:var(--rmd);padding:14px 16px;margin-bottom:12px">'
             // Titre tâche
             + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap">'
             + '<div style="flex:1">'
@@ -2071,6 +2069,7 @@ function addOpTask(ci) {
     o.value = a.name; o.textContent = a.name;
     sel.appendChild(o);
   });
+  document.getElementById('opitem-color').value = '#F4F3EE';
   document.getElementById('opitem-modal').style.display = 'flex';
 }
 
@@ -2105,7 +2104,16 @@ function doAddOpTask() {
       dismissed: false  // pour fermer l'alerte sans cocher
     });
   }
-
+  var color = document.getElementById('opitem-color').value || '#F4F3EE';
+  opTasks[_opCatIndex].items.push({
+    title: title,
+    freqCount: count,
+    startDate: startDate,
+    responsible: resp,
+    color: color,      // ← ajouter
+    occurrences: occurrences,
+    createdAt: new Date().toISOString().slice(0,10)
+  });
   if (!opTasks[_opCatIndex].items) opTasks[_opCatIndex].items = [];
   opTasks[_opCatIndex].items.push({
     title: title,
@@ -2115,7 +2123,7 @@ function doAddOpTask() {
     occurrences: occurrences,
     createdAt: new Date().toISOString().slice(0,10)
   });
-
+  
   saveData();
   closeModal('opitem-modal');
   renderOperational();
