@@ -811,7 +811,7 @@ function updateBadges() {
   const b = tasks.filter(t => t.status === 'blocked').length;
   const bb = document.getElementById('nb-blk');
   if (bb && bb.style) { 
-    bb.style.display = 'block'; } if(b) bb.textContent = b;
+    bb.style.display = 'block'; }
   // Coupure active
   document.getElementById('nb-cut').style.display = cuts.find(c => !c.end) ? '' : 'none';
 
