@@ -435,6 +435,7 @@ let nextId = 100;
 let trashedTasks = [];
 let observations = [];
 let _localWrite = false;
+let _firebaseLoaded = false; 
 let currentUser = null;   // account object
 let selectedMembers = [];
 let modalTask = null, modalMsg = '';
@@ -495,11 +496,11 @@ function saveAccounts() {
   try{ db.ref('accounts').set(accounts).catch(e=>{}); }catch(e){}
 }
 
-  
+
 function saveData() {
-  // PROTECTION : ne jamais sauvegarder si toutes les données sont vides
-  if (!tasks.length && !absences.length && !cuts.length && !archivedTasks.length && !opTasks.length) {
-    console.warn('saveData() bloqué - données vides, sauvegarde annulée.');
+  // Bloquer UNIQUEMENT si Firebase n'a pas encore chargé
+  if (!_firebaseLoaded) {
+    console.warn('saveData() bloqué - Firebase pas encore chargé.');
     return;
   }
   
@@ -512,7 +513,7 @@ function saveData() {
       .catch(()=>{ setSyncUI('err','Hors ligne'); _localWrite=false; });
   } catch(e) { setSyncUI('err','Hors ligne'); _localWrite=false; }
 }
-
+  
 function loadAll() {
   try {
     const raw = localStorage.getItem(K_ACCOUNTS);
@@ -559,7 +560,7 @@ function loadAll() {
   const ids = [...tasks, ...absences, ...cuts].map(x => x.id || 0);
   nextId = ids.length ? Math.max(...ids) + 1 : 50;
 }
-
+  
 function startRealtimeSync() {
   try {
     db.ref('.info/connected').on('value', s => {
@@ -568,7 +569,6 @@ function startRealtimeSync() {
 
     db.ref('accounts').on('value', s => {
       const d = s.val();
-      // Ne mettre à jour les comptes QUE si Firebase retourne des données valides
       if (d && Array.isArray(d) && d.length >= 1) {
         accounts = d;
         try { localStorage.setItem(K_ACCOUNTS, JSON.stringify(accounts)); } catch(e) {}
@@ -579,14 +579,8 @@ function startRealtimeSync() {
       if (_localWrite) return;
       const d = s.val();
 
-      // PROTECTION : ne rien faire si Firebase retourne null ou vide
-      if (!d || typeof d !== 'object') return;
-
-      // PROTECTION : ne pas écraser des données existantes avec des données vides
-      const fbTasks = Array.isArray(d.tasks) ? d.tasks : [];
-      if (fbTasks.length === 0 && tasks.length > 0) {
-        // Firebase semble vide mais on a des données locales - ne pas écraser
-        console.warn('Firebase a retourné des tâches vides alors que des données locales existent. Ignoré.');
+      if (!d || typeof d !== 'object') {
+        _firebaseLoaded = true;
         return;
       }
 
@@ -599,10 +593,11 @@ function startRealtimeSync() {
       opTasks       = Array.isArray(d.opTasks)       ? d.opTasks       : [];
       trashedTasks  = Array.isArray(d.trashedTasks)  ? d.trashedTasks  : [];
 
+      _firebaseLoaded = true;
+
       const ids = [...tasks, ...absences, ...cuts].map(x => x.id || 0);
       nextId = ids.length ? Math.max(...ids) + 1 : 50;
 
-      // Sauvegarder dans localStorage comme backup
       try {
         localStorage.setItem(K_DATA, JSON.stringify({
           tasks, presences, absences, cuts,
@@ -610,7 +605,6 @@ function startRealtimeSync() {
         }));
       } catch(e) {}
 
-      // Rafraîchir la vue active
       const active = document.querySelector('.sec.active');
       if (active) {
         const id = active.id.replace('sec-', '');
@@ -633,7 +627,6 @@ function startRealtimeSync() {
     console.warn('Firebase non disponible:', e);
   }
 }
-  
   
 function initDefaultAccounts() {
   accounts = [
