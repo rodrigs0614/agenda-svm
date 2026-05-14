@@ -143,12 +143,8 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
 .setup-row{display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--n50);border-radius:var(--rsm);margin-bottom:7px;}
 .setup-row input{flex:1;padding:7px 10px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;background:var(--sf);color:var(--tx);}
 @media(max-width:640px){.fg,.fg3,.two{grid-template-columns:1fr;}.main{padding:14px 10px;}.header{padding:0 14px;}.nav-btn{padding:12px 10px;font-size:14px;}}
-.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s;}
+.sdot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;transition:background .3s;}
 .sdot.ok{background:#1D9E75;}
-.sdot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
-.sdot.ok { background: var(--g700); }
-.sdot.err { background: var(--r400); }
-.sdot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;}
 .sdot.ok{background:var(--g700);}
 .sdot.err{background:var(--r400);}
 .sdot.pend{background:#FAC775;animation:blink 1s infinite;}
@@ -773,9 +769,7 @@ function restoreSession() {
 function startApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  setSyncUI('pend', 'Connexion...'); // ← ajouter ici
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
+  setSyncUI('pend', 'Connexion...'); 
   // Show admin nav items for admins
   document.getElementById('nav-settings').style.display = '';
   document.getElementById('nav-admin').style.display = isAdmin() ? '' : 'none';
