@@ -55,7 +55,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .h-user{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.85);font-size:14px;}
 .h-date{color:var(--t100);font-size:14px;}
 .nav-bar{background:var(--sf);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;overflow-x:auto;}
-.nav-btn{padding:13px 16px;border:none;background:transparent;color:var(--txm);font-size:15px;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:2.5px solid transparent;transition:all 0.15s;white-space:nowrap;font-family:inherit;}
+.nav-btn{padding:11px 14px;border:none;background:transparent;color:var(--txm);font-size:15px;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:2.5px solid transparent;transition:all 0.15s;white-space:nowrap;font-family:inherit;}
 .nav-btn:hover{color:var(--tx);background:var(--n50);}
 .nav-btn.active{color:var(--t700);border-bottom-color:var(--t500);font-weight:500;}
 .nav-btn i{font-size:17px;}
@@ -1884,7 +1884,7 @@ function renderOperational() {
 
       html += '<div style="background:white;border:1px solid var(--bd);border-radius:var(--rlg);margin-bottom:16px;overflow:hidden;box-shadow:var(--sh)">'
         // En-tête catégorie
-        + '<div style="background:var(--t900);padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="toggleOpB('+ci+')">'
+        + '<div style="background:'+(cat.color||'var(--t900)')+';padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="toggleOpB('+ci+')">'
         + '<i class="ti ti-folder-open" style="color:var(--t100);font-size:19px"></i>'
         + '<div style="flex:1">'
         + '<div style="color:white;font-size:17px;font-weight:700">'+cat.name+'</div>'
@@ -2076,10 +2076,6 @@ function addOpTask(ci) {
   document.getElementById('opitem-resp').value = '';
   document.getElementById('opitem-err').style.display = 'none';
   document.getElementById('opitem-catname').textContent = opTasks[ci].name;
-  // Pré-remplir couleur avec celle de la catégorie
-  var catColor = opTasks[ci].color || '#F4F3EE';
-  // Convertir la couleur foncée en version claire pour le fond
-  document.getElementById('opitem-color').value = catColor;
   var sel = document.getElementById('opitem-resp');
   sel.innerHTML = '<option value="">— Optionnel —</option>';
   accounts.filter(function(a){ return a.active !== false; }).forEach(function(a) {
@@ -2121,13 +2117,11 @@ function doAddOpTask() {
       dismissed: false  // pour fermer l'alerte sans cocher
     });
   }
-  var color = document.getElementById('opitem-color').value || '#F4F3EE';
   opTasks[_opCatIndex].items.push({
     title: title,
     freqCount: count,
     startDate: startDate,
     responsible: resp,
-    color: color,      // ← ajouter
     occurrences: occurrences,
     createdAt: new Date().toISOString().slice(0,10)
   });
@@ -3123,55 +3117,6 @@ if (restoreSession()) {
       <select id="opitem-resp"></select>
     </div>
 
-    <!-- Couleur de fond de la tâche -->
-    <div class="fi" style="margin-bottom:18px">
-      <label>Couleur de fond de la tâche</label>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <input type="color" id="opitem-color" value="#F4F3EE"
-          oninput="document.getElementById('opitem-color-preview').style.background=this.value"
-          style="width:48px;height:36px;padding:2px;border:1px solid var(--bds);border-radius:var(--rsm);cursor:pointer">
-        <div id="opitem-color-preview" style="flex:1;height:36px;border-radius:var(--rsm);background:#F4F3EE;transition:background 0.2s;border:1px solid var(--bds)"></div>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:5px">
-        <span onclick="setOpColor('opitem','#F4F3EE')" style="width:24px;height:24px;border-radius:4px;background:#F4F3EE;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#E1F5EE')" style="width:24px;height:24px;border-radius:4px;background:#E1F5EE;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#9FE1CB')" style="width:24px;height:24px;border-radius:4px;background:#9FE1CB;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#1D9E75')" style="width:24px;height:24px;border-radius:4px;background:#1D9E75;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#0F6E56')" style="width:24px;height:24px;border-radius:4px;background:#0F6E56;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#EAF3DE')" style="width:24px;height:24px;border-radius:4px;background:#EAF3DE;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#3B6D11')" style="width:24px;height:24px;border-radius:4px;background:#3B6D11;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#E6F1FB')" style="width:24px;height:24px;border-radius:4px;background:#E6F1FB;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#185FA5')" style="width:24px;height:24px;border-radius:4px;background:#185FA5;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#0C447C')" style="width:24px;height:24px;border-radius:4px;background:#0C447C;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#CCDFF5')" style="width:24px;height:24px;border-radius:4px;background:#CCDFF5;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#7BAFD4')" style="width:24px;height:24px;border-radius:4px;background:#7BAFD4;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#FCEBEB')" style="width:24px;height:24px;border-radius:4px;background:#FCEBEB;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#E24B4A')" style="width:24px;height:24px;border-radius:4px;background:#E24B4A;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#A32D2D')" style="width:24px;height:24px;border-radius:4px;background:#A32D2D;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#F5B8B8')" style="width:24px;height:24px;border-radius:4px;background:#F5B8B8;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#FAEEDA')" style="width:24px;height:24px;border-radius:4px;background:#FAEEDA;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#FAC775')" style="width:24px;height:24px;border-radius:4px;background:#FAC775;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#854F0B')" style="width:24px;height:24px;border-radius:4px;background:#854F0B;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#F4A460')" style="width:24px;height:24px;border-radius:4px;background:#F4A460;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#EEEDFE')" style="width:24px;height:24px;border-radius:4px;background:#EEEDFE;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#534AB7')" style="width:24px;height:24px;border-radius:4px;background:#534AB7;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#3C3489')" style="width:24px;height:24px;border-radius:4px;background:#3C3489;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#C9B8F5')" style="width:24px;height:24px;border-radius:4px;background:#C9B8F5;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#FBEAF0')" style="width:24px;height:24px;border-radius:4px;background:#FBEAF0;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#F06292')" style="width:24px;height:24px;border-radius:4px;background:#F06292;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#AD1457')" style="width:24px;height:24px;border-radius:4px;background:#AD1457;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#FFFDE7')" style="width:24px;height:24px;border-radius:4px;background:#FFFDE7;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#FFF176')" style="width:24px;height:24px;border-radius:4px;background:#FFF176;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#F9A825')" style="width:24px;height:24px;border-radius:4px;background:#F9A825;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#FFFFFF')" style="width:24px;height:24px;border-radius:4px;background:#FFFFFF;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#E8E7DF')" style="width:24px;height:24px;border-radius:4px;background:#E8E7DF;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#888780')" style="width:24px;height:24px;border-radius:4px;background:#888780;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#1A1A18')" style="width:24px;height:24px;border-radius:4px;background:#1A1A18;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#E0F7FA')" style="width:24px;height:24px;border-radius:4px;background:#E0F7FA;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#00BCD4')" style="width:24px;height:24px;border-radius:4px;background:#00BCD4;cursor:pointer;border:1px solid #ccc"></span>
-        <span onclick="setOpColor('opitem','#00838F')" style="width:24px;height:24px;border-radius:4px;background:#00838F;cursor:pointer;border:1px solid #ccc"></span>
-      </div>
-    </div>
 
     <div id="opitem-err" style="color:var(--r700);font-size:12px;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
