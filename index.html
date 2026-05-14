@@ -25,7 +25,7 @@
   --sh:0 1px 4px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:15px;line-height:1.5;}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:16px;line-height:1.5;}
 
 /* ── LOGIN ── */
 #login-screen{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:linear-gradient(160deg,var(--t900) 0%,#0a3a2a 50%,#051f17 100%);}
@@ -33,15 +33,15 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .login-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
 .login-logo-icon{width:60px;height:60px;border-radius:50%;overflow:hidden;flex-shrink:0;}
 .login-logo-icon img{width:100%;height:100%;object-fit:contain;}
-.login-logo-text h1{font-size:17px;font-weight:700;color:var(--tx);}
-.login-logo-text p{font-size:13px;color:var(--txm);}
+.login-logo-text h1{font-size:18px;font-weight:700;color:var(--tx);}
+.login-logo-text p{font-size:14px;color:var(--txm);}
 .login-field{margin-bottom:14px;}
-.login-field label{display:block;font-size:13px;font-weight:600;color:var(--txm);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em;}
-.login-field input{width:100%;padding:10px 13px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;background:var(--sf);color:var(--tx);transition:border-color 0.15s,box-shadow 0.15s;}
+.login-field label{display:block;font-size:14px;font-weight:600;color:var(--txm);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em;}
+.login-field input{width:100%;padding:10px 13px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:16px;font-family:inherit;background:var(--sf);color:var(--tx);transition:border-color 0.15s,box-shadow 0.15s;}
 .login-field input:focus{outline:none;border-color:var(--t500);box-shadow:0 0 0 3px rgba(29,158,117,0.15);}
-.login-btn{width:100%;padding:11px;border:none;border-radius:var(--rsm);background:var(--t500);color:white;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;}
+.login-btn{width:100%;padding:11px;border:none;border-radius:var(--rsm);background:var(--t500);color:white;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;}
 .login-btn:hover{background:var(--t700);}
-.login-err{background:var(--r50);border:1px solid var(--r400);border-radius:var(--rsm);padding:9px 12px;font-size:14px;color:var(--r700);margin-bottom:12px;display:none;align-items:center;gap:7px;}
+.login-err{background:var(--r50);border:1px solid var(--r400);border-radius:var(--rsm);padding:9px 12px;font-size:15px;color:var(--r700);margin-bottom:12px;display:none;align-items:center;gap:7px;}
 
 /* ── APP ── */
 #app{display:none;}
@@ -49,39 +49,39 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .header-left{display:flex;align-items:center;gap:12px;}
 .logo-mk{width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;}
 .logo-mk img{width:100%;height:100%;object-fit:contain;}
-.h-title{color:white;font-size:15px;font-weight:600;}
-.h-sub{color:var(--t100);font-size:13px;margin-top:1px;}
+.h-title{color:white;font-size:16px;font-weight:600;}
+.h-sub{color:var(--t100);font-size:14px;margin-top:1px;}
 .h-right{display:flex;align-items:center;gap:10px;}
-.h-user{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.85);font-size:13px;}
-.h-date{color:var(--t100);font-size:13px;}
+.h-user{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.85);font-size:14px;}
+.h-date{color:var(--t100);font-size:14px;}
 .nav-bar{background:var(--sf);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;overflow-x:auto;}
-.nav-btn{padding:13px 16px;border:none;background:transparent;color:var(--txm);font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:2.5px solid transparent;transition:all 0.15s;white-space:nowrap;font-family:inherit;}
+.nav-btn{padding:13px 16px;border:none;background:transparent;color:var(--txm);font-size:15px;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:2.5px solid transparent;transition:all 0.15s;white-space:nowrap;font-family:inherit;}
 .nav-btn:hover{color:var(--tx);background:var(--n50);}
 .nav-btn.active{color:var(--t700);border-bottom-color:var(--t500);font-weight:500;}
-.nav-btn i{font-size:16px;}
-.nb{font-size:11px;padding:1px 6px;border-radius:20px;background:var(--r50);color:var(--r700);font-weight:600;}
+.nav-btn i{font-size:17px;}
+.nb{font-size:12px;padding:1px 6px;border-radius:20px;background:var(--r50);color:var(--r700);font-weight:600;}
 .main{max-width:980px;margin:0 auto;padding:22px 18px;}
 .main.ov-full{max-width:100%;padding:0;}
 .sec{display:none;}.sec.active{display:block;}
 .card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rlg);padding:18px 20px;margin-bottom:14px;box-shadow:var(--sh);}
 .csm{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rmd);padding:14px 18px;margin-bottom:10px;box-shadow:var(--sh);}
-.ftitle{font-size:13px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.ftitle{font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
 .fg{display:grid;gap:11px;grid-template-columns:1fr 1fr;margin-bottom:12px;}
 .fg3{grid-template-columns:1fr 1fr 1fr;}
 .fg1{grid-template-columns:1fr;}
 .fi{display:flex;flex-direction:column;gap:4px;}
-.fi label{font-size:13px;color:var(--txm);font-weight:500;}
-.fi input,.fi select,.fi textarea{padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;background:var(--sf);color:var(--tx);transition:border-color 0.15s,box-shadow 0.15s;}
+.fi label{font-size:14px;color:var(--txm);font-weight:500;}
+.fi input,.fi select,.fi textarea{padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;background:var(--sf);color:var(--tx);transition:border-color 0.15s,box-shadow 0.15s;}
 .fi input:focus,.fi select:focus,.fi textarea:focus{outline:none;border-color:var(--t500);box-shadow:0 0 0 3px rgba(29,158,117,0.12);}
 .fi textarea{resize:vertical;min-height:60px;}
-.bp{padding:9px 18px;border-radius:var(--rsm);border:none;background:var(--t500);color:white;font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:inherit;transition:background 0.15s;}
+.bp{padding:9px 18px;border-radius:var(--rsm);border:none;background:var(--t500);color:white;font-size:15px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:inherit;transition:background 0.15s;}
 .bp:hover{background:var(--t700);}
 .bp.bpd{background:var(--r700);}.bp.bpd:hover{background:var(--r800);}
-.bg_{padding:5px 10px;border-radius:var(--rsm);border:1px solid var(--bds);background:transparent;color:var(--txm);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;transition:all 0.15s;}
+.bg_{padding:5px 10px;border-radius:var(--rsm);border:1px solid var(--bds);background:transparent;color:var(--txm);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;transition:all 0.15s;}
 .bg_:hover{background:var(--n50);color:var(--tx);}
 .bgd{border-color:var(--r400);color:var(--r700);}.bgd:hover{background:var(--r50);}
 .bgb{border-color:var(--b600);color:var(--b600);}.bgb:hover{background:var(--b50);}
-.bdg{display:inline-flex;align-items:center;gap:4px;font-size:13px;padding:3px 9px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.bdg{display:inline-flex;align-items:center;gap:4px;font-size:14px;padding:3px 9px;border-radius:20px;font-weight:500;white-space:nowrap;}
 .dtd{background:var(--n100);color:var(--n600);}
 .dpr{background:var(--b50);color:var(--b800);}
 .dbl{background:var(--r50);color:var(--r700);}
@@ -90,64 +90,64 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .drm{background:var(--p50);color:var(--p800);}
 .dab{background:var(--a50);color:var(--a800);}
 .dct{background:var(--r50);color:var(--r700);}
-.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
-.avsm{width:26px;height:26px;font-size:11px;}
-.avxs{width:20px;height:20px;font-size:10px;}
-.avlg{width:42px;height:42px;font-size:16px;}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;}
+.avsm{width:26px;height:26px;font-size:12px;}
+.avxs{width:20px;height:20px;font-size:11px;}
+.avlg{width:42px;height:42px;font-size:17px;}
 .avst{display:flex;}.avst .av{margin-left:-7px;border:2px solid var(--sf);}.avst .av:first-child{margin-left:0;}
 .pb{height:7px;background:var(--n100);border-radius:10px;overflow:hidden;flex:1;}
 .pf{height:100%;border-radius:10px;background:var(--t500);transition:width 0.3s;}
 .pf.blocked{background:var(--r400);}.pf.done{background:var(--g700);}
-.blk{background:var(--r50);border-left:3px solid var(--r400);border-radius:0 var(--rsm) var(--rsm) 0;padding:8px 12px;margin-top:10px;font-size:13px;color:var(--r800);display:flex;align-items:flex-start;gap:7px;}
-.atag{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--txm);background:var(--n50);border:1px solid var(--bds);border-radius:var(--rsm);padding:3px 9px;}
+.blk{background:var(--r50);border-left:3px solid var(--r400);border-radius:0 var(--rsm) var(--rsm) 0;padding:8px 12px;margin-top:10px;font-size:14px;color:var(--r800);display:flex;align-items:flex-start;gap:7px;}
+.atag{display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--txm);background:var(--n50);border:1px solid var(--bds);border-radius:var(--rsm);padding:3px 9px;}
 .stgd{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:9px;margin-bottom:18px;}
 .stc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rmd);padding:13px 16px;text-align:center;box-shadow:var(--sh);}
 .stn{font-size:24px;font-weight:700;}
-.stl{font-size:13px;color:var(--txm);margin-top:3px;text-transform:uppercase;letter-spacing:0.04em;}
+.stl{font-size:14px;color:var(--txm);margin-top:3px;text-transform:uppercase;letter-spacing:0.04em;}
 .alrt{border-radius:var(--rmd);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
 .alrt-cut{background:var(--r50);border:1px solid var(--r400);}
 .alrt-inf{background:var(--a50);border:1px solid var(--a400);}
 .alrt i{font-size:19px;flex-shrink:0;}
 .alrt-cut i{color:var(--r700);}.alrt-inf i{color:var(--a700);}
 .mpk{display:flex;flex-wrap:wrap;gap:7px;padding:10px;border:1px solid var(--bds);border-radius:var(--rsm);min-height:48px;background:var(--sf);}
-.mch{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;user-select:none;border:2px solid transparent;transition:all 0.12s;}
+.mch{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:14px;font-weight:500;cursor:pointer;user-select:none;border:2px solid transparent;transition:all 0.12s;}
 .mch.sel{border-color:var(--t500);box-shadow:0 0 0 2px rgba(29,158,117,0.15);}
 .prg{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;}
 .prc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rmd);padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh);}
 .sech{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.sect{font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px;}
-.sect i{font-size:18px;color:var(--t500);}
+.sect{font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.sect i{font-size:19px;color:var(--t500);}
 .chf-bn{background:linear-gradient(135deg,var(--t900) 0%,var(--t700) 100%);border-radius:var(--rlg);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:18px;color:white;}
-.chf-av{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;border:2px solid rgba(255,255,255,0.3);}
+.chf-av{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:white;border:2px solid rgba(255,255,255,0.3);}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
-.meta{font-size:13px;color:var(--txm);}
+.meta{font-size:14px;color:var(--txm);}
 hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
-.empty{text-align:center;padding:28px;color:var(--txl);font-size:14px;}
+.empty{text-align:center;padding:28px;color:var(--txl);font-size:15px;}
 .empty i{font-size:30px;display:block;margin-bottom:7px;opacity:0.4;}
 .nb-box{background:var(--b50);border:1px solid rgba(24,95,165,0.2);border-radius:var(--rmd);padding:12px 14px;margin-bottom:14px;}
-.ep{background:var(--n50);border:1px solid var(--bd);border-radius:var(--rmd);padding:13px;font-size:13px;line-height:1.7;white-space:pre-wrap;font-family:'Courier New',monospace;color:var(--txm);max-height:200px;overflow-y:auto;}
+.ep{background:var(--n50);border:1px solid var(--bd);border-radius:var(--rmd);padding:13px;font-size:14px;line-height:1.7;white-space:pre-wrap;font-family:'Courier New',monospace;color:var(--txm);max-height:200px;overflow-y:auto;}
 /* MODAL */
 .mov{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
 .mbox{background:var(--sf);border-radius:var(--rlg);padding:24px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;}
 .mbox.sm{max-width:420px;}.mbox.md{max-width:560px;}
 .mhd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.mtt{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.mtt{font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px;}
 .mtt i{color:var(--t500);}
 /* ADMIN PANEL */
 .adm-member-row{background:var(--n50);border:1px solid var(--bd);border-radius:var(--rmd);padding:13px 16px;margin-bottom:9px;display:flex;align-items:center;gap:12px;}
-.role-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;}
+.role-badge{font-size:12px;padding:2px 8px;border-radius:20px;font-weight:600;}
 .rb-admin{background:var(--t50);color:var(--t700);}
 .rb-member{background:var(--n100);color:var(--n600);}.rb-chef{background:var(--a50);color:var(--a800);}
-.pw-badge{font-family:'Courier New',monospace;font-size:13px;background:var(--n100);border:1px solid var(--bds);border-radius:var(--rsm);padding:2px 8px;color:var(--txm);letter-spacing:0.04em;}
+.pw-badge{font-family:'Courier New',monospace;font-size:14px;background:var(--n100);border:1px solid var(--bds);border-radius:var(--rsm);padding:2px 8px;color:var(--txm);letter-spacing:0.04em;}
 .setup-row{display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--n50);border-radius:var(--rsm);margin-bottom:7px;}
-.setup-row input{flex:1;padding:7px 10px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;font-family:inherit;background:var(--sf);color:var(--tx);}
-@media(max-width:640px){.fg,.fg3,.two{grid-template-columns:1fr;}.main{padding:14px 10px;}.header{padding:0 14px;}.nav-btn{padding:12px 10px;font-size:13px;}}
+.setup-row input{flex:1;padding:7px 10px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;background:var(--sf);color:var(--tx);}
+@media(max-width:640px){.fg,.fg3,.two{grid-template-columns:1fr;}.main{padding:14px 10px;}.header{padding:0 14px;}.nav-btn{padding:12px 10px;font-size:14px;}}
 .sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s;}
 .sdot.ok{background:#1D9E75;} .sdot.pend{background:#FAC775;animation:blink 1s infinite;} .sdot.err{background:#E24B4A;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
-.slbl{font-size:13px;color:rgba(255,255,255,.6);}
-.toast{position:fixed;bottom:20px;right:20px;z-index:500;background:var(--t900);color:white;padding:10px 16px;border-radius:var(--rmd);font-size:14px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;transform:translateY(60px);opacity:0;transition:all .3s;}
+.slbl{font-size:14px;color:rgba(255,255,255,.6);}
+.toast{position:fixed;bottom:20px;right:20px;z-index:500;background:var(--t900);color:white;padding:10px 16px;border-radius:var(--rmd);font-size:15px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;transform:translateY(60px);opacity:0;transition:all .3s;}
 .toast.show{transform:translateY(0);opacity:1;} .toast.err{background:var(--r700);}
 
 /* HEADER RESPONSIVE MOBILE */
@@ -328,7 +328,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
       <input type="password" id="li-pass" placeholder="Votre mot de passe" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <button class="login-btn" onclick="doLogin()"><i class="ti ti-login"></i> Se connecter</button>
-    <p style="font-size:13px;color:var(--txl);text-align:center;margin-top:16px;">Identifiants fournis par l'administrateur</p>
+    <p style="font-size:14px;color:var(--txl);text-align:center;margin-top:16px;">Identifiants fournis par l'administrateur</p>
   </div>
 </div>
 
@@ -346,7 +346,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
         <span class="slbl" id="slbl">Connexion…</span>
       </div>
       <div class="h-user" id="h-user-info"></div>
-      <button onclick="doLogout()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);border-radius:var(--rsm);padding:5px 10px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px;font-family:inherit;"><i class="ti ti-logout" style="font-size:14px"></i> Déconnexion</button>
+      <button onclick="doLogout()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);border-radius:var(--rsm);padding:5px 10px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:5px;font-family:inherit;"><i class="ti ti-logout" style="font-size:15px"></i> Déconnexion</button>
     </div>
   </header>
   <nav class="nav-bar" id="nav-bar">
@@ -389,15 +389,15 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
       <button class="bg_" onclick="closeModal('email-modal')"><i class="ti ti-x"></i></button>
     </div>
     <div style="margin-bottom:12px">
-      <div style="font-size:13px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Destinataires</div>
+      <div style="font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Destinataires</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px" id="em-recip"></div>
     </div>
     <div style="margin-bottom:12px">
-      <div style="font-size:13px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Message additionnel <span style="font-weight:400;text-transform:none">(optionnel)</span></div>
-      <textarea id="em-extra-msg" rows="2" placeholder="Ajouter un message personnalisé…" oninput="modalMsg=this.value;document.getElementById('em-preview').textContent=buildEmailBody(modalTask,this.value)" style="width:100%;padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;resize:vertical"></textarea>
+      <div style="font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Message additionnel <span style="font-weight:400;text-transform:none">(optionnel)</span></div>
+      <textarea id="em-extra-msg" rows="2" placeholder="Ajouter un message personnalisé…" oninput="modalMsg=this.value;document.getElementById('em-preview').textContent=buildEmailBody(modalTask,this.value)" style="width:100%;padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;resize:vertical"></textarea>
     </div>
     <div style="margin-bottom:16px">
-      <div style="font-size:13px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Aperçu</div>
+      <div style="font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Aperçu</div>
       <div class="ep" id="em-preview"></div>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
@@ -414,7 +414,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     <div class="fi" style="margin-bottom:12px"><label>Mot de passe actuel</label><input type="password" id="pw-old" placeholder="…"></div>
     <div class="fi" style="margin-bottom:12px"><label>Nouveau mot de passe</label><input type="password" id="pw-new" placeholder="Min. 4 caractères"></div>
     <div class="fi" style="margin-bottom:18px"><label>Confirmer</label><input type="password" id="pw-conf" placeholder="…"></div>
-    <div id="pw-err" style="color:var(--r700);font-size:13px;margin-bottom:10px;display:none"></div>
+    <div id="pw-err" style="color:var(--r700);font-size:14px;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="bg_" onclick="closeModal('pw-modal')">Annuler</button>
       <button class="bp" onclick="doChangePw()"><i class="ti ti-lock-check"></i> Confirmer</button>
@@ -428,7 +428,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     <div class="mhd"><div class="mtt"><i class="ti ti-user-plus"></i> Ajouter un membre</div><button class="bg_" onclick="closeModal('add-member-modal')"><i class="ti ti-x"></i></button></div>
     <div class="fg" style="margin-bottom:12px">
       <div class="fi"><label>Nom complet *</label><input type="text" id="nm-name" placeholder="Prénom Nom"></div>
-      <div class="fi"><label>Identifiant * <span style="font-size:11px;color:var(--txl)">(pour la connexion)</span></label><input type="text" id="nm-login" placeholder="ex: rodrigue.dt"></div>
+      <div class="fi"><label>Identifiant * <span style="font-size:12px;color:var(--txl)">(pour la connexion)</span></label><input type="text" id="nm-login" placeholder="ex: rodrigue.dt"></div>
     </div>
     <div class="fg" style="margin-bottom:12px">
       <div class="fi"><label>Mot de passe *</label><input type="text" id="nm-pw" placeholder="ex: DT2026!"></div>
@@ -437,7 +437,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
       </div>
     </div>
     <div class="fi" style="margin-bottom:18px"><label>E-mail (optionnel)</label><input type="email" id="nm-email" placeholder="adresse@eccas.int"></div>
-    <div id="nm-err" style="color:var(--r700);font-size:13px;margin-bottom:10px;display:none"></div>
+    <div id="nm-err" style="color:var(--r700);font-size:14px;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="bg_" onclick="closeModal('add-member-modal')">Annuler</button>
       <button class="bp" onclick="doAddMember()"><i class="ti ti-user-plus"></i> Créer le compte</button>
@@ -449,7 +449,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
 <div class="mov" id="reset-pw-modal" style="display:none" onclick="if(event.target===this)closeModal('reset-pw-modal')">
   <div class="mbox sm">
     <div class="mhd"><div class="mtt"><i class="ti ti-key"></i> Réinitialiser le mot de passe</div><button class="bg_" onclick="closeModal('reset-pw-modal')"><i class="ti ti-x"></i></button></div>
-    <p style="font-size:14px;color:var(--txm);margin-bottom:16px">Définir un nouveau mot de passe pour <strong id="rp-name"></strong>.</p>
+    <p style="font-size:15px;color:var(--txm);margin-bottom:16px">Définir un nouveau mot de passe pour <strong id="rp-name"></strong>.</p>
     <div class="fi" style="margin-bottom:18px"><label>Nouveau mot de passe *</label><input type="text" id="rp-pw" placeholder="Saisir le nouveau mot de passe"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="bg_" onclick="closeModal('reset-pw-modal')">Annuler</button>
@@ -749,7 +749,7 @@ function startApp() {
   document.getElementById('h-user-info').innerHTML =
     `<span class="av avsm" style="background:${c.bg};color:${c.fg}">${ini(currentUser.name)}</span>
      <span>${currentUser.name}</span>
-     ${isAdmin() ? '<span class="bdg dps" style="font-size:11px">Admin IT</span>' : (currentUser.role==="chef" ? '<span class="bdg" style="font-size:11px;background:var(--a50);color:var(--a800)">Chef</span>' : '')}`;
+     ${isAdmin() ? '<span class="bdg dps" style="font-size:12px">Admin IT</span>' : (currentUser.role==="chef" ? '<span class="bdg" style="font-size:12px;background:var(--a50);color:var(--a800)">Chef</span>' : '')}`;
   const chefAcc = accounts.find(a => a.role === 'chef' && a.active !== false);
   const hChef = document.getElementById('h-chef-info');
   if (hChef && chefAcc) hChef.textContent = 'Agenda collaboratif · Chef : ' + chefAcc.name;
@@ -822,7 +822,7 @@ function buildPicker() {
     chip.onclick = () => toggleMember(name);
     c.appendChild(chip);
   });
-  if (!selectedMembers.length) { const h = document.createElement('span'); h.style.cssText='font-size:13px;color:var(--txl);padding:4px;'; h.textContent='Cliquer sur les noms pour sélectionner…'; c.appendChild(h); }
+  if (!selectedMembers.length) { const h = document.createElement('span'); h.style.cssText='font-size:14px;color:var(--txl);padding:4px;'; h.textContent='Cliquer sur les noms pour sélectionner…'; c.appendChild(h); }
 }
 function toggleMember(name) { selectedMembers = selectedMembers.includes(name) ? selectedMembers.filter(m=>m!==name) : [...selectedMembers, name]; buildPicker(); }
 
@@ -848,7 +848,7 @@ function renderOverview() {
 
   // ── BANDE GAUCHE : tâches opérationnelles ──
   var sideLeft = '<div class="ov-sidebar-left">'
-    + '<div style="font-size:13px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px">'
+    + '<div style="font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px">'
     + '<i class="ti ti-clipboard-list" style="color:var(--t500)"></i> Tâches opérationnelles</div>';
 
   var hasOpTasks = false;
@@ -862,25 +862,25 @@ function renderOverview() {
         var cardClass = daysLeft <= 1 ? 'urgent' : daysLeft <= 3 ? 'warning' : '';
         var catColor = cat.color || 'var(--t500)';
         sideLeft += '<div class="op-mini-card ' + cardClass + '" style="background:'+(it.color||'white')+';border-left-color:' + catColor + '">'
-          + '<div style="font-size:13px;font-weight:700;color:' + catColor + ';margin-bottom:3px">'
-          + '<i class="ti ti-folder" style="font-size:11px"></i> ' + cat.name + '</div>'
-          + '<div style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:4px">' + it.title + '</div>'
+          + '<div style="font-size:14px;font-weight:700;color:' + catColor + ';margin-bottom:3px">'
+          + '<i class="ti ti-folder" style="font-size:12px"></i> ' + cat.name + '</div>'
+          + '<div style="font-size:15px;font-weight:600;color:var(--tx);margin-bottom:4px">' + it.title + '</div>'
           + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px">'
-          + '<span style="font-size:13px;color:var(--txm)"><i class="ti ti-calendar" style="font-size:11px"></i> ' + fmtDate(occ.date) + '</span>'
+          + '<span style="font-size:14px;color:var(--txm)"><i class="ti ti-calendar" style="font-size:12px"></i> ' + fmtDate(occ.date) + '</span>'
           + (daysLeft <= 1
-              ? '<span style="font-size:11px;font-weight:700;color:var(--r700);animation:prio-pulse 1s infinite;background:var(--r50);padding:1px 6px;border-radius:10px">⚠ Urgent</span>'
+              ? '<span style="font-size:12px;font-weight:700;color:var(--r700);animation:prio-pulse 1s infinite;background:var(--r50);padding:1px 6px;border-radius:10px">⚠ Urgent</span>'
               : daysLeft <= 3
-                ? '<span style="font-size:11px;font-weight:600;color:var(--a700);background:var(--a50);padding:1px 6px;border-radius:10px">Dans ' + daysLeft + 'j</span>'
-                : '<span style="font-size:11px;color:var(--txl)">Dans ' + daysLeft + ' j</span>')
+                ? '<span style="font-size:12px;font-weight:600;color:var(--a700);background:var(--a50);padding:1px 6px;border-radius:10px">Dans ' + daysLeft + 'j</span>'
+                : '<span style="font-size:12px;color:var(--txl)">Dans ' + daysLeft + ' j</span>')
           + '</div>'
-          + (it.responsible ? '<div style="font-size:13px;color:var(--txm);margin-top:3px"><i class="ti ti-user" style="font-size:11px"></i> ' + it.responsible + '</div>' : '')
+          + (it.responsible ? '<div style="font-size:14px;color:var(--txm);margin-top:3px"><i class="ti ti-user" style="font-size:12px"></i> ' + it.responsible + '</div>' : '')
           + '</div>';
       });
     });
   });
 
   if (!hasOpTasks) {
-    sideLeft += '<div style="font-size:13px;color:var(--txl);text-align:center;padding:16px 8px">'
+    sideLeft += '<div style="font-size:14px;color:var(--txl);text-align:center;padding:16px 8px">'
       + '<i class="ti ti-circle-check" style="font-size:20px;display:block;margin-bottom:6px;color:var(--g700)"></i>'
       + 'Toutes les tâches opérationnelles sont à jour</div>';
   }
@@ -892,14 +892,14 @@ function renderOverview() {
   // Alertes opérationnelles
   if (opAlerts.critical.length) {
     main += '<div style="background:#A32D2D;border-radius:var(--rmd);padding:12px 18px;margin-bottom:14px;color:white;animation:prio-pulse 1s infinite">'
-      + '<div style="font-size:15px;font-weight:700"><i class="ti ti-alarm"></i> ⚠ ALERTE — '
+      + '<div style="font-size:16px;font-weight:700"><i class="ti ti-alarm"></i> ⚠ ALERTE — '
       + opAlerts.critical.length + ' tâche(s) opérationnelle(s) à livrer aujourd\'hui ou demain !</div>'
       + '</div>';
   }
 
   if (opAlerts.warning.length) {
     main += '<div style="background:var(--a50);border:2px solid var(--a400);border-radius:var(--rmd);padding:12px 16px;margin-bottom:14px">'
-      + '<div style="font-size:14px;font-weight:700;color:var(--a800)"><i class="ti ti-alert-triangle"></i> '
+      + '<div style="font-size:15px;font-weight:700;color:var(--a800)"><i class="ti ti-alert-triangle"></i> '
       + opAlerts.warning.length + ' tâche(s) opérationnelle(s) à livrer dans moins de 3 jours</div>'
       + '</div>';
   }
@@ -923,18 +923,18 @@ function renderOverview() {
 
   // Bloqués
   const bt = tasks.filter(t=>t.status==='blocked');
-  main += `<div><div class="sect" style="margin-bottom:12px;font-size:15px"><i class="ti ti-alert-circle" style="color:var(--r400)"></i> Bloqués</div>`;
+  main += `<div><div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-alert-circle" style="color:var(--r400)"></i> Bloqués</div>`;
   if (!bt.length) main += `<div class="empty"><i class="ti ti-circle-check"></i>Aucun bloquage</div>`;
-  bt.forEach(t => { main += `<div class="csm"><div class="row" style="margin-bottom:6px"><div class="avst">${(t.members||[]).slice(0,3).map(m=>av(m,'avsm')).join('')}</div><strong style="font-size:14px;flex:1">${t.title}</strong></div><div class="meta">${(t.members||[]).join(', ')}</div>${t.blocker?`<div class="blk"><i class="ti ti-alert-triangle"></i>${t.blocker}</div>`:''}</div>`; });
+  bt.forEach(t => { main += `<div class="csm"><div class="row" style="margin-bottom:6px"><div class="avst">${(t.members||[]).slice(0,3).map(m=>av(m,'avsm')).join('')}</div><strong style="font-size:15px;flex:1">${t.title}</strong></div><div class="meta">${(t.members||[]).join(', ')}</div>${t.blocker?`<div class="blk"><i class="ti ti-alert-triangle"></i>${t.blocker}</div>`:''}</div>`; });
   main += `</div>`;
 
   // Priorités hautes
   const highPrio = tasks.filter(t => (t.priority||0) >= 4 && t.status !== 'done');
   if (highPrio.length) {
-    main += `<div style="grid-column:1/-1"><div class="sect" style="margin-bottom:12px;font-size:15px"><i class="ti ti-alert-triangle" style="color:#A32D2D"></i> Priorités hautes / maximales</div>`;
+    main += `<div style="grid-column:1/-1"><div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-alert-triangle" style="color:#A32D2D"></i> Priorités hautes / maximales</div>`;
     highPrio.forEach(t => {
       main += `<div class="csm" style="border-left:4px solid ${(t.priority||0)===5?'#A32D2D':'#E24B4A'}">
-        <div class="row" style="margin-bottom:6px">${prioBadge(t.priority)}<strong style="flex:1;font-size:14px">${t.title}</strong><span class="bdg ${SC[t.status]}">${SL[t.status]}</span></div>
+        <div class="row" style="margin-bottom:6px">${prioBadge(t.priority)}<strong style="flex:1;font-size:15px">${t.title}</strong><span class="bdg ${SC[t.status]}">${SL[t.status]}</span></div>
         <div class="meta">${(t.members||[]).join(', ')}${t.date?' · Échéance : '+fmtDate(t.date):''}</div>
       </div>`;
     });
@@ -943,10 +943,10 @@ function renderOverview() {
 
   // Travaux actifs
   const ip = tasks.filter(t=>t.status==='progress'||t.status==='todo');
-  main += `<div style="grid-column:1/-1"><div class="sect" style="margin-bottom:12px;font-size:15px"><i class="ti ti-activity" style="color:var(--t500)"></i> Travaux actifs</div>`;
+  main += `<div style="grid-column:1/-1"><div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-activity" style="color:var(--t500)"></i> Travaux actifs</div>`;
   if (!ip.length) main += `<div class="empty"><i class="ti ti-checklist"></i>Aucun travail actif</div>`;
   ip.slice(0,6).forEach(t => {
-    main += `<div class="csm"><div class="row" style="margin-bottom:8px"><div class="avst">${(t.members||[]).slice(0,3).map(m=>av(m,'avsm')).join('')}</div><div style="flex:1"><strong style="font-size:14px">${t.title}</strong><div class="meta">${(t.members||[]).join(', ')}${t.date?' · échéance '+fmtDate(t.date):''}</div></div><span class="bdg ${SC[t.status]}">${SL[t.status]}</span></div><div class="row"><div class="pb"><div class="pf" style="width:${t.pct}%"></div></div><span class="meta" style="min-width:32px;text-align:right">${t.pct}%</span></div></div>`;
+    main += `<div class="csm"><div class="row" style="margin-bottom:8px"><div class="avst">${(t.members||[]).slice(0,3).map(m=>av(m,'avsm')).join('')}</div><div style="flex:1"><strong style="font-size:15px">${t.title}</strong><div class="meta">${(t.members||[]).join(', ')}${t.date?' · échéance '+fmtDate(t.date):''}</div></div><span class="bdg ${SC[t.status]}">${SL[t.status]}</span></div><div class="row"><div class="pb"><div class="pf" style="width:${t.pct}%"></div></div><span class="meta" style="min-width:32px;text-align:right">${t.pct}%</span></div></div>`;
   });
   main += `</div>`;
 
@@ -956,11 +956,11 @@ function renderOverview() {
 
 // ── BANDE DROITE : présences ──
   var sideRight = '<div class="ov-sidebar-right">'
-    + '<div style="font-size:13px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px">'
+    + '<div style="font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px">'
     + '<i class="ti ti-users" style="color:var(--t500)"></i> Présences</div>';
 
   if (!presences.length) {
-    sideRight += '<div style="font-size:13px;color:var(--txl);text-align:center;padding:16px 8px">'
+    sideRight += '<div style="font-size:14px;color:var(--txl);text-align:center;padding:16px 8px">'
       + '<i class="ti ti-users" style="font-size:20px;display:block;margin-bottom:6px"></i>'
       + 'Aucune présence renseignée</div>';
   } else {
@@ -974,13 +974,13 @@ function renderOverview() {
       var members = presences.filter(function(p){ return p.status === g.status; });
       if (!members.length) return;
       sideRight += '<div style="margin-bottom:10px">'
-        + '<div style="font-size:13px;font-weight:600;color:' + g.color + ';margin-bottom:5px;display:flex;align-items:center;gap:4px">'
-        + '<i class="ti ' + g.icon + '" style="font-size:13px"></i> ' + g.label + ' (' + members.length + ')</div>';
+        + '<div style="font-size:14px;font-weight:600;color:' + g.color + ';margin-bottom:5px;display:flex;align-items:center;gap:4px">'
+        + '<i class="ti ' + g.icon + '" style="font-size:14px"></i> ' + g.label + ' (' + members.length + ')</div>';
       members.forEach(function(p) {
         var c = mc(p.member);
         sideRight += '<div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:white;border:1px solid var(--bd);border-radius:var(--rsm);margin-bottom:4px;box-shadow:var(--sh)">'
           + av(p.member, 'avsm')
-          + '<span style="font-size:13px;font-weight:500;flex:1">' + p.member + '</span>'
+          + '<span style="font-size:14px;font-weight:500;flex:1">' + p.member + '</span>'
           + '</div>';
       });
 
@@ -993,7 +993,7 @@ function renderOverview() {
   var remoteCount = presences.filter(function(p){ return p.status==='remote'; }).length;
   var absentCount2 = presences.filter(function(p){ return p.status==='absent'; }).length;
   if (presences.length) {
-    sideRight += '<div style="background:var(--n50);border-radius:var(--rsm);padding:8px 10px;margin-top:6px;font-size:13px;color:var(--txm)">'
+    sideRight += '<div style="background:var(--n50);border-radius:var(--rsm);padding:8px 10px;margin-top:6px;font-size:14px;color:var(--txm)">'
       + '<div style="font-weight:600;margin-bottom:4px">Résumé du jour</div>'
       + '<div>🏢 Au bureau : <strong>' + presentCount2 + '</strong></div>'
       + '<div>🏠 Télétravail : <strong>' + remoteCount + '</strong></div>'
@@ -1006,17 +1006,17 @@ function renderOverview() {
   var activeAbsences = absences.filter(function(a){ return a.to >= today2; });
   if (activeAbsences.length) {
     sideRight += '<div style="margin-top:14px">'
-      + '<div style="font-size:13px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px">'
+      + '<div style="font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px">'
       + '<i class="ti ti-calendar-off" style="color:var(--r400)"></i> Absences planifiées</div>';
     activeAbsences.forEach(function(a) {
       var isNow = a.from <= today2 && a.to >= today2;
       sideRight += '<div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:'+(isNow?'var(--r50)':'var(--a50)')+';border:1px solid '+(isNow?'var(--r400)':'var(--a400)')+';border-radius:var(--rsm);margin-bottom:4px">'
         + av(a.member, 'avsm')
         + '<div style="flex:1">'
-        + '<div style="font-size:13px;font-weight:500;color:'+(isNow?'var(--r700)':'var(--a700)')+'">'+a.member+'</div>'
-        + '<div style="font-size:11px;color:'+(isNow?'var(--r700)':'var(--a700)')+'">'+fmtDate(a.from)+' → '+fmtDate(a.to)+(a.reason?' · '+a.reason:'')+'</div>'
+        + '<div style="font-size:14px;font-weight:500;color:'+(isNow?'var(--r700)':'var(--a700)')+'">'+a.member+'</div>'
+        + '<div style="font-size:12px;color:'+(isNow?'var(--r700)':'var(--a700)')+'">'+fmtDate(a.from)+' → '+fmtDate(a.to)+(a.reason?' · '+a.reason:'')+'</div>'
         + '</div>'
-        + (isNow ? '<span style="font-size:10px;background:var(--r400);color:white;padding:1px 5px;border-radius:8px">En cours</span>' : '')
+        + (isNow ? '<span style="font-size:11px;background:var(--r400);color:white;padding:1px 5px;border-radius:8px">En cours</span>' : '')
         + '</div>';
     });
     sideRight += '</div>';
@@ -1043,7 +1043,7 @@ function renderTasks() {
       <div class="fi"><label>Assigné par *</label><select id="t-assigner"></select></div>
     </div>
     <div class="fi" style="margin-bottom:12px">
-      <label>Assigné à * <span style="font-size:13px;color:var(--t500);font-weight:400">- plusieurs membres possibles</span></label>
+      <label>Assigné à * <span style="font-size:14px;color:var(--t500);font-weight:400">- plusieurs membres possibles</span></label>
       <div class="mpk" id="members-picker"></div>
     </div>
     <div class="fg fg3">
@@ -1065,15 +1065,15 @@ function renderTasks() {
     </div>
     <div class="nb-box">
       <div style="display:flex;align-items:center;gap:8px">
-        <i class="ti ti-mail" style="color:var(--b600);font-size:17px"></i>
-        <span style="font-size:13px;font-weight:600;color:var(--b800)">Notification e-mail</span>
-        <label style="display:flex;align-items:center;gap:6px;margin-left:auto;cursor:pointer;font-size:13px;color:var(--txm)">
+        <i class="ti ti-mail" style="color:var(--b600);font-size:18px"></i>
+        <span style="font-size:14px;font-weight:600;color:var(--b800)">Notification e-mail</span>
+        <label style="display:flex;align-items:center;gap:6px;margin-left:auto;cursor:pointer;font-size:14px;color:var(--txm)">
           <input type="checkbox" id="t-notify" style="width:14px;height:14px;accent-color:var(--t500)"> Notifier les assignés
         </label>
       </div>
       <div id="email-fields" style="display:none;margin-top:12px">
-        <p style="font-size:13px;color:var(--txm);margin-bottom:8px">Les e-mails se configurent dans <strong>Paramètres</strong>.</p>
-        <div class="fi"><label>Message additionnel</label><textarea id="t-msg" rows="2" placeholder="Message personnalisé…" style="font-size:13px;" oninput="modalMsg=this.value"></textarea></div>
+        <p style="font-size:14px;color:var(--txm);margin-bottom:8px">Les e-mails se configurent dans <strong>Paramètres</strong>.</p>
+        <div class="fi"><label>Message additionnel</label><textarea id="t-msg" rows="2" placeholder="Message personnalisé…" style="font-size:14px;" oninput="modalMsg=this.value"></textarea></div>
       </div>
     </div>
     <button class="bp" onclick="addTask()"><i class="ti ti-plus"></i> Créer la tâche</button>
@@ -1081,8 +1081,8 @@ function renderTasks() {
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
     <div class="sect"><i class="ti ti-list-check"></i> Liste des travaux</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <select id="filter-member" onchange="refreshTaskList()" style="padding:6px 10px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;background:var(--sf);font-family:inherit;color:var(--tx)"></select>
-      <select id="filter-status" onchange="refreshTaskList()" style="padding:6px 10px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:13px;background:var(--sf);font-family:inherit;color:var(--tx)">
+      <select id="filter-member" onchange="refreshTaskList()" style="padding:6px 10px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;background:var(--sf);font-family:inherit;color:var(--tx)"></select>
+      <select id="filter-status" onchange="refreshTaskList()" style="padding:6px 10px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;background:var(--sf);font-family:inherit;color:var(--tx)">
         <option value="">Tous les statuts</option><option value="todo">À faire</option><option value="progress">En cours</option><option value="blocked">Bloqué</option><option value="done">Terminé</option>
       </select>
     </div>
@@ -1118,25 +1118,25 @@ function refreshTaskList() {
 
   document.getElementById('task-list').innerHTML = list.map(t => {
     const pct = Math.min(100, Math.max(0, t.pct||0));
-    const chips = (t.members||[]).map(m => { const c=mc(m); return `<span style="display:inline-flex;align-items:center;gap:5px;background:${c.bg};color:${c.fg};border-radius:20px;padding:4px 11px;font-size:13px;font-weight:500;">${av(m,'avxs')} ${m}</span>`; }).join('');
+    const chips = (t.members||[]).map(m => { const c=mc(m); return `<span style="display:inline-flex;align-items:center;gap:5px;background:${c.bg};color:${c.fg};border-radius:20px;padding:4px 11px;font-size:14px;font-weight:500;">${av(m,'avxs')} ${m}</span>`; }).join('');
     const canEmail = (t.members||[]).some(m => { const acc=accounts.find(a=>a.name===m); return acc && acc.email; });
     const canEdit = isAdmin() || (currentUser && (t.assigner === currentUser.name || (t.members||[]).includes(currentUser.name)));
     return `<div class="csm">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-        <div style="flex:1;min-width:160px"><strong style="font-size:15px">${t.title}</strong><div class="meta" style="margin-top:2px">${t.date?'Échéance : '+fmtDate(t.date):'Pas d\'échéance'}</div></div>
+        <div style="flex:1;min-width:160px"><strong style="font-size:16px">${t.title}</strong><div class="meta" style="margin-top:2px">${t.date?'Échéance : '+fmtDate(t.date):'Pas d\'échéance'}</div></div>
         <span class="bdg ${SC[t.status]}">${SL[t.status]}</span>
               ${t.priority > 0 ? prioBadge(t.priority) : ''}
       </div>
-      <div style="margin-bottom:10px"><div style="font-size:13px;font-weight:600;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px">Assigné à</div><div style="display:flex;flex-wrap:wrap;gap:6px">${chips}</div></div>
+      <div style="margin-bottom:10px"><div style="font-size:14px;font-weight:600;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px">Assigné à</div><div style="display:flex;flex-wrap:wrap;gap:6px">${chips}</div></div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
         <span class="atag"><i class="ti ti-user-check"></i> Assigné par&nbsp;<strong>${t.assigner||'-'}</strong></span>
         ${t.assignedAt ? `<span class="meta">le ${fmtDate(t.assignedAt)}</span>` : ''}
-        ${canEmail ? `<button class="bg_ bgb" onclick="previewEmail(${t.id})"><i class="ti ti-mail"></i> Notifier</button>` : `<span style="font-size:13px;color:var(--txl);font-style:italic">E-mail non configuré</span>`}
+        ${canEmail ? `<button class="bg_ bgb" onclick="previewEmail(${t.id})"><i class="ti ti-mail"></i> Notifier</button>` : `<span style="font-size:14px;color:var(--txl);font-style:italic">E-mail non configuré</span>`}
       </div>
       <div class="row" style="margin-bottom:8px"><div class="pb"><div class="pf ${t.status}" style="width:${pct}%"></div></div><span class="meta" style="min-width:36px;text-align:right">${pct}%</span></div>
       ${t.blocker ? `<div class="blk"><i class="ti ti-alert-triangle"></i>${t.blocker}</div>` : ''}
-      ${t.note ? `<div style="font-size:13px;color:var(--txm);margin-top:7px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm);border-left:3px solid var(--n400)"><i class="ti ti-notes" style="font-size:13px"></i> ${t.note}</div>` : ''}
-      ${t.lastUpdatedBy ? `<div class="meta" style="margin-top:4px;font-size:13px">Mis à jour par <strong>${t.lastUpdatedBy}</strong> le ${fmtDate(t.lastUpdatedAt)}</div>` : ''}
+      ${t.note ? `<div style="font-size:14px;color:var(--txm);margin-top:7px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm);border-left:3px solid var(--n400)"><i class="ti ti-notes" style="font-size:14px"></i> ${t.note}</div>` : ''}
+      ${t.lastUpdatedBy ? `<div class="meta" style="margin-top:4px;font-size:14px">Mis à jour par <strong>${t.lastUpdatedBy}</strong> le ${fmtDate(t.lastUpdatedAt)}</div>` : ''}
       <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:10px;flex-wrap:wrap">
         ${(t.members||[]).includes(currentUser.name) ? `<button class="bg_" style="border-color:var(--b600);color:var(--b600)" onclick="openProgModal(${t.id})"><i class="ti ti-edit"></i> Mettre à jour</button>` : ''}
         ${canEdit && t.status !== 'done' ? `<button class="bg_" style="border-color:var(--g700);color:var(--g700)" onclick="markDone(${t.id})"><i class="ti ti-circle-check"></i> Terminer</button>` : ''}
@@ -1217,7 +1217,7 @@ function openEmailModal() {
 
   document.getElementById('em-recip').innerHTML = notif.map(function(a) {
     var c = mc(a.name);
-    return '<span style="display:inline-flex;align-items:center;gap:5px;background:'+c.bg+';color:'+c.fg+';border-radius:20px;padding:4px 10px;font-size:13px;">'+av(a.name,'avxs')+' '+a.name+' <span style="opacity:0.6;font-size:11px">&lt;'+a.email+'&gt;</span></span>';
+    return '<span style="display:inline-flex;align-items:center;gap:5px;background:'+c.bg+';color:'+c.fg+';border-radius:20px;padding:4px 10px;font-size:14px;">'+av(a.name,'avxs')+' '+a.name+' <span style="opacity:0.6;font-size:12px">&lt;'+a.email+'&gt;</span></span>';
   }).join('');
 
   // ← Pré-remplir le message avec ce qui a été écrit dans le formulaire
@@ -1293,9 +1293,9 @@ function renderPresence() {
 
   html += '<div class="prg">';
   presences.filter(p => !adminAcc || p.member !== adminAcc.name).forEach((p,i) => {
-    html += `<div class="prc">${av(p.member)}<div style="flex:1"><div style="font-size:14px;font-weight:500">${p.member}</div><span class="bdg ${PC[p.status]}" style="margin-top:4px"><i class="ti ${PI[p.status]}" style="font-size:11px"></i>${PL[p.status]}</span></div><button class="bg_ bgd" onclick="removePresence('${p.member}')"><i class="ti ti-x"></i></button></div>`;
+    html += `<div class="prc">${av(p.member)}<div style="flex:1"><div style="font-size:15px;font-weight:500">${p.member}</div><span class="bdg ${PC[p.status]}" style="margin-top:4px"><i class="ti ${PI[p.status]}" style="font-size:12px"></i>${PL[p.status]}</span></div><button class="bg_ bgd" onclick="removePresence('${p.member}')"><i class="ti ti-x"></i></button></div>`;
   });
-  without.forEach(m => { html += `<div class="prc" style="opacity:0.4">${av(m)}<div style="flex:1"><div style="font-size:14px">${m}</div><div class="meta">Non renseigné</div></div></div>`; });
+  without.forEach(m => { html += `<div class="prc" style="opacity:0.4">${av(m)}<div style="flex:1"><div style="font-size:15px">${m}</div><div class="meta">Non renseigné</div></div></div>`; });
   html += '</div>';
   el.innerHTML = html;
 
@@ -1343,7 +1343,7 @@ function renderAbsences() {
 }
 function absCard(a, idx, past=false) {
   const canDel = isAdmin() || (currentUser && a.member === currentUser.name);
-  return `<div class="csm" style="${past?'opacity:0.6':''}"><div class="row">${av(a.member,'avsm')}<div style="flex:1"><strong style="font-size:14px">${a.member}</strong><div class="meta">${fmtDate(a.from)} → ${fmtDate(a.to)} · ${daysDiff(a.from,a.to)} jour(s)</div></div><span class="bdg dab">${a.reason}</span>${canDel?`<button class="bg_ bgd" onclick="removeAbsence(${idx})"><i class="ti ti-trash"></i></button>`:''}</div></div>`;
+  return `<div class="csm" style="${past?'opacity:0.6':''}"><div class="row">${av(a.member,'avsm')}<div style="flex:1"><strong style="font-size:15px">${a.member}</strong><div class="meta">${fmtDate(a.from)} → ${fmtDate(a.to)} · ${daysDiff(a.from,a.to)} jour(s)</div></div><span class="bdg dab">${a.reason}</span>${canDel?`<button class="bg_ bgd" onclick="removeAbsence(${idx})"><i class="ti ti-trash"></i></button>`:''}</div></div>`;
 }
 function addAbsence() {
   const m=document.getElementById('a-member').value, r=document.getElementById('a-reason').value.trim(), f=document.getElementById('a-from').value, t=document.getElementById('a-to').value;
@@ -1382,7 +1382,7 @@ function renderCuts() {
     <div class="fg">
       <div class="fi">
         <label>Type d'incident *</label>
-        <select id="c-type" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;background:var(--sf);color:var(--tx)">
+        <select id="c-type" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;background:var(--sf);color:var(--tx)">
           <option value="electric">⚡ Coupure électrique</option>
           <option value="internet">🌐 Coupure internet</option>
         </select>
@@ -1391,7 +1391,7 @@ function renderCuts() {
     </div>
     <div class="fg">
       <div class="fi"><label>Heure de début *</label><input type="text" id="c-start" placeholder="ex : 09:30"></div>
-      <div class="fi"><label>Heure de fin <span style="font-size:13px;color:var(--txl)">(vide si en cours)</span></label><input type="text" id="c-end" placeholder="ex : 11:00"></div>
+      <div class="fi"><label>Heure de fin <span style="font-size:14px;color:var(--txl)">(vide si en cours)</span></label><input type="text" id="c-end" placeholder="ex : 11:00"></div>
     </div>
     <div class="fi" style="margin-bottom:14px">
       <label>Note / zone concernée</label>
@@ -1415,7 +1415,7 @@ function renderCuts() {
         <div class="row">
           <i class="ti ${icon}" style="font-size:19px;color:${color}"></i>
           <div style="flex:1">
-            <strong style="font-size:14px">${label} · ${fmtDate(c.date)}</strong>
+            <strong style="font-size:15px">${label} · ${fmtDate(c.date)}</strong>
             <div class="meta">${c.start} → ${c.end||'En cours'}${dur?' ('+dur+')':''}${c.note?' · '+c.note:''}</div>
           </div>
           ${!c.end?'<span class="bdg dct">En cours</span>':dur?`<span class="meta">${dur}</span>`:''}
@@ -1463,13 +1463,13 @@ function renderSettings() {
   <div class="sect" style="margin-bottom:16px"><i class="ti ti-user-cog"></i> Mon compte</div>
   <div class="card">
     <div class="ftitle"><i class="ti ti-mail"></i> Mon adresse e-mail</div>
-    <p style="font-size:14px;color:var(--txm);margin-bottom:12px">Utilisée pour recevoir les notifications d'assignation de tâches.</p>
+    <p style="font-size:15px;color:var(--txm);margin-bottom:12px">Utilisée pour recevoir les notifications d'assignation de tâches.</p>
     <div class="fi" style="margin-bottom:14px"><label>E-mail</label><input type="email" id="my-email" placeholder="adresse@eccas.int" value="${currentUser.email||''}"></div>
     <button class="bp" onclick="saveMyEmail()"><i class="ti ti-device-floppy"></i> Enregistrer</button>
   </div>
   <div class="card" style="margin-top:4px">
     <div class="ftitle"><i class="ti ti-lock"></i> Changer mon mot de passe</div>
-    <p style="font-size:14px;color:var(--txm);margin-bottom:12px">Choisissez un mot de passe sécurisé.</p>
+    <p style="font-size:15px;color:var(--txm);margin-bottom:12px">Choisissez un mot de passe sécurisé.</p>
     <button class="bp" onclick="openChangePw()"><i class="ti ti-lock-open"></i> Modifier le mot de passe</button>
   </div>`;
 }
@@ -1517,13 +1517,13 @@ function renderAdmin() {
       <span class="av" style="background:${c.bg};color:${c.fg}">${ini(a.name)}</span>
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <strong style="font-size:14px">${a.name}</strong>
+          <strong style="font-size:15px">${a.name}</strong>
           <span class="role-badge ${a.role==='admin'?'rb-admin':(a.role==='chef'?'rb-chef':'rb-member')}">
             ${a.role==='admin'?'Admin IT':(a.role==='chef'?'Chef d\'équipe':'Membre')}
           </span>
         </div>
         <div class="meta" style="margin-top:2px">
-          <span>ID : <code style="background:var(--n100);padding:1px 5px;border-radius:3px;font-size:13px">${a.login}</code></span>
+          <span>ID : <code style="background:var(--n100);padding:1px 5px;border-radius:3px;font-size:14px">${a.login}</code></span>
           ${a.email?`<span style="margin-left:10px">✉ ${a.email}</span>`:'<span style="margin-left:10px;color:var(--txl);font-style:italic">pas d\'e-mail</span>'}
         </div>
       </div>
@@ -1565,7 +1565,7 @@ function renderAdmin() {
       const c = mc(a.name);
       html += `<div class="adm-member-row" style="opacity:0.6">
         <span class="av" style="background:${c.bg};color:${c.fg}">${ini(a.name)}</span>
-        <div style="flex:1"><strong style="font-size:14px">${a.name}</strong><div class="meta">ID : ${a.login}</div></div>
+        <div style="flex:1"><strong style="font-size:15px">${a.name}</strong><div class="meta">ID : ${a.login}</div></div>
         <div style="display:flex;gap:6px">
           <button class="bg_" onclick="openRenameModal('${a.login}','${a.name}')"><i class="ti ti-pencil"></i> Renommer</button>
           <button class="bg_" onclick="reactivateMember('${a.login}')"><i class="ti ti-user-check"></i> Réactiver</button>
@@ -1577,7 +1577,7 @@ function renderAdmin() {
   html += `</div>
   <div class="card" style="margin-top:4px">
     <div class="ftitle"><i class="ti ti-database-export"></i> Données</div>
-    <p style="font-size:14px;color:var(--txm);margin-bottom:14px">Exportez toutes les données de l'agenda au format JSON pour les sauvegarder ou les transférer.</p>
+    <p style="font-size:15px;color:var(--txm);margin-bottom:14px">Exportez toutes les données de l'agenda au format JSON pour les sauvegarder ou les transférer.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="bp" onclick="exportData()"><i class="ti ti-download"></i> Exporter les données</button>
       <label class="bg_" style="cursor:pointer"><i class="ti ti-upload"></i> Importer les données<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
@@ -1794,18 +1794,18 @@ function renderArchives(){
       var pct=Math.min(100,Math.max(0,t.pct||0));
       var chips=(t.members||[]).map(function(m){
         var col=mc(m);
-        return '<span style="display:inline-flex;align-items:center;gap:4px;background:'+col.bg+';color:'+col.fg+';border-radius:20px;padding:3px 9px;font-size:13px;">'+av(m,'avxs')+' '+m+'</span>';
+        return '<span style="display:inline-flex;align-items:center;gap:4px;background:'+col.bg+';color:'+col.fg+';border-radius:20px;padding:3px 9px;font-size:14px;">'+av(m,'avxs')+' '+m+'</span>';
       }).join('');
       html+='<div class="csm">'
         +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap">'
         +'<div style="flex:1"><strong>'+t.title+'</strong>'
         +(t.archivedAt?'<div class="meta">Archivee le '+fmtDate(t.archivedAt)+'</div>':'')
-        +'</div><span class="bdg darc"><i class="ti ti-archive" style="font-size:11px"></i> Archive</span></div>'
+        +'</div><span class="bdg darc"><i class="ti ti-archive" style="font-size:12px"></i> Archive</span></div>'
         +'<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">'+chips+'</div>'
         +'<div class="row" style="margin-bottom:6px">'
         +'<div class="pb"><div class="pf done" style="width:'+pct+'%"></div></div>'
         +'<span class="meta" style="min-width:32px;text-align:right">'+pct+'%</span></div>'
-        +(t.note?'<div style="font-size:13px;color:var(--txm);margin-top:6px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm)"><i class="ti ti-notes" style="font-size:13px"></i> '+t.note+'</div>':'')
+        +(t.note?'<div style="font-size:14px;color:var(--txm);margin-top:6px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm)"><i class="ti ti-notes" style="font-size:14px"></i> '+t.note+'</div>':'')
         +(isAdmin()?'<div style="display:flex;justify-content:flex-end;margin-top:8px">'
           +'<button class="bg_ bgd" onclick="deleteArchive('+t.id+')"><i class="ti ti-trash"></i> Supprimer</button></div>':'')
         +'</div>';
@@ -1829,22 +1829,22 @@ function renderOperational() {
   var alerts = getOpAlerts(today);
 
   var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">'
-    + '<div class="sect" style="font-size:18px;font-weight:700"><i class="ti ti-clipboard-list" style="color:var(--t500)"></i> Tâches opérationnelles</div>'
+    + '<div class="sect" style="font-size:19px;font-weight:700"><i class="ti ti-clipboard-list" style="color:var(--t500)"></i> Tâches opérationnelles</div>'
     + (ce ? '<button class="bp" onclick="addOpCat()"><i class="ti ti-plus"></i> Nouvelle catégorie</button>' : '')
     + '</div>';
 
   // Alertes urgentes en haut
   if (alerts.critical.length) {
     html += '<div style="background:#A32D2D;border-radius:var(--rmd);padding:14px 18px;margin-bottom:14px;color:white;animation:prio-pulse 1s infinite">'
-      + '<div style="font-size:15px;font-weight:700;margin-bottom:8px"><i class="ti ti-alarm"></i> ⚠ ALERTE - Tâche(s) à effectuer demain ou aujourd\'hui !</div>';
+      + '<div style="font-size:16px;font-weight:700;margin-bottom:8px"><i class="ti ti-alarm"></i> ⚠ ALERTE - Tâche(s) à effectuer demain ou aujourd\'hui !</div>';
     alerts.critical.forEach(function(a) {
       var canDismiss = isAdmin() || isChef() || (currentUser.name === a.responsible);
       html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,0.1);border-radius:var(--rsm);padding:8px 12px;margin-bottom:6px;flex-wrap:wrap">'
         + '<div>'
-        + '<strong style="font-size:14px">' + a.cat + ' - ' + a.title + '</strong>'
-        + '<div style="font-size:13px;opacity:.85;margin-top:2px">Échéance : ' + fmtDate(a.date) + (a.responsible ? ' · Responsable : ' + a.responsible : '') + '</div>'
+        + '<strong style="font-size:15px">' + a.cat + ' - ' + a.title + '</strong>'
+        + '<div style="font-size:14px;opacity:.85;margin-top:2px">Échéance : ' + fmtDate(a.date) + (a.responsible ? ' · Responsable : ' + a.responsible : '') + '</div>'
         + '</div>'
-        + (canDismiss && !a.done ? '<button onclick="dismissOpAlert(\'' + a.key + '\')" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:white;border-radius:var(--rsm);padding:4px 10px;cursor:pointer;font-size:13px;font-family:inherit"><i class="ti ti-x"></i> Fermer</button>' : '')
+        + (canDismiss && !a.done ? '<button onclick="dismissOpAlert(\'' + a.key + '\')" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:white;border-radius:var(--rsm);padding:4px 10px;cursor:pointer;font-size:14px;font-family:inherit"><i class="ti ti-x"></i> Fermer</button>' : '')
         + '</div>';
     });
     html += '</div>';
@@ -1852,25 +1852,25 @@ function renderOperational() {
 
   if (alerts.warning.length) {
     html += '<div style="background:var(--a50);border:2px solid var(--a400);border-radius:var(--rmd);padding:14px 18px;margin-bottom:14px">'
-      + '<div style="font-size:15px;font-weight:700;color:var(--a800);margin-bottom:8px"><i class="ti ti-alert-triangle"></i> Attention - Tâche(s) à livrer dans moins de 3 jours</div>';
+      + '<div style="font-size:16px;font-weight:700;color:var(--a800);margin-bottom:8px"><i class="ti ti-alert-triangle"></i> Attention - Tâche(s) à livrer dans moins de 3 jours</div>';
     alerts.warning.forEach(function(a) {
       var canDismiss = isAdmin() || isChef() || (currentUser.name === a.responsible);
       html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:white;border-radius:var(--rsm);padding:8px 12px;margin-bottom:6px;flex-wrap:wrap">'
         + '<div>'
-        + '<strong style="font-size:14px;color:var(--a800)">' + a.cat + ' - ' + a.title + '</strong>'
-        + '<div style="font-size:13px;color:var(--a700);margin-top:2px">Échéance : ' + fmtDate(a.date) + ' (' + a.daysLeft + ' jour(s)) ' + (a.responsible ? ' · ' + a.responsible : '') + '</div>'
+        + '<strong style="font-size:15px;color:var(--a800)">' + a.cat + ' - ' + a.title + '</strong>'
+        + '<div style="font-size:14px;color:var(--a700);margin-top:2px">Échéance : ' + fmtDate(a.date) + ' (' + a.daysLeft + ' jour(s)) ' + (a.responsible ? ' · ' + a.responsible : '') + '</div>'
         + '</div>'
-        + (canDismiss && !a.done ? '<button onclick="dismissOpAlert(\'' + a.key + '\')" style="background:var(--a50);border:1px solid var(--a400);color:var(--a800);border-radius:var(--rsm);padding:4px 10px;cursor:pointer;font-size:13px;font-family:inherit"><i class="ti ti-x"></i> Fermer</button>' : '')
+        + (canDismiss && !a.done ? '<button onclick="dismissOpAlert(\'' + a.key + '\')" style="background:var(--a50);border:1px solid var(--a400);color:var(--a800);border-radius:var(--rsm);padding:4px 10px;cursor:pointer;font-size:14px;font-family:inherit"><i class="ti ti-x"></i> Fermer</button>' : '')
         + '</div>';
     });
     html += '</div>';
   }
 
-  html += '<div style="background:var(--b50);border:1px solid rgba(24,95,165,0.3);border-radius:var(--rmd);padding:10px 14px;margin-bottom:16px;font-size:14px;color:var(--b800)">'
+  html += '<div style="background:var(--b50);border:1px solid rgba(24,95,165,0.3);border-radius:var(--rmd);padding:10px 14px;margin-bottom:16px;font-size:15px;color:var(--b800)">'
     + '<i class="ti ti-info-circle"></i> Productions récurrentes attendues. Les occurrences sont réparties automatiquement dans le mois.</div>';
 
   if (!opTasks.length) {
-    html += '<div class="empty" style="font-size:17px"><i class="ti ti-clipboard-list"></i>Aucune tâche opérationnelle.<br><span style="font-size:14px">Cliquez sur "Nouvelle catégorie" pour commencer.</span></div>';
+    html += '<div class="empty" style="font-size:18px"><i class="ti ti-clipboard-list"></i>Aucune tâche opérationnelle.<br><span style="font-size:15px">Cliquez sur "Nouvelle catégorie" pour commencer.</span></div>';
   } else {
     opTasks.forEach(function(cat, ci) {
       var totalItems = (cat.items||[]).length;
@@ -1885,21 +1885,21 @@ function renderOperational() {
       html += '<div style="background:white;border:1px solid var(--bd);border-radius:var(--rlg);margin-bottom:16px;overflow:hidden;box-shadow:var(--sh)">'
         // En-tête catégorie
         + '<div style="background:var(--t900);padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="toggleOpB('+ci+')">'
-        + '<i class="ti ti-folder-open" style="color:var(--t100);font-size:18px"></i>'
+        + '<i class="ti ti-folder-open" style="color:var(--t100);font-size:19px"></i>'
         + '<div style="flex:1">'
-        + '<div style="color:white;font-size:16px;font-weight:700">'+cat.name+'</div>'
-        + (cat.description?'<div style="color:var(--t100);font-size:13px;margin-top:2px">'+cat.description+'</div>':'')
+        + '<div style="color:white;font-size:17px;font-weight:700">'+cat.name+'</div>'
+        + (cat.description?'<div style="color:var(--t100);font-size:14px;margin-top:2px">'+cat.description+'</div>':'')
         + '</div>'
-        + (totalOcc ? '<span style="background:rgba(255,255,255,0.2);color:white;border-radius:20px;padding:3px 12px;font-size:13px;font-weight:600">'+doneOcc+'/'+totalOcc+'</span>' : '')
-        + (ce ? '<button class="bg_" style="font-size:13px;background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:white;margin-left:6px" onclick="event.stopPropagation();addOpTask('+ci+')"><i class="ti ti-plus"></i> Ajouter</button>' : '')
-        + (ce ? '<button style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);border-radius:var(--rsm);padding:4px 8px;cursor:pointer;font-size:13px;margin-left:4px" onclick="event.stopPropagation();delOpCat('+ci+')"><i class="ti ti-trash"></i></button>' : '')
-        + '<i class="ti ti-chevron-down" style="color:var(--t100);font-size:15px;margin-left:6px"></i>'
+        + (totalOcc ? '<span style="background:rgba(255,255,255,0.2);color:white;border-radius:20px;padding:3px 12px;font-size:14px;font-weight:600">'+doneOcc+'/'+totalOcc+'</span>' : '')
+        + (ce ? '<button class="bg_" style="font-size:14px;background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:white;margin-left:6px" onclick="event.stopPropagation();addOpTask('+ci+')"><i class="ti ti-plus"></i> Ajouter</button>' : '')
+        + (ce ? '<button style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);border-radius:var(--rsm);padding:4px 8px;cursor:pointer;font-size:14px;margin-left:4px" onclick="event.stopPropagation();delOpCat('+ci+')"><i class="ti ti-trash"></i></button>' : '')
+        + '<i class="ti ti-chevron-down" style="color:var(--t100);font-size:16px;margin-left:6px"></i>'
         + '</div>'
         // Corps catégorie
         + '<div id="opb'+ci+'" style="padding:16px 18px">';
 
       if (!totalItems) {
-        html += '<div style="color:var(--txl);font-size:14px;text-align:center;padding:12px">Aucune tâche - cliquez sur "Ajouter" pour commencer.</div>';
+        html += '<div style="color:var(--txl);font-size:15px;text-align:center;padding:12px">Aucune tâche - cliquez sur "Ajouter" pour commencer.</div>';
       } else {
         (cat.items||[]).forEach(function(it, ii) {
           var occs = it.occurrences || [];
@@ -1910,17 +1910,17 @@ function renderOperational() {
             // Titre tâche
             + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap">'
             + '<div style="flex:1">'
-            + '<div style="font-size:16px;font-weight:700;color:var(--tx)">'+it.title+'</div>'
+            + '<div style="font-size:17px;font-weight:700;color:var(--tx)">'+it.title+'</div>'
             + '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">'
-            + '<span style="font-size:13px;color:var(--txm)"><i class="ti ti-repeat" style="font-size:13px"></i> '+it.freqCount+'x / mois</span>'
-            + (it.responsible ? '<span style="font-size:13px;color:var(--txm)"><i class="ti ti-user" style="font-size:13px"></i> '+it.responsible+'</span>' : '')
-            + (nextOcc ? '<span style="font-size:13px;color:var(--b600);font-weight:600"><i class="ti ti-calendar-event" style="font-size:13px"></i> Prochaine : '+fmtDate(nextOcc.date)+'</span>' : '')
+            + '<span style="font-size:14px;color:var(--txm)"><i class="ti ti-repeat" style="font-size:14px"></i> '+it.freqCount+'x / mois</span>'
+            + (it.responsible ? '<span style="font-size:14px;color:var(--txm)"><i class="ti ti-user" style="font-size:14px"></i> '+it.responsible+'</span>' : '')
+            + (nextOcc ? '<span style="font-size:14px;color:var(--b600);font-weight:600"><i class="ti ti-calendar-event" style="font-size:14px"></i> Prochaine : '+fmtDate(nextOcc.date)+'</span>' : '')
             + '</div>'
             + '</div>'
             + '<div style="display:flex;align-items:center;gap:6px">'
-            + '<span style="background:'+(doneCount===occs.length&&occs.length?'var(--g50)':'var(--b50)')+';color:'+(doneCount===occs.length&&occs.length?'var(--g700)':'var(--b800)')+';border-radius:20px;padding:3px 12px;font-size:13px;font-weight:600">'+doneCount+'/'+occs.length+'</span>'
-            + (ce ? '<button style="background:var(--r50);border:1px solid var(--r400);color:var(--r700);border-radius:var(--rsm);padding:3px 8px;cursor:pointer;font-size:13px" onclick="delOpI('+ci+','+ii+')"><i class="ti ti-trash"></i></button>' : '')
-            + (it.responsible ? '<button class="bg_ bgb" style="font-size:13px" onclick="notifyOpTask('+ci+','+ii+')"><i class="ti ti-mail"></i> Notifier</button>' : '')
+            + '<span style="background:'+(doneCount===occs.length&&occs.length?'var(--g50)':'var(--b50)')+';color:'+(doneCount===occs.length&&occs.length?'var(--g700)':'var(--b800)')+';border-radius:20px;padding:3px 12px;font-size:14px;font-weight:600">'+doneCount+'/'+occs.length+'</span>'
+            + (ce ? '<button style="background:var(--r50);border:1px solid var(--r400);color:var(--r700);border-radius:var(--rsm);padding:3px 8px;cursor:pointer;font-size:14px" onclick="delOpI('+ci+','+ii+')"><i class="ti ti-trash"></i></button>' : '')
+            + (it.responsible ? '<button class="bg_ bgb" style="font-size:14px" onclick="notifyOpTask('+ci+','+ii+')"><i class="ti ti-mail"></i> Notifier</button>' : '')
             + '</div>'
             + '</div>'
             // Occurrences
@@ -1937,13 +1937,13 @@ function renderOperational() {
               + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
               + '<input type="checkbox" '+(occ.done?'checked':'')+' '+(occ.done?'disabled':'')+' onchange="toggleOpOcc('+ci+','+ii+','+oi+',this.checked)" style="width:18px;height:18px;accent-color:var(--t500);flex-shrink:0;cursor:pointer">'
               + '<div style="flex:1">'
-              + '<div style="font-size:14px;font-weight:600;color:'+(occ.done?'var(--g700)':isUrgent?'var(--r700)':'var(--tx)')+'">Occurrence '+(oi+1)+'</div>'
-              + '<div style="font-size:13px;color:var(--txm)">'+fmtDate(occ.date)+'</div>'
+              + '<div style="font-size:15px;font-weight:600;color:'+(occ.done?'var(--g700)':isUrgent?'var(--r700)':'var(--tx)')+'">Occurrence '+(oi+1)+'</div>'
+              + '<div style="font-size:14px;color:var(--txm)">'+fmtDate(occ.date)+'</div>'
               + '</div>'
               + '</div>'
-              + (occ.done ? '<div style="font-size:13px;color:var(--g700);font-weight:500"><i class="ti ti-circle-check"></i> Effectuée le '+fmtDate(occ.doneAt)+'</div>' : '')
-              + (isUrgent ? '<div style="font-size:13px;color:var(--r700);font-weight:700"><i class="ti ti-alarm"></i> '+( daysLeft <= 0 ? 'Aujourd\'hui !' : 'Demain !')+'</div>' : '')
-              + (isWarning ? '<div style="font-size:13px;color:var(--a700);font-weight:600"><i class="ti ti-clock"></i> Dans '+daysLeft+' jour(s)</div>' : '')
+              + (occ.done ? '<div style="font-size:14px;color:var(--g700);font-weight:500"><i class="ti ti-circle-check"></i> Effectuée le '+fmtDate(occ.doneAt)+'</div>' : '')
+              + (isUrgent ? '<div style="font-size:14px;color:var(--r700);font-weight:700"><i class="ti ti-alarm"></i> '+( daysLeft <= 0 ? 'Aujourd\'hui !' : 'Demain !')+'</div>' : '')
+              + (isWarning ? '<div style="font-size:14px;color:var(--a700);font-weight:600"><i class="ti ti-clock"></i> Dans '+daysLeft+' jour(s)</div>' : '')
               + '</div>';
           });
 
@@ -2248,15 +2248,15 @@ function renderReports() {
     + '<div class="ftitle"><i class="ti ti-adjustments"></i> Paramètres du rapport</div>'
     + '<div class="fg" style="margin-bottom:12px">'
     + '<div class="fi"><label>Type de période</label>'
-    + '<select id="rpt-period" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;background:var(--sf);color:var(--tx)">'
+    + '<select id="rpt-period" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;background:var(--sf);color:var(--tx)">'
     + '<option value="weekly"'+(periodType==='weekly'?' selected':'')+'>Hebdomadaire</option>'
     + '<option value="monthly"'+(periodType==='monthly'?' selected':'')+'>Mensuel</option>'
     + '<option value="quarterly"'+(periodType==='quarterly'?' selected':'')+'>Trimestriel</option>'
     + '<option value="annual"'+(periodType==='annual'?' selected':'')+'>Annuel</option>'
     + '<option value="custom"'+(periodType==='custom'?' selected':'')+'>Personnalisé</option>'
     + '</select></div>'
-    + '<div class="fi"><label>Du</label><input type="date" id="rpt-from" value="'+dateFrom+'" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit"></div>'
-    + '<div class="fi"><label>Au</label><input type="date" id="rpt-to" value="'+dateTo+'" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit"></div>'
+    + '<div class="fi"><label>Du</label><input type="date" id="rpt-from" value="'+dateFrom+'" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit"></div>'
+    + '<div class="fi"><label>Au</label><input type="date" id="rpt-to" value="'+dateTo+'" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit"></div>'
     + '</div>'
     + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'
     + '<button class="bp" onclick="window.print()"><i class="ti ti-printer"></i> Imprimer / PDF</button>'
@@ -2266,10 +2266,10 @@ function renderReports() {
 
   // ── EN-TÊTE ──
   html += '<div style="background:linear-gradient(135deg,var(--t900),var(--t700));border-radius:var(--rlg);padding:16px 20px;margin-bottom:18px;color:white">'
-    + '<div style="font-size:13px;opacity:.7;text-transform:uppercase">'+TEAM+'</div>'
-    + '<div style="font-size:18px;font-weight:700;margin-top:2px">'+periodLabel+'</div>'
-    + '<div style="font-size:13px;opacity:.7;margin-top:4px">Du '+dfLabel+' au '+dtLabel+'</div>'
-    + '<div style="font-size:13px;opacity:.6;margin-top:2px">Généré le '+now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</div>'
+    + '<div style="font-size:14px;opacity:.7;text-transform:uppercase">'+TEAM+'</div>'
+    + '<div style="font-size:19px;font-weight:700;margin-top:2px">'+periodLabel+'</div>'
+    + '<div style="font-size:14px;opacity:.7;margin-top:4px">Du '+dfLabel+' au '+dtLabel+'</div>'
+    + '<div style="font-size:14px;opacity:.6;margin-top:2px">Généré le '+now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</div>'
     + '</div>';
 
   // ── KPIs ──
@@ -2279,15 +2279,15 @@ function renderReports() {
     + '<div class="stc"><div class="stn" style="color:var(--r400)">'+blocked+'</div><div class="stl">Bloquées</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--g700)">'+done+'</div><div class="stl">Terminées</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--a700)">'+rptCuts.length+'</div><div class="stl">Coupures</div>'
-    + (cMin>0?'<div style="font-size:13px;color:var(--txl)">'+Math.floor(cMin/60)+'h'+(cMin%60?cMin%60+'min':'')+'</div>':'')
+    + (cMin>0?'<div style="font-size:14px;color:var(--txl)">'+Math.floor(cMin/60)+'h'+(cMin%60?cMin%60+'min':'')+'</div>':'')
     + '</div>'
     + '<div class="stc"><div class="stn" style="color:var(--p600)">'+rptObservations.length+'</div><div class="stl">Observations</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--g700)">'+rptOpDone.length+'</div><div class="stl">Op. réalisées</div></div>'
     + '</div>';
 
   // ── CHARGE PAR MEMBRE ──
-  html += '<div class="sect" style="margin-bottom:12px;font-size:15px"><i class="ti ti-users"></i> Charge par membre</div>'
-    + '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px">'
+  html += '<div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-users"></i> Charge par membre</div>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:15px;margin-bottom:18px">'
     + '<thead><tr style="background:var(--t500);color:white">'
     + '<th style="padding:8px 12px;text-align:left">Membre</th>'
     + '<th style="padding:8px 12px;text-align:center">Total</th>'
@@ -2306,14 +2306,14 @@ function renderReports() {
       + '<td style="padding:8px 12px;text-align:center;color:var(--r400)">'+s.blocked+'</td>'
       + '<td style="padding:8px 12px"><div style="display:flex;align-items:center;gap:6px">'
       + '<div style="flex:1;height:6px;background:var(--n100);border-radius:4px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+(pct===100?'var(--g700)':'var(--t500)')+'"></div></div>'
-      + '<span style="font-size:13px;color:var(--txm)">'+pct+'%</span></div></td>'
+      + '<span style="font-size:14px;color:var(--txm)">'+pct+'%</span></div></td>'
       + '</tr>';
   });
   html += '</tbody></table>';
 
   // ── LISTE DES TÂCHES ──
-  html += '<div class="sect" style="margin-bottom:12px;font-size:15px"><i class="ti ti-list-check"></i> Détail des tâches</div>'
-    + '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px">'
+  html += '<div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-list-check"></i> Détail des tâches</div>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px">'
     + '<thead><tr style="background:var(--t500);color:white">'
     + '<th style="padding:7px 10px;text-align:left">Tâche</th>'
     + '<th style="padding:7px 10px;text-align:left">Assigné à</th>'
@@ -2330,14 +2330,14 @@ function renderReports() {
   }).forEach(function(t,i){
     html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
       + '<td style="padding:7px 10px"><strong>'+t.title+'</strong>'
-      + (t.blocker?'<div style="color:var(--r700);font-size:13px;margin-top:2px"><i class="ti ti-alert-triangle"></i> '+t.blocker+'</div>':'')
+      + (t.blocker?'<div style="color:var(--r700);font-size:14px;margin-top:2px"><i class="ti ti-alert-triangle"></i> '+t.blocker+'</div>':'')
       + '</td>'
       + '<td style="padding:7px 10px">'+(t.members||[]).join(', ')+'</td>'
       + '<td style="padding:7px 10px;text-align:center">'+((t.priority||0)>0?prioBadge(t.priority):'-')+'</td>'
       + '<td style="padding:7px 10px;text-align:center">'+(t.pct||0)+'%</td>'
       + '<td style="padding:7px 10px;text-align:center"><span class="bdg '+SC[t.status]+'">'+SL[t.status]+'</span></td>'
       + '<td class="no-print" style="padding:7px 10px;text-align:center">'
-      + '<button class="bg_ bgd" style="font-size:13px;padding:3px 8px" onclick="rptExclude('+t.id+')"><i class="ti ti-eye-off"></i> Exclure</button>'
+      + '<button class="bg_ bgd" style="font-size:14px;padding:3px 8px" onclick="rptExclude('+t.id+')"><i class="ti ti-eye-off"></i> Exclure</button>'
       + '</td>'
       + '</tr>';
   });
@@ -2345,8 +2345,8 @@ function renderReports() {
 
   // ── PRÉSENCES ──
   if (presences.length) {
-    html += '<div class="sect" style="margin-bottom:12px;font-size:15px"><i class="ti ti-map-pin"></i> Présences</div>'
-      + '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px">'
+    html += '<div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-map-pin"></i> Présences</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px">'
       + '<thead><tr style="background:var(--t500);color:white">'
       + '<th style="padding:7px 10px">Membre</th>'
       + '<th style="padding:7px 10px;text-align:center">Statut</th>'
@@ -2362,8 +2362,8 @@ function renderReports() {
 
   // ── ABSENCES ──
   if (rptAbsences.length) {
-    html += '<div class="sect" style="margin-bottom:12px;font-size:15px"><i class="ti ti-calendar-off"></i> Absences</div>'
-      + '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px">'
+    html += '<div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-calendar-off"></i> Absences</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px">'
       + '<thead><tr style="background:var(--t500);color:white">'
       + '<th style="padding:7px 10px">Membre</th><th style="padding:7px 10px">Du</th>'
       + '<th style="padding:7px 10px">Au</th><th style="padding:7px 10px">Motif</th>'
@@ -2376,7 +2376,7 @@ function renderReports() {
         + '<td style="padding:7px 10px">'+fmtDate(a.to)+'</td>'
         + '<td style="padding:7px 10px">'+a.reason+'</td>'
         + '<td class="no-print" style="padding:7px 10px;text-align:center">'
-        + '<button class="bg_ bgd" style="font-size:13px;padding:3px 8px" onclick="rptExclude(\'abs_'+a.id+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
+        + '<button class="bg_ bgd" style="font-size:14px;padding:3px 8px" onclick="rptExclude(\'abs_'+a.id+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
         + '</td>'
         + '</tr>';
     });
@@ -2385,8 +2385,8 @@ function renderReports() {
 
   // ── OBSERVATIONS ──
   if (rptObservations.length) {
-    html += '<div class="sect" style="margin-bottom:12px;font-size:15px"><i class="ti ti-notes"></i> Observations</div>'
-      + '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px">'
+    html += '<div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-notes"></i> Observations</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px">'
       + '<thead><tr style="background:var(--t500);color:white">'
       + '<th style="padding:7px 10px">Date</th><th style="padding:7px 10px">Auteur</th>'
       + '<th style="padding:7px 10px">Catégorie</th><th style="padding:7px 10px">Observation</th>'
@@ -2399,7 +2399,7 @@ function renderReports() {
         + '<td style="padding:7px 10px">'+o.category+'</td>'
         + '<td style="padding:7px 10px">'+o.text+'</td>'
         + '<td class="no-print" style="padding:7px 10px;text-align:center">'
-        + '<button class="bg_ bgd" style="font-size:13px;padding:3px 8px" onclick="rptExclude(\'obs_'+o.id+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
+        + '<button class="bg_ bgd" style="font-size:14px;padding:3px 8px" onclick="rptExclude(\'obs_'+o.id+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
         + '</td>'
         + '</tr>';
     });
@@ -2408,8 +2408,8 @@ function renderReports() {
 
   // ── TÂCHES OPÉRATIONNELLES RÉALISÉES ──
   if (rptOpDone.length) {
-    html += '<div class="sect" style="margin-bottom:12px;font-size:15px"><i class="ti ti-clipboard-check" style="color:var(--g700)"></i> Tâches opérationnelles réalisées</div>'
-      + '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px">'
+    html += '<div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-clipboard-check" style="color:var(--g700)"></i> Tâches opérationnelles réalisées</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px">'
       + '<thead><tr style="background:var(--t500);color:white">'
       + '<th style="padding:7px 10px;text-align:left">Catégorie</th>'
       + '<th style="padding:7px 10px;text-align:left">Tâche</th>'
@@ -2420,13 +2420,13 @@ function renderReports() {
       + '</tr></thead><tbody>';
     rptOpDone.forEach(function(it,i){
       html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
-        + '<td style="padding:7px 10px"><span style="background:var(--t50);color:var(--t700);border-radius:20px;padding:2px 8px;font-size:13px;font-weight:600"><i class="ti ti-folder" style="font-size:11px"></i> '+it.cat+'</span></td>'
+        + '<td style="padding:7px 10px"><span style="background:var(--t50);color:var(--t700);border-radius:20px;padding:2px 8px;font-size:14px;font-weight:600"><i class="ti ti-folder" style="font-size:12px"></i> '+it.cat+'</span></td>'
         + '<td style="padding:7px 10px"><strong>'+it.title+'</strong></td>'
         + '<td style="padding:7px 10px;text-align:center">'+it.freqCount+'x</td>'
         + '<td style="padding:7px 10px">'+(it.responsible?av(it.responsible,'avxs')+' '+it.responsible:'-')+'</td>'
         + '<td style="padding:7px 10px;text-align:center">'+(it.doneAt?fmtDate(it.doneAt):'-')+'</td>'
         + '<td class="no-print" style="padding:7px 10px;text-align:center">'
-        + '<button class="bg_ bgd" style="font-size:13px;padding:3px 8px" onclick="rptExclude(\'op_'+it.cat.replace(/'/g,'')+'_'+it.title.replace(/'/g,'')+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
+        + '<button class="bg_ bgd" style="font-size:14px;padding:3px 8px" onclick="rptExclude(\'op_'+it.cat.replace(/'/g,'')+'_'+it.title.replace(/'/g,'')+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
         + '</td>'
         + '</tr>';
     });
@@ -2531,7 +2531,7 @@ function renderTrash() {
   if (!trashedTasks.length) {
     html += '<div class="empty"><i class="ti ti-trash"></i>La corbeille est vide</div>';
   } else {
-    html += '<div style="background:var(--r50);border:1px solid var(--r400);border-radius:var(--rmd);padding:10px 14px;margin-bottom:14px;font-size:14px;color:var(--r700)">'
+    html += '<div style="background:var(--r50);border:1px solid var(--r400);border-radius:var(--rmd);padding:10px 14px;margin-bottom:14px;font-size:15px;color:var(--r700)">'
       + '<i class="ti ti-info-circle"></i> Les tâches sont supprimées définitivement après 7 jours.</div>';
 
     trashedTasks.forEach(function(t) {
@@ -2543,15 +2543,15 @@ function renderTrash() {
       }
       var chips = (t.members||[]).map(function(m) {
         var col = mc(m);
-        return '<span style="display:inline-flex;align-items:center;gap:4px;background:' + col.bg + ';color:' + col.fg + ';border-radius:20px;padding:3px 9px;font-size:13px;">' + av(m,'avxs') + ' ' + m + '</span>';
+        return '<span style="display:inline-flex;align-items:center;gap:4px;background:' + col.bg + ';color:' + col.fg + ';border-radius:20px;padding:3px 9px;font-size:14px;">' + av(m,'avxs') + ' ' + m + '</span>';
       }).join('');
 
       html += '<div class="csm" style="opacity:0.85">'
         + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap">'
-        + '<div style="flex:1"><strong style="font-size:15px">' + t.title + '</strong>'
+        + '<div style="flex:1"><strong style="font-size:16px">' + t.title + '</strong>'
         + '<div class="meta" style="margin-top:2px">Supprimée le ' + fmtDate(t.trashedAt) + ' · <span style="color:var(--r700);font-weight:500">Expire dans ' + daysLeft + ' jour' + (daysLeft > 1 ? 's' : '') + '</span></div>'
         + '</div>'
-        + '<span class="bdg" style="background:var(--r50);color:var(--r700)"><i class="ti ti-trash" style="font-size:11px"></i> Corbeille</span>'
+        + '<span class="bdg" style="background:var(--r50);color:var(--r700)"><i class="ti ti-trash" style="font-size:12px"></i> Corbeille</span>'
         + '</div>'
         + '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">' + chips + '</div>'
         + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">'
@@ -2605,7 +2605,7 @@ function renderObservations() {
     + '<div class="ftitle"><i class="ti ti-pencil"></i> Nouvelle observation</div>'
     + '<div class="fi" style="margin-bottom:10px">'
     + '<label>Catégorie</label>'
-    + '<select id="obs-cat" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;background:var(--sf);color:var(--tx)">'
+    + '<select id="obs-cat" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;background:var(--sf);color:var(--tx)">'
     + '<option value="Visite">Visite</option>'
     + '<option value="Imprévu">Imprévu</option>'
     + '<option value="Réunion non planifiée">Réunion non planifiée</option>'
@@ -2616,7 +2616,7 @@ function renderObservations() {
     + '</div>'
     + '<div class="fi" style="margin-bottom:14px">'
     + '<label>Observation *</label>'
-    + '<textarea id="obs-text" rows="3" placeholder="Décrivez l\'observation, l\'imprévu, la visite…" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;resize:vertical"></textarea>'
+    + '<textarea id="obs-text" rows="3" placeholder="Décrivez l\'observation, l\'imprévu, la visite…" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;resize:vertical"></textarea>'
     + '</div>'
     + '<button class="bp" onclick="addObservation()"><i class="ti ti-plus"></i> Enregistrer l\'observation</button>'
     + '</div>';
@@ -2634,7 +2634,7 @@ function renderObservations() {
 
     // Afficher du plus récent au plus ancien
     Object.keys(grouped).sort(function(a,b){ return b.localeCompare(a); }).forEach(function(date) {
-      html += '<div style="margin-bottom:6px;font-size:13px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;padding:6px 0;border-bottom:1px solid var(--bd);margin-top:16px">'
+      html += '<div style="margin-bottom:6px;font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;padding:6px 0;border-bottom:1px solid var(--bd);margin-top:16px">'
         + '<i class="ti ti-calendar" style="color:var(--t500)"></i> ' + fmtDate(date)
         + '</div>';
 
@@ -2645,14 +2645,14 @@ function renderObservations() {
           + '<span class="av avsm" style="background:' + c.bg + ';color:' + c.fg + ';flex-shrink:0">' + ini(o.author) + '</span>'
           + '<div style="flex:1">'
           + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">'
-          + '<strong style="font-size:14px">' + o.author + '</strong>'
-          + '<span class="bdg" style="background:var(--b50);color:var(--b800);font-size:11px">' + o.category + '</span>'
-          + '<span class="meta" style="font-size:13px">' + o.time + '</span>'
+          + '<strong style="font-size:15px">' + o.author + '</strong>'
+          + '<span class="bdg" style="background:var(--b50);color:var(--b800);font-size:12px">' + o.category + '</span>'
+          + '<span class="meta" style="font-size:14px">' + o.time + '</span>'
           + '</div>'
-          + '<div style="font-size:14px;color:var(--tx);line-height:1.6">' + o.text + '</div>'
+          + '<div style="font-size:15px;color:var(--tx);line-height:1.6">' + o.text + '</div>'
           + '</div>'
           + (isAdmin() || o.author === currentUser.name
-            ? '<button class="bg_ bgd" style="font-size:13px;padding:3px 8px;flex-shrink:0" onclick="deleteObservation(' + o.id + ')"><i class="ti ti-trash"></i></button>'
+            ? '<button class="bg_ bgd" style="font-size:14px;padding:3px 8px;flex-shrink:0" onclick="deleteObservation(' + o.id + ')"><i class="ti ti-trash"></i></button>'
             : '')
           + '</div>'
           + '</div>';
@@ -2703,8 +2703,8 @@ function renderMySpace() {
   if (isAdmin() || isChef()) {
     var activeMembers = accounts.filter(function(a){ return a.active !== false; });
     selectorHtml = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">'
-      + '<span style="font-size:14px;color:var(--txm);font-weight:500"><i class="ti ti-eye"></i> Consulter l\'espace de :</span>'
-      + '<select id="myspace-member-select" onchange="renderMySpace()" style="padding:7px 12px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;background:var(--sf);color:var(--tx)">'
+      + '<span style="font-size:15px;color:var(--txm);font-weight:500"><i class="ti ti-eye"></i> Consulter l\'espace de :</span>'
+      + '<select id="myspace-member-select" onchange="renderMySpace()" style="padding:7px 12px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;background:var(--sf);color:var(--tx)">'
       + activeMembers.map(function(a){
           return '<option value="'+a.name+'"'+(a.name===viewedMember?' selected':'')+'>'+a.name+(a.name===currentUser.name?' (moi)':'')+'</option>';
         }).join('')
@@ -2739,9 +2739,9 @@ function renderMySpace() {
     + '<div style="background:linear-gradient(135deg,var(--t900),var(--t700));border-radius:var(--rlg);padding:20px 24px;margin-bottom:20px;color:white;display:flex;align-items:center;gap:16px">'
     + '<span class="av avlg" style="background:'+col.bg+';color:'+col.fg+'">'+ini(viewedMember)+'</span>'
     + '<div>'
-    + '<div style="font-size:13px;opacity:.7;text-transform:uppercase;letter-spacing:.06em">'+(isOwnSpace?'Mon espace':'Espace de')+'</div>'
-    + '<div style="font-size:20px;font-weight:700;margin-top:2px">'+viewedMember+(isOwnSpace?' <span style="font-size:13px;opacity:.7">(moi)</span>':'')+'</div>'
-    + '<div style="font-size:13px;opacity:.7;margin-top:3px">'+TEAM+'</div>'
+    + '<div style="font-size:14px;opacity:.7;text-transform:uppercase;letter-spacing:.06em">'+(isOwnSpace?'Mon espace':'Espace de')+'</div>'
+    + '<div style="font-size:20px;font-weight:700;margin-top:2px">'+viewedMember+(isOwnSpace?' <span style="font-size:14px;opacity:.7">(moi)</span>':'')+'</div>'
+    + '<div style="font-size:14px;opacity:.7;margin-top:3px">'+TEAM+'</div>'
     + '</div>'
     + '</div>';
 
@@ -2768,7 +2768,7 @@ function renderMySpace() {
         + (t.status==='blocked'?'var(--r400)':t.status==='progress'?'var(--b600)':'var(--n300)')
         + '">'
         + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap">'
-        + '<div style="flex:1"><strong style="font-size:15px">'+t.title+'</strong>'
+        + '<div style="flex:1"><strong style="font-size:16px">'+t.title+'</strong>'
         + (t.date?'<div class="meta" style="margin-top:2px">Échéance : '+fmtDate(t.date)+'</div>':'')
         + '</div>'
         + '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
@@ -2785,7 +2785,7 @@ function renderMySpace() {
         + '<span class="meta" style="min-width:36px;text-align:right">'+pct+'%</span>'
         + '</div>'
         + (t.blocker?'<div class="blk"><i class="ti ti-alert-triangle"></i>'+t.blocker+'</div>':'')
-        + (t.note?'<div style="font-size:13px;color:var(--txm);margin-top:6px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm);border-left:3px solid var(--n400)"><i class="ti ti-notes" style="font-size:13px"></i> '+t.note+'</div>':'')
+        + (t.note?'<div style="font-size:14px;color:var(--txm);margin-top:6px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm);border-left:3px solid var(--n400)"><i class="ti ti-notes" style="font-size:14px"></i> '+t.note+'</div>':'')
         // Bouton Mettre à jour uniquement sur son propre espace
         + (isOwnSpace
           ? '<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="bg_" style="border-color:var(--b600);color:var(--b600)" onclick="openProgModal('+t.id+')"><i class="ti ti-edit"></i> Mettre à jour</button></div>'
@@ -2801,11 +2801,11 @@ function renderMySpace() {
     doneList.forEach(function(t) {
       html += '<div class="csm" style="opacity:0.75;border-left:4px solid var(--g700)">'
         + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'
-        + '<strong style="font-size:14px">'+t.title+'</strong>'
-        + '<span class="bdg ddn"><i class="ti ti-circle-check" style="font-size:11px"></i> Terminé</span>'
+        + '<strong style="font-size:15px">'+t.title+'</strong>'
+        + '<span class="bdg ddn"><i class="ti ti-circle-check" style="font-size:12px"></i> Terminé</span>'
         + '</div>'
         + (t.doneAt?'<div class="meta" style="margin-top:4px">Terminée le '+fmtDate(t.doneAt)+'</div>':'')
-        + (t.note?'<div style="font-size:13px;color:var(--txm);margin-top:6px;padding:6px 10px;background:var(--n50);border-radius:var(--rsm)"><i class="ti ti-notes" style="font-size:13px"></i> '+t.note+'</div>':'')
+        + (t.note?'<div style="font-size:14px;color:var(--txm);margin-top:6px;padding:6px 10px;background:var(--n50);border-radius:var(--rsm)"><i class="ti ti-notes" style="font-size:14px"></i> '+t.note+'</div>':'')
         + '</div>';
     });
   }
@@ -2816,8 +2816,8 @@ function renderMySpace() {
     myArchived.forEach(function(t) {
       html += '<div class="csm" style="opacity:0.6;border-left:4px solid var(--n400)">'
         + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'
-        + '<strong style="font-size:14px">'+t.title+'</strong>'
-        + '<span class="bdg darc"><i class="ti ti-archive" style="font-size:11px"></i> Archivée</span>'
+        + '<strong style="font-size:15px">'+t.title+'</strong>'
+        + '<span class="bdg darc"><i class="ti ti-archive" style="font-size:12px"></i> Archivée</span>'
         + '</div>'
         + (t.archivedAt?'<div class="meta" style="margin-top:4px">Archivée le '+fmtDate(t.archivedAt)+'</div>':'')
         + '</div>';
@@ -2899,17 +2899,17 @@ if (restoreSession()) {
 <div style="position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;display:none;align-items:center;justify-content:center;padding:20px" id="prog-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
   <div style="background:white;border-radius:14px;padding:24px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-      <div style="font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px"><i class="ti ti-edit" style="color:var(--t500)"></i> Mettre à jour la tâche</div>
+      <div style="font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px"><i class="ti ti-edit" style="color:var(--t500)"></i> Mettre à jour la tâche</div>
       <button onclick="document.getElementById('prog-modal').style.display='none'" style="background:transparent;border:1px solid var(--bds);border-radius:var(--rsm);padding:4px 8px;cursor:pointer;font-family:inherit"><i class="ti ti-x"></i></button>
     </div>
-    <div id="prog-task-title" style="font-size:14px;font-weight:600;padding:9px 12px;background:var(--n50);border-radius:var(--rsm);margin-bottom:14px"></div>
+    <div id="prog-task-title" style="font-size:15px;font-weight:600;padding:9px 12px;background:var(--n50);border-radius:var(--rsm);margin-bottom:14px"></div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
-      <label style="font-size:13px;color:var(--txm);font-weight:500">Avancement - <span id="prog-pct-lbl" style="color:var(--t500);font-weight:600">0%</span></label>
+      <label style="font-size:14px;color:var(--txm);font-weight:500">Avancement - <span id="prog-pct-lbl" style="color:var(--t500);font-weight:600">0%</span></label>
       <input type="range" id="prog-pct" min="0" max="100" value="0" oninput="document.getElementById('prog-pct-lbl').textContent=this.value+'%'" style="width:100%;accent-color:var(--t500)">
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
-      <label style="font-size:13px;color:var(--txm);font-weight:500">Statut</label>
-      <select id="prog-status" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit">
+      <label style="font-size:14px;color:var(--txm);font-weight:500">Statut</label>
+      <select id="prog-status" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit">
         <option value="todo">À faire</option>
         <option value="progress">En cours</option>
         <option value="blocked">Bloqué</option>
@@ -2917,16 +2917,16 @@ if (restoreSession()) {
       </select>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
-      <label style="font-size:13px;color:var(--txm);font-weight:500">Difficultés / point bloquant</label>
-      <input type="text" id="prog-blocker" placeholder="Décrire les difficultés rencontrées…" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit">
+      <label style="font-size:14px;color:var(--txm);font-weight:500">Difficultés / point bloquant</label>
+      <input type="text" id="prog-blocker" placeholder="Décrire les difficultés rencontrées…" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit">
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:18px">
-      <label style="font-size:13px;color:var(--txm);font-weight:500">Note de progression</label>
-      <textarea id="prog-note" rows="2" placeholder="Commentaire libre sur l'avancement…" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;resize:vertical"></textarea>
+      <label style="font-size:14px;color:var(--txm);font-weight:500">Note de progression</label>
+      <textarea id="prog-note" rows="2" placeholder="Commentaire libre sur l'avancement…" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;resize:vertical"></textarea>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button onclick="document.getElementById('prog-modal').style.display='none'" style="padding:7px 14px;border-radius:var(--rsm);border:1px solid var(--bds);background:transparent;font-size:14px;cursor:pointer;font-family:inherit">Annuler</button>
-      <button onclick="saveProgress()" style="padding:9px 18px;border-radius:var(--rsm);border:none;background:var(--t500);color:white;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+      <button onclick="document.getElementById('prog-modal').style.display='none'" style="padding:7px 14px;border-radius:var(--rsm);border:1px solid var(--bds);background:transparent;font-size:15px;cursor:pointer;font-family:inherit">Annuler</button>
+      <button onclick="saveProgress()" style="padding:9px 18px;border-radius:var(--rsm);border:none;background:var(--t500);color:white;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px"><i class="ti ti-device-floppy"></i> Enregistrer</button>
     </div>
   </div>
 </div>
@@ -2941,7 +2941,7 @@ if (restoreSession()) {
     <!-- Sélecteur prédéfini -->
     <div class="fi" style="margin-bottom:14px">
       <label>Type de catégorie *</label>
-      <select id="opcat-predefined" onchange="onOpcatSelect()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:14px;font-family:inherit;background:var(--sf);color:var(--tx)">
+      <select id="opcat-predefined" onchange="onOpcatSelect()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;background:var(--sf);color:var(--tx)">
         <option value="">— Choisir une catégorie —</option>
         <option value="Bulletin de Veille Multirisque">📋 Bulletin de Veille Multirisque</option>
         <option value="Bulletin de Paludisme">🦟 Bulletin de Paludisme</option>
@@ -2978,14 +2978,14 @@ if (restoreSession()) {
 
     <!-- Description toujours visible -->
     <div class="fi" style="margin-bottom:18px">
-      <label>Description <span style="font-size:13px;color:var(--txl)">(optionnelle)</span></label>
+      <label>Description <span style="font-size:14px;color:var(--txl)">(optionnelle)</span></label>
       <textarea id="opcat-desc" rows="2" placeholder="Brève description…"></textarea>
     </div>
 
     <!-- Champ nom caché utilisé pour les catégories prédéfinies -->
     <input type="hidden" id="opcat-name" value="">
 
-    <div id="opcat-err" style="color:var(--r700);font-size:13px;margin-bottom:10px;display:none"></div>
+    <div id="opcat-err" style="color:var(--r700);font-size:14px;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="bg_" onclick="closeModal('opcat-modal')">Annuler</button>
       <button class="bp" onclick="doAddOpCat()"><i class="ti ti-folder-plus"></i> Créer</button>
@@ -3000,7 +3000,7 @@ if (restoreSession()) {
       <div class="mtt"><i class="ti ti-clipboard-plus"></i> Ajouter une tâche opérationnelle</div>
       <button class="bg_" onclick="closeModal('opitem-modal')"><i class="ti ti-x"></i></button>
     </div>
-    <div style="background:var(--t50);border:1px solid var(--t100);border-radius:var(--rsm);padding:8px 12px;margin-bottom:14px;font-size:13px;color:var(--t700)">
+    <div style="background:var(--t50);border:1px solid var(--t100);border-radius:var(--rsm);padding:8px 12px;margin-bottom:14px;font-size:14px;color:var(--t700)">
       <i class="ti ti-folder"></i> Catégorie : <strong id="opitem-catname"></strong>
     </div>
     <div class="fi" style="margin-bottom:12px">
@@ -3011,7 +3011,7 @@ if (restoreSession()) {
       <div class="fi">
         <label>Nombre d'occurrences dans le mois *</label>
         <input type="number" id="opitem-freq-count" min="1" max="31" value="1" placeholder="ex : 4">
-        <span style="font-size:13px;color:var(--txl);margin-top:4px;display:block">Les dates seront réparties automatiquement jusqu'à la fin du mois</span>
+        <span style="font-size:14px;color:var(--txl);margin-top:4px;display:block">Les dates seront réparties automatiquement jusqu'à la fin du mois</span>
       </div>
       <div class="fi">
         <label>Date de début *</label>
@@ -3019,10 +3019,10 @@ if (restoreSession()) {
       </div>
     </div>
     <div class="fi" style="margin-bottom:18px">
-      <label>Responsable principal <span style="font-size:13px;color:var(--txl)">(optionnel)</span></label>
+      <label>Responsable principal <span style="font-size:14px;color:var(--txl)">(optionnel)</span></label>
       <select id="opitem-resp"></select>
     </div>
-    <div id="opitem-err" style="color:var(--r700);font-size:13px;margin-bottom:10px;display:none"></div>
+    <div id="opitem-err" style="color:var(--r700);font-size:14px;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="bg_" onclick="closeModal('opitem-modal')">Annuler</button>
       <button class="bp" onclick="doAddOpTask()"><i class="ti ti-plus"></i> Créer les occurrences</button>
