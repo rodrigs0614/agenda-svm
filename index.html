@@ -360,7 +360,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
     <button class="nav-btn" onclick="showSec('myspace',this)"><i class="ti ti-user-circle"></i> Mon espace</button>
     <button class="nav-btn" onclick="showSec('archives',this)"><i class="ti ti-archive"></i> Archives</button>
     <button class="nav-btn" onclick="showSec('trash',this)"><i class="ti ti-trash"></i> Corbeille</button>
-    <button class="nav-btn" id="nav-reports" style="display:none" onclick="showSec('reports',this)"><i class="ti ti-chart-bar"></i> Rapports</button>
+    <button class="nav-btn" id="nav-reports" style="display:none" onclick="showSec('reports',this)"><i class="ti ti-chart-bar"></i> Recapitulatifs</button>
     <button class="nav-btn" id="nav-settings" onclick="showSec('settings',this)"><i class="ti ti-settings"></i> Paramètres</button>
     <button class="nav-btn" id="nav-admin" onclick="showSec('admin',this)" style="display:none"><i class="ti ti-shield-lock"></i> Admin</button>
   </nav>
@@ -1981,23 +1981,33 @@ function addOpCat() {
   document.getElementById('opcat-custom-fields').style.display = 'none';
   document.getElementById('opcat-modal').style.display = 'flex';
 }
+
+
 function onOpcatSelect() {
   var sel = document.getElementById('opcat-predefined').value;
   var customFields = document.getElementById('opcat-custom-fields');
   var colorInput = document.getElementById('opcat-color');
+  var preview = document.getElementById('opcat-color-preview');
 
   if (sel === 'autre') {
     customFields.style.display = 'block';
     document.getElementById('opcat-name-custom').value = '';
-    colorInput.value = '#1D9E75';
+    colorInput.value = '#F4F3EE';
+    preview.style.background = '#F4F3EE';
   } else if (sel) {
     var found = OPCATS_PREDEFINED.find(function(c){ return c.name === sel; });
-    if (found) colorInput.value = found.color;
+    if (found) {
+      colorInput.value = found.color;
+      preview.style.background = found.color;
+    }
     customFields.style.display = 'none';
   } else {
     customFields.style.display = 'none';
+    colorInput.value = '#1D9E75';
+    preview.style.background = '#1D9E75';
   }
 }
+
 function notifyOpTask(ci, ii) {
   var cat = opTasks[ci];
   var it = cat.items[ii];
@@ -2063,19 +2073,23 @@ function addOpTask(ci) {
   document.getElementById('opitem-title').value = '';
   document.getElementById('opitem-freq-count').value = '1';
   document.getElementById('opitem-startdate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('opitem-resp').value = '';
   document.getElementById('opitem-err').style.display = 'none';
   document.getElementById('opitem-catname').textContent = opTasks[ci].name;
+  // Pré-remplir couleur avec celle de la catégorie
+  var catColor = opTasks[ci].color || '#F4F3EE';
+  // Convertir la couleur foncée en version claire pour le fond
+  document.getElementById('opitem-color').value = catColor;
   var sel = document.getElementById('opitem-resp');
-  sel.innerHTML = '<option value="">- Optionnel -</option>';
+  sel.innerHTML = '<option value="">— Optionnel —</option>';
   accounts.filter(function(a){ return a.active !== false; }).forEach(function(a) {
     var o = document.createElement('option');
     o.value = a.name; o.textContent = a.name;
     sel.appendChild(o);
   });
-  document.getElementById('opitem-color').value = '#F4F3EE';
   document.getElementById('opitem-modal').style.display = 'flex';
 }
-
+  
 function doAddOpTask() {
   var title = document.getElementById('opitem-title').value.trim();
   var count = parseInt(document.getElementById('opitem-freq-count').value) || 1;
@@ -2172,12 +2186,12 @@ function renderReports() {
   }
 
   var periodLabel = {
-    weekly: 'Rapport hebdomadaire',
-    monthly: 'Rapport mensuel',
-    quarterly: 'Rapport trimestriel',
-    annual: 'Rapport annuel',
-    custom: 'Rapport personnalisé'
-  }[periodType] || 'Rapport';
+    weekly: 'Recapitulatif hebdomadaire',
+    monthly: 'Recapitulatif mensuel',
+    quarterly: 'Recapitulatif trimestriel',
+    annual: 'Recapitulatif annuel',
+    custom: 'Recapitulatif personnalisé'
+  }[periodType] || 'Recapitulatif';
 
   var dfLabel = new Date(dateFrom).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
   var dtLabel = new Date(dateTo).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
@@ -2245,7 +2259,7 @@ function renderReports() {
 
   // ── PANNEAU DE CONTRÔLE ──
   html += '<div class="card no-print" style="margin-bottom:16px">'
-    + '<div class="ftitle"><i class="ti ti-adjustments"></i> Paramètres du rapport</div>'
+    + '<div class="ftitle"><i class="ti ti-adjustments"></i> Paramètres du recapitulatif</div>'
     + '<div class="fg" style="margin-bottom:12px">'
     + '<div class="fi"><label>Type de période</label>'
     + '<select id="rpt-period" onchange="renderReports()" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;background:var(--sf);color:var(--tx)">'
@@ -2278,8 +2292,12 @@ function renderReports() {
     + '<div class="stc"><div class="stn" style="color:var(--b600)">'+inprog+'</div><div class="stl">En cours</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--r400)">'+blocked+'</div><div class="stl">Bloquées</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--g700)">'+done+'</div><div class="stl">Terminées</div></div>'
-    + '<div class="stc"><div class="stn" style="color:var(--a700)">'+rptCuts.length+'</div><div class="stl">Coupures</div>'
-    + (cMin>0?'<div style="font-size:14px;color:var(--txl)">'+Math.floor(cMin/60)+'h'+(cMin%60?cMin%60+'min':'')+'</div>':'')
+    + '<div class="stc"><div class="stn" style="color:var(--a700)">'+rptCuts.length+'</div><div class="stl">Incidents</div>'
+    + '<div style="font-size:10px;color:var(--txl);margin-top:2px">'
+    + '⚡ '+rptCuts.filter(function(c){return c.type!=='internet';}).length
+    + ' · 🌐 '+rptCuts.filter(function(c){return c.type==='internet';}).length
+    + '</div>'
+    + (cMin>0?'<div style="font-size:11px;color:var(--txl)">'+Math.floor(cMin/60)+'h'+(cMin%60?cMin%60+'min':'')+'</div>':'')
     + '</div>'
     + '<div class="stc"><div class="stn" style="color:var(--p600)">'+rptObservations.length+'</div><div class="stl">Observations</div></div>'
     + '<div class="stc"><div class="stn" style="color:var(--g700)">'+rptOpDone.length+'</div><div class="stl">Op. réalisées</div></div>'
@@ -2382,7 +2400,42 @@ function renderReports() {
     });
     html += '</tbody></table>';
   }
+// ── INFRASTRUCTURE (COUPURES) ──
+  if (rptCuts.length) {
+    html += '<div class="sect" style="margin-bottom:12px;font-size:14px"><i class="ti ti-building-community"></i> Incidents infrastructure</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px">'
+      + '<thead><tr style="background:var(--t500);color:white">'
+      + '<th style="padding:7px 10px">Type</th>'
+      + '<th style="padding:7px 10px">Date</th>'
+      + '<th style="padding:7px 10px;text-align:center">Début</th>'
+      + '<th style="padding:7px 10px;text-align:center">Fin</th>'
+      + '<th style="padding:7px 10px;text-align:center">Durée</th>'
+      + '<th style="padding:7px 10px">Note</th>'
+      + '<th class="no-print" style="padding:7px 10px;text-align:center">Action</th>'
+      + '</tr></thead><tbody>';
 
+    rptCuts.forEach(function(c, i) {
+      var isNet = c.type === 'internet';
+      var dur = c.end ? calcDur(c.start, c.end) : null;
+      html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
+        + '<td style="padding:7px 10px">'
+        + '<span style="display:inline-flex;align-items:center;gap:5px;font-weight:600;color:'+(isNet?'var(--b600)':'var(--r700)')+'">'
+        + '<i class="ti '+(isNet?'ti-wifi-off':'ti-bolt-off')+'"></i>'
+        + (isNet ? 'Internet' : 'Électricité')
+        + '</span></td>'
+        + '<td style="padding:7px 10px">'+fmtDate(c.date)+'</td>'
+        + '<td style="padding:7px 10px;text-align:center">'+c.start+'</td>'
+        + '<td style="padding:7px 10px;text-align:center">'+(c.end||'<span style="color:var(--r400)">En cours</span>')+'</td>'
+        + '<td style="padding:7px 10px;text-align:center">'+(dur||'—')+'</td>'
+        + '<td style="padding:7px 10px">'+(c.note||'—')+'</td>'
+        + '<td class="no-print" style="padding:7px 10px;text-align:center">'
+        + '<button class="bg_ bgd" style="font-size:11px;padding:3px 8px" onclick="rptExclude(\'cut_'+c.id+'\')"><i class="ti ti-eye-off"></i> Exclure</button>'
+        + '</td>'
+        + '</tr>';
+    });
+
+    html += '</tbody></table>';
+  }
   // ── OBSERVATIONS ──
   if (rptObservations.length) {
     html += '<div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-notes"></i> Observations</div>'
@@ -2446,7 +2499,7 @@ var ALL_PERMS=[
   {id:'manage_absences',label:'Gerer les absences'},
   {id:'manage_cuts',label:'Gerer les coupures'},
   {id:'manage_operational',label:'Gerer les taches operationnelles'},
-  {id:'view_reports',label:'Acceder aux rapports'},
+  {id:'view_reports',label:'Acceder aux Recapitulatifs'},
   {id:'reset_passwords',label:'Reinitialiser les mots de passe'}
 ];
 
@@ -2878,6 +2931,11 @@ function dismissOpAlert(key) {
   renderOperational();
   showToast('Alerte fermée.');
 }
+
+function setOpColor(prefix, color) {
+  document.getElementById(prefix+'-color').value = color;
+  document.getElementById(prefix+'-color-preview').style.background = color;
+}
   
 // ═══════════════════════════════════════════════════════
 // BOOT
@@ -2956,26 +3014,68 @@ if (restoreSession()) {
     <div id="opcat-custom-fields" style="display:none">
       <div class="fi" style="margin-bottom:12px">
         <label>Nom de la catégorie *</label>
-        <input type="text" id="opcat-name-custom" placeholder="Ex : Rapport spécial…">
+        <input type="text" id="opcat-name-custom" placeholder="Ex : Recapitulatif spécial…">
       </div>
     </div>
 
-    <!-- Couleur toujours visible -->
-    <div class="fi" style="margin-bottom:12px">
-      <label>Couleur de surbrillance du bloc</label>
-      <div style="display:flex;align-items:center;gap:10px">
-        <input type="color" id="opcat-color" value="#1D9E75" style="width:48px;height:36px;padding:2px;border:1px solid var(--bds);border-radius:var(--rsm);cursor:pointer;background:white">
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <span onclick="document.getElementById('opcat-color').value='#1D9E75'" style="width:22px;height:22px;border-radius:50%;background:#1D9E75;cursor:pointer" title="Vert"></span>
-          <span onclick="document.getElementById('opcat-color').value='#185FA5'" style="width:22px;height:22px;border-radius:50%;background:#185FA5;cursor:pointer" title="Bleu"></span>
-          <span onclick="document.getElementById('opcat-color').value='#A32D2D'" style="width:22px;height:22px;border-radius:50%;background:#A32D2D;cursor:pointer" title="Rouge"></span>
-          <span onclick="document.getElementById('opcat-color').value='#854F0B'" style="width:22px;height:22px;border-radius:50%;background:#854F0B;cursor:pointer" title="Orange"></span>
-          <span onclick="document.getElementById('opcat-color').value='#534AB7'" style="width:22px;height:22px;border-radius:50%;background:#534AB7;cursor:pointer" title="Violet"></span>
-          <span onclick="document.getElementById('opcat-color').value='#3B6D11'" style="width:22px;height:22px;border-radius:50%;background:#3B6D11;cursor:pointer" title="Vert foncé"></span>
-        </div>
-      </div>
-    </div>
 
+  <div class="fi" style="margin-bottom:18px">
+  <label>Couleur de fond</label>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+    <input type="color" id="opcat-color" value="#1D9E75" 
+      oninput="document.getElementById('opcat-color-preview').style.background=this.value"
+      style="width:48px;height:36px;padding:2px;border:1px solid var(--bds);border-radius:var(--rsm);cursor:pointer">
+    <div id="opcat-color-preview" style="flex:1;height:36px;border-radius:var(--rsm);background:#1D9E75;transition:background 0.2s;border:1px solid var(--bds)"></div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:5px">
+    <!-- Verts -->
+    <span onclick="setOpColor('opcat','#E1F5EE')" style="width:24px;height:24px;border-radius:4px;background:#E1F5EE;cursor:pointer;border:1px solid #ccc" title="#E1F5EE"></span>
+    <span onclick="setOpColor('opcat','#9FE1CB')" style="width:24px;height:24px;border-radius:4px;background:#9FE1CB;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#1D9E75')" style="width:24px;height:24px;border-radius:4px;background:#1D9E75;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#0F6E56')" style="width:24px;height:24px;border-radius:4px;background:#0F6E56;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#EAF3DE')" style="width:24px;height:24px;border-radius:4px;background:#EAF3DE;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#3B6D11')" style="width:24px;height:24px;border-radius:4px;background:#3B6D11;cursor:pointer;border:1px solid #ccc"></span>
+    <!-- Bleus -->
+    <span onclick="setOpColor('opcat','#E6F1FB')" style="width:24px;height:24px;border-radius:4px;background:#E6F1FB;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#185FA5')" style="width:24px;height:24px;border-radius:4px;background:#185FA5;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#0C447C')" style="width:24px;height:24px;border-radius:4px;background:#0C447C;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#CCDFF5')" style="width:24px;height:24px;border-radius:4px;background:#CCDFF5;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#7BAFD4')" style="width:24px;height:24px;border-radius:4px;background:#7BAFD4;cursor:pointer;border:1px solid #ccc"></span>
+    <!-- Rouges -->
+    <span onclick="setOpColor('opcat','#FCEBEB')" style="width:24px;height:24px;border-radius:4px;background:#FCEBEB;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#E24B4A')" style="width:24px;height:24px;border-radius:4px;background:#E24B4A;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#A32D2D')" style="width:24px;height:24px;border-radius:4px;background:#A32D2D;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#F5B8B8')" style="width:24px;height:24px;border-radius:4px;background:#F5B8B8;cursor:pointer;border:1px solid #ccc"></span>
+    <!-- Oranges -->
+    <span onclick="setOpColor('opcat','#FAEEDA')" style="width:24px;height:24px;border-radius:4px;background:#FAEEDA;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#FAC775')" style="width:24px;height:24px;border-radius:4px;background:#FAC775;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#854F0B')" style="width:24px;height:24px;border-radius:4px;background:#854F0B;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#F4A460')" style="width:24px;height:24px;border-radius:4px;background:#F4A460;cursor:pointer;border:1px solid #ccc"></span>
+    <!-- Violets -->
+    <span onclick="setOpColor('opcat','#EEEDFE')" style="width:24px;height:24px;border-radius:4px;background:#EEEDFE;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#534AB7')" style="width:24px;height:24px;border-radius:4px;background:#534AB7;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#3C3489')" style="width:24px;height:24px;border-radius:4px;background:#3C3489;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#C9B8F5')" style="width:24px;height:24px;border-radius:4px;background:#C9B8F5;cursor:pointer;border:1px solid #ccc"></span>
+    <!-- Roses -->
+    <span onclick="setOpColor('opcat','#FBEAF0')" style="width:24px;height:24px;border-radius:4px;background:#FBEAF0;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#F06292')" style="width:24px;height:24px;border-radius:4px;background:#F06292;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#AD1457')" style="width:24px;height:24px;border-radius:4px;background:#AD1457;cursor:pointer;border:1px solid #ccc"></span>
+    <!-- Jaunes -->
+    <span onclick="setOpColor('opcat','#FFFDE7')" style="width:24px;height:24px;border-radius:4px;background:#FFFDE7;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#FFF176')" style="width:24px;height:24px;border-radius:4px;background:#FFF176;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#F9A825')" style="width:24px;height:24px;border-radius:4px;background:#F9A825;cursor:pointer;border:1px solid #ccc"></span>
+    <!-- Gris/Neutres -->
+    <span onclick="setOpColor('opcat','#FFFFFF')" style="width:24px;height:24px;border-radius:4px;background:#FFFFFF;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#F4F3EE')" style="width:24px;height:24px;border-radius:4px;background:#F4F3EE;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#E8E7DF')" style="width:24px;height:24px;border-radius:4px;background:#E8E7DF;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#888780')" style="width:24px;height:24px;border-radius:4px;background:#888780;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#1A1A18')" style="width:24px;height:24px;border-radius:4px;background:#1A1A18;cursor:pointer;border:1px solid #ccc"></span>
+    <!-- Teals/Cyans -->
+    <span onclick="setOpColor('opcat','#E0F7FA')" style="width:24px;height:24px;border-radius:4px;background:#E0F7FA;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#00BCD4')" style="width:24px;height:24px;border-radius:4px;background:#00BCD4;cursor:pointer;border:1px solid #ccc"></span>
+    <span onclick="setOpColor('opcat','#00838F')" style="width:24px;height:24px;border-radius:4px;background:#00838F;cursor:pointer;border:1px solid #ccc"></span>
+  </div>
+</div>
     <!-- Description toujours visible -->
     <div class="fi" style="margin-bottom:18px">
       <label>Description <span style="font-size:14px;color:var(--txl)">(optionnelle)</span></label>
@@ -3005,24 +3105,75 @@ if (restoreSession()) {
     </div>
     <div class="fi" style="margin-bottom:12px">
       <label>Titre de la tâche *</label>
-      <input type="text" id="opitem-title" placeholder="ex : Rapport mensuel de veille…">
+      <input type="text" id="opitem-title" placeholder="ex : Recapitulatif mensuel de veille…">
     </div>
     <div class="fg" style="margin-bottom:12px">
       <div class="fi">
         <label>Nombre d'occurrences dans le mois *</label>
         <input type="number" id="opitem-freq-count" min="1" max="31" value="1" placeholder="ex : 4">
-        <span style="font-size:14px;color:var(--txl);margin-top:4px;display:block">Les dates seront réparties automatiquement jusqu'à la fin du mois</span>
+        <span style="font-size:12px;color:var(--txl);margin-top:4px;display:block">Les dates seront réparties automatiquement jusqu'à la fin du mois</span>
       </div>
       <div class="fi">
         <label>Date de début *</label>
         <input type="date" id="opitem-startdate">
       </div>
     </div>
-    <div class="fi" style="margin-bottom:18px">
-      <label>Responsable principal <span style="font-size:14px;color:var(--txl)">(optionnel)</span></label>
+    <div class="fi" style="margin-bottom:12px">
+      <label>Responsable principal <span style="font-size:12px;color:var(--txl)">(optionnel)</span></label>
       <select id="opitem-resp"></select>
     </div>
-    <div id="opitem-err" style="color:var(--r700);font-size:14px;margin-bottom:10px;display:none"></div>
+
+    <!-- Couleur de fond de la tâche -->
+    <div class="fi" style="margin-bottom:18px">
+      <label>Couleur de fond de la tâche</label>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <input type="color" id="opitem-color" value="#F4F3EE"
+          oninput="document.getElementById('opitem-color-preview').style.background=this.value"
+          style="width:48px;height:36px;padding:2px;border:1px solid var(--bds);border-radius:var(--rsm);cursor:pointer">
+        <div id="opitem-color-preview" style="flex:1;height:36px;border-radius:var(--rsm);background:#F4F3EE;transition:background 0.2s;border:1px solid var(--bds)"></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        <span onclick="setOpColor('opitem','#F4F3EE')" style="width:24px;height:24px;border-radius:4px;background:#F4F3EE;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#E1F5EE')" style="width:24px;height:24px;border-radius:4px;background:#E1F5EE;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#9FE1CB')" style="width:24px;height:24px;border-radius:4px;background:#9FE1CB;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#1D9E75')" style="width:24px;height:24px;border-radius:4px;background:#1D9E75;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#0F6E56')" style="width:24px;height:24px;border-radius:4px;background:#0F6E56;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#EAF3DE')" style="width:24px;height:24px;border-radius:4px;background:#EAF3DE;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#3B6D11')" style="width:24px;height:24px;border-radius:4px;background:#3B6D11;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#E6F1FB')" style="width:24px;height:24px;border-radius:4px;background:#E6F1FB;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#185FA5')" style="width:24px;height:24px;border-radius:4px;background:#185FA5;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#0C447C')" style="width:24px;height:24px;border-radius:4px;background:#0C447C;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#CCDFF5')" style="width:24px;height:24px;border-radius:4px;background:#CCDFF5;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#7BAFD4')" style="width:24px;height:24px;border-radius:4px;background:#7BAFD4;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#FCEBEB')" style="width:24px;height:24px;border-radius:4px;background:#FCEBEB;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#E24B4A')" style="width:24px;height:24px;border-radius:4px;background:#E24B4A;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#A32D2D')" style="width:24px;height:24px;border-radius:4px;background:#A32D2D;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#F5B8B8')" style="width:24px;height:24px;border-radius:4px;background:#F5B8B8;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#FAEEDA')" style="width:24px;height:24px;border-radius:4px;background:#FAEEDA;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#FAC775')" style="width:24px;height:24px;border-radius:4px;background:#FAC775;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#854F0B')" style="width:24px;height:24px;border-radius:4px;background:#854F0B;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#F4A460')" style="width:24px;height:24px;border-radius:4px;background:#F4A460;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#EEEDFE')" style="width:24px;height:24px;border-radius:4px;background:#EEEDFE;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#534AB7')" style="width:24px;height:24px;border-radius:4px;background:#534AB7;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#3C3489')" style="width:24px;height:24px;border-radius:4px;background:#3C3489;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#C9B8F5')" style="width:24px;height:24px;border-radius:4px;background:#C9B8F5;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#FBEAF0')" style="width:24px;height:24px;border-radius:4px;background:#FBEAF0;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#F06292')" style="width:24px;height:24px;border-radius:4px;background:#F06292;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#AD1457')" style="width:24px;height:24px;border-radius:4px;background:#AD1457;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#FFFDE7')" style="width:24px;height:24px;border-radius:4px;background:#FFFDE7;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#FFF176')" style="width:24px;height:24px;border-radius:4px;background:#FFF176;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#F9A825')" style="width:24px;height:24px;border-radius:4px;background:#F9A825;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#FFFFFF')" style="width:24px;height:24px;border-radius:4px;background:#FFFFFF;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#E8E7DF')" style="width:24px;height:24px;border-radius:4px;background:#E8E7DF;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#888780')" style="width:24px;height:24px;border-radius:4px;background:#888780;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#1A1A18')" style="width:24px;height:24px;border-radius:4px;background:#1A1A18;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#E0F7FA')" style="width:24px;height:24px;border-radius:4px;background:#E0F7FA;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#00BCD4')" style="width:24px;height:24px;border-radius:4px;background:#00BCD4;cursor:pointer;border:1px solid #ccc"></span>
+        <span onclick="setOpColor('opitem','#00838F')" style="width:24px;height:24px;border-radius:4px;background:#00838F;cursor:pointer;border:1px solid #ccc"></span>
+      </div>
+    </div>
+
+    <div id="opitem-err" style="color:var(--r700);font-size:12px;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="bg_" onclick="closeModal('opitem-modal')">Annuler</button>
       <button class="bp" onclick="doAddOpTask()"><i class="ti ti-plus"></i> Créer les occurrences</button>
