@@ -269,8 +269,6 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
   top: 72px;
   max-height: calc(100vh - 90px);
   overflow-y: auto;
-  margin-right: -24px;
-  padding-right: 24px;
 }
 .ov-sidebar-left {
   position: sticky;
@@ -1002,8 +1000,6 @@ function renderOverview() {
       + '<div>❌ Absent : <strong>' + absentCount2 + '</strong></div>'
       + '</div>';
   }
-
-  sideRight += '</div>';  
   
         // Absences signalées
   var today2 = new Date().toISOString().slice(0,10);
@@ -1025,6 +1021,9 @@ function renderOverview() {
     });
     sideRight += '</div>';
   }
+
+  sideRight += '</div>';  
+  
   // Assemblage final avec layout
   document.getElementById('ov-root').innerHTML =
     '<div class="ov-layout">' + sideLeft + main + sideRight + '</div>';
