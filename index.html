@@ -148,7 +148,10 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
 .sdot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
 .sdot.ok { background: var(--g700); }
 .sdot.err { background: var(--r400); }
-.sdot.pend { background: #FAC775; animation: blink 1s infinite; }
+.sdot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.sdot.ok{background:var(--g700);}
+.sdot.err{background:var(--r400);}
+.sdot.pend{background:#FAC775;animation:blink 1s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .slbl{font-size:14px;color:rgba(255,255,255,.6);}
 .toast{position:fixed;bottom:20px;right:20px;z-index:500;background:var(--t900);color:white;padding:10px 16px;border-radius:var(--rmd);font-size:15px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;transform:translateY(60px);opacity:0;transition:all .3s;}
