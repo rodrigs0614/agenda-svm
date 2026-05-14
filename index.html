@@ -304,6 +304,28 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
   .ov-layout { grid-template-columns: 1fr; }
   .ov-sidebar-left { position: static; max-height: none; }
 }
+
+.nb-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--r400);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+}
+.nav-btn {
+  position: relative;
+} 
+
 </style>
 </head>
 <body>
@@ -351,13 +373,13 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
   </header>
   <nav class="nav-bar" id="nav-bar">
     <button class="nav-btn active" onclick="showSec('overview',this)"><i class="ti ti-layout-dashboard"></i> Vue d'ensemble</button>
-    <button class="nav-btn" onclick="showSec('tasks',this)"><i class="ti ti-checklist"></i> Travaux <span class="nb" id="nb-blk" style="display:none"></span></button>
+    <button class="nav-btn" onclick="showSec('tasks',this)"><i class="ti ti-list-check"></i> Travaux <span class="nb-badge" id="nb-tasks" style="display:none"></span></button>
     <button class="nav-btn" onclick="showSec('presence',this)"><i class="ti ti-users"></i> Présences</button>
-    <button class="nav-btn" onclick="showSec('absences',this)"><i class="ti ti-calendar-off"></i> Absences</button>
+    <button class="nav-btn" onclick="showSec('absences',this)"><i class="ti ti-calendar-off"></i> Absences <span class="nb-badge" id="nb-abs" style="display:none"></span></button>
     <button class="nav-btn" onclick="showSec('power',this)"><i class="ti ti-building-community"></i> Infrastructure <span class="nb" id="nb-cut" style="display:none">!</span></button>
-    <button class="nav-btn" onclick="showSec('operational',this)"><i class="ti ti-clipboard-list"></i> Tâches opérationnelles</button>
+    <button class="nav-btn" onclick="showSec('operational',this)"><i class="ti ti-clipboard-list"></i> Tâches opérationnelles<span class="nb-badge" id="nb-op" style="display:none"></span></button>
     <button class="nav-btn" onclick="showSec('observations',this)"><i class="ti ti-notes"></i> Observations</button>
-    <button class="nav-btn" onclick="showSec('myspace',this)"><i class="ti ti-user-circle"></i> Mon espace</button>
+    <button class="nav-btn" onclick="showSec('myspace',this)"><i class="ti ti-user-circle"></i> Mon espace<span class="nb-badge" id="nb-my" style="display:none"></span></button>
     <button class="nav-btn" onclick="showSec('archives',this)"><i class="ti ti-archive"></i> Archives</button>
     <button class="nav-btn" onclick="showSec('trash',this)"><i class="ti ti-trash"></i> Corbeille</button>
     <button class="nav-btn" id="nav-reports" style="display:none" onclick="showSec('reports',this)"><i class="ti ti-chart-bar"></i> Recapitulatifs</button>
@@ -777,11 +799,43 @@ function showSec(id, btn) {
 }
 
 function updateBadges() {
+  // Bloqués
   const b = tasks.filter(t => t.status === 'blocked').length;
   const bb = document.getElementById('nb-blk');
   bb.style.display = b ? '' : 'none'; if(b) bb.textContent = b;
+
+  // Coupure active
   document.getElementById('nb-cut').style.display = cuts.find(c => !c.end) ? '' : 'none';
+
+  // Travaux
+  const nbTasks = tasks.filter(t => t.status !== 'done').length;
+  const elTasks = document.getElementById('nb-tasks');
+  if (elTasks) { elTasks.textContent = nbTasks; elTasks.style.display = nbTasks ? '' : 'none'; }
+
+  // Absences planifiées
+  const today = new Date().toISOString().slice(0,10);
+  const nbAbs = absences.filter(a => a.to >= today).length;
+  const elAbs = document.getElementById('nb-abs');
+  if (elAbs) { elAbs.textContent = nbAbs; elAbs.style.display = nbAbs ? '' : 'none'; }
+
+  // Tâches opérationnelles — occurrences non faites
+  var nbOp = 0;
+  opTasks.forEach(function(cat) {
+    (cat.items||[]).forEach(function(it) {
+      (it.occurrences||[]).forEach(function(occ) {
+        if (!occ.done) nbOp++;
+      });
+    });
+  });
+  const elOp = document.getElementById('nb-op');
+  if (elOp) { elOp.textContent = nbOp; elOp.style.display = nbOp ? '' : 'none'; }
+
+  // Mon espace
+  const nbMy = currentUser ? tasks.filter(t => (t.members||[]).includes(currentUser.name) && t.status !== 'done').length : 0;
+  const elMy = document.getElementById('nb-my');
+  if (elMy) { elMy.textContent = nbMy; elMy.style.display = nbMy ? '' : 'none'; }
 }
+
 function updateHeaderDate() {
   document.getElementById('hdate').textContent = new Date().toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^\w/, c => c.toUpperCase());
 }
@@ -2117,15 +2171,6 @@ function doAddOpTask() {
       dismissed: false  // pour fermer l'alerte sans cocher
     });
   }
-  opTasks[_opCatIndex].items.push({
-    title: title,
-    freqCount: count,
-    startDate: startDate,
-    responsible: resp,
-    occurrences: occurrences,
-    createdAt: new Date().toISOString().slice(0,10)
-  });
-  if (!opTasks[_opCatIndex].items) opTasks[_opCatIndex].items = [];
   opTasks[_opCatIndex].items.push({
     title: title,
     freqCount: count,
