@@ -986,26 +986,6 @@ function renderOverview() {
           + '</div>';
       });
 
-              // Absences signalées
-        var today2 = new Date().toISOString().slice(0,10);
-        var activeAbsences = absences.filter(function(a){ return a.to >= today2; });
-        if (activeAbsences.length) {
-          sideRight += '<div style="margin-top:14px">'
-            + '<div style="font-size:12px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px">'
-            + '<i class="ti ti-calendar-off" style="color:var(--r400)"></i> Absences planifiées</div>';
-          activeAbsences.forEach(function(a) {
-            var isNow = a.from <= today2 && a.to >= today2;
-            sideRight += '<div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:'+(isNow?'var(--r50)':'var(--a50)')+';border:1px solid '+(isNow?'var(--r400)':'var(--a400)')+';border-radius:var(--rsm);margin-bottom:4px">'
-              + av(a.member, 'avsm')
-              + '<div style="flex:1">'
-              + '<div style="font-size:12px;font-weight:500;color:'+(isNow?'var(--r700)':'var(--a700)')+'">'+a.member+'</div>'
-              + '<div style="font-size:10px;color:'+(isNow?'var(--r700)':'var(--a700)')+'">'+fmtDate(a.from)+' → '+fmtDate(a.to)+(a.reason?' · '+a.reason:'')+'</div>'
-              + '</div>'
-              + (isNow ? '<span style="font-size:9px;background:var(--r400);color:white;padding:1px 5px;border-radius:8px">En cours</span>' : '')
-              + '</div>';
-          });
-          sideRight += '</div>';
-        }
       sideRight += '</div>';
     });
   }
@@ -1025,6 +1005,26 @@ function renderOverview() {
 
   sideRight += '</div>';  
   
+        // Absences signalées
+  var today2 = new Date().toISOString().slice(0,10);
+  var activeAbsences = absences.filter(function(a){ return a.to >= today2; });
+  if (activeAbsences.length) {
+    sideRight += '<div style="margin-top:14px">'
+      + '<div style="font-size:12px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px">'
+      + '<i class="ti ti-calendar-off" style="color:var(--r400)"></i> Absences planifiées</div>';
+    activeAbsences.forEach(function(a) {
+      var isNow = a.from <= today2 && a.to >= today2;
+      sideRight += '<div style="display:flex;align-items:center;gap:7px;padding:6px 8px;background:'+(isNow?'var(--r50)':'var(--a50)')+';border:1px solid '+(isNow?'var(--r400)':'var(--a400)')+';border-radius:var(--rsm);margin-bottom:4px">'
+        + av(a.member, 'avsm')
+        + '<div style="flex:1">'
+        + '<div style="font-size:12px;font-weight:500;color:'+(isNow?'var(--r700)':'var(--a700)')+'">'+a.member+'</div>'
+        + '<div style="font-size:10px;color:'+(isNow?'var(--r700)':'var(--a700)')+'">'+fmtDate(a.from)+' → '+fmtDate(a.to)+(a.reason?' · '+a.reason:'')+'</div>'
+        + '</div>'
+        + (isNow ? '<span style="font-size:9px;background:var(--r400);color:white;padding:1px 5px;border-radius:8px">En cours</span>' : '')
+        + '</div>';
+    });
+    sideRight += '</div>';
+  }
   // Assemblage final avec layout
   document.getElementById('ov-root').innerHTML =
     '<div class="ov-layout">' + sideLeft + main + sideRight + '</div>';
