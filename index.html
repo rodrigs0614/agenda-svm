@@ -1947,12 +1947,12 @@ function renderOperational() {
       html += '<div style="background:white;border:1px solid var(--bd);border-radius:var(--rlg);margin-bottom:16px;overflow:hidden;box-shadow:var(--sh)">'
         // En-tête catégorie
         + '<div style="background:'+(cat.color||'var(--t900)')+';padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="toggleOpB('+ci+')">'
-        + '<i class="ti ti-folder-open" style="color:var(--t100);font-size:19px"></i>'
+        + '<i class="ti ti-folder-open" style="color:#333;font-size:19px"></i>'
         + '<div style="flex:1">'
-        + '<div style="color:white;font-size:17px;font-weight:700">'+cat.name+'</div>'
-        + (cat.description?'<div style="color:var(--t100);font-size:14px;margin-top:2px">'+cat.description+'</div>':'')
+        + '<div style="color:black;font-size:17px;font-weight:700">'+cat.name+'</div>'
+        + (cat.description?'<div style="color:#333;font-size:14px;margin-top:2px">'+cat.description+'</div>':'')
         + '</div>'
-        + (totalOcc ? '<span style="background:rgba(255,255,255,0.2);color:white;border-radius:20px;padding:3px 12px;font-size:14px;font-weight:600">'+doneOcc+'/'+totalOcc+'</span>' : '')
+        + (totalOcc ? '<span style="background:rgba(255,255,255,0.2);color:black;border-radius:20px;padding:3px 12px;font-size:14px;font-weight:600">'+doneOcc+'/'+totalOcc+'</span>' : '')
         + (ce ? '<button class="bg_" style="font-size:14px;background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:white;margin-left:6px" onclick="event.stopPropagation();addOpTask('+ci+')"><i class="ti ti-plus"></i> Ajouter</button>' : '')
         + (ce ? '<button style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);border-radius:var(--rsm);padding:4px 8px;cursor:pointer;font-size:14px;margin-left:4px" onclick="event.stopPropagation();delOpCat('+ci+')"><i class="ti ti-trash"></i></button>' : '')
         + '<i class="ti ti-chevron-down" style="color:var(--t100);font-size:16px;margin-left:6px"></i>'
