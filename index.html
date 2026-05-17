@@ -1952,9 +1952,9 @@ function renderOperational() {
         + '<div style="color:black;font-size:17px;font-weight:700">'+cat.name+'</div>'
         + (cat.description?'<div style="color:#333;font-size:14px;margin-top:2px">'+cat.description+'</div>':'')
         + '</div>'
-        + (totalOcc ? '<span style="background:rgba(255,255,255,0.2);color:black;border-radius:20px;padding:3px 12px;font-size:14px;font-weight:600">'+doneOcc+'/'+totalOcc+'</span>' : '')
-        + (ce ? '<button class="bg_" style="font-size:14px;background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:white;margin-left:6px" onclick="event.stopPropagation();addOpTask('+ci+')"><i class="ti ti-plus"></i> Ajouter</button>' : '')
-        + (ce ? '<button style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);border-radius:var(--rsm);padding:4px 8px;cursor:pointer;font-size:14px;margin-left:4px" onclick="event.stopPropagation();delOpCat('+ci+')"><i class="ti ti-trash"></i></button>' : '')
+        + (totalOcc ? '<span style="background:rgbargba(0,0,0,0.8);color:black;border-radius:20px;padding:3px 12px;font-size:14px;font-weight:600">'+doneOcc+'/'+totalOcc+'</span>' : '')
+        + (ce ? '<button class="bg_" style="font-size:14px;background:rgbargba(0,0,0,0.8);border-color:rgbargba(0,0,0,0.8);color:black;margin-left:6px" onclick="event.stopPropagation();addOpTask('+ci+')"><i class="ti ti-plus"></i> Ajouter</button>' : '')
+        + (ce ? '<button style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgbargba(0,0,0,0.8);border-radius:var(--rsm);padding:4px 8px;cursor:pointer;font-size:14px;margin-left:4px" onclick="event.stopPropagation();delOpCat('+ci+')"><i class="ti ti-trash"></i></button>' : '')
         + '<i class="ti ti-chevron-down" style="color:var(--t100);font-size:16px;margin-left:6px"></i>'
         + '</div>'
         // Corps catégorie
