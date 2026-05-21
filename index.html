@@ -513,6 +513,7 @@ let _localWrite = false;
 let _firebaseLoaded = false; 
 let currentUser = null;   // account object
 let selectedMembers = [];
+let presenceHistory = [];
 let modalTask = null, modalMsg = '';
 let resetTargetLogin = null;
 
@@ -579,11 +580,11 @@ function saveData() {
     return;
   }
   
-  try { localStorage.setItem(K_DATA, JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,observations})); } catch(e) {}
+  try { localStorage.setItem(K_DATA, JSON.stringify({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,observations,presenceHistory})); } catch(e) {}
   setSyncUI('pend','Sauvegarde…');
   _localWrite = true;
   try {
-    db.ref('data').set({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,observations,_by:currentUser?currentUser.name:'',_ts:Date.now()})
+    db.ref('data').set({tasks,presences,absences,cuts,archivedTasks,opTasks,trashedTasks,observations,presenceHistory,_by:currentUser?currentUser.name:'',_ts:Date.now()})
       .then(()=>{ setSyncUI('ok','Synchronisé'); setTimeout(()=>{ _localWrite=false; }, 3000); })
       .catch(()=>{ setSyncUI('err','Hors ligne'); _localWrite=false; });
   } catch(e) { setSyncUI('err','Hors ligne'); _localWrite=false; }
@@ -628,6 +629,7 @@ function loadAll() {
         archivedTasks = Array.isArray(d.archivedTasks) ? d.archivedTasks : [];
         opTasks       = Array.isArray(d.opTasks)       ? d.opTasks       : [];
         trashedTasks  = Array.isArray(d.trashedTasks)  ? d.trashedTasks  : [];
+        presenceHistory = Array.isArray(d.presenceHistory) ? d.presenceHistory : [];
       }
     }
   } catch(e) {}
@@ -671,6 +673,7 @@ function startRealtimeSync() {
       archivedTasks = Array.isArray(d.archivedTasks) ? d.archivedTasks : [];
       opTasks       = Array.isArray(d.opTasks)       ? d.opTasks       : [];
       trashedTasks  = Array.isArray(d.trashedTasks)  ? d.trashedTasks  : [];
+      presenceHistory = Array.isArray(d.presenceHistory) ? d.presenceHistory : [];
 
       _firebaseLoaded = true;
 
@@ -788,6 +791,8 @@ function startApp() {
   showSec('overview');
   renderOverview();
   updateBadges();
+  checkDailyPresenceReset();
+  setInterval(checkDailyPresenceReset, 60000);
   startRealtimeSync();
 }
 
@@ -1196,7 +1201,9 @@ function refreshTaskList() {
         ${canEmail ? `<button class="bg_ bgb" onclick="previewEmail(${t.id})"><i class="ti ti-mail"></i> Notifier</button>` : `<span style="font-size:14px;color:var(--txl);font-style:italic">E-mail non configuré</span>`}
       </div>
       <div class="row" style="margin-bottom:8px"><div class="pb"><div class="pf ${t.status}" style="width:${pct}%"></div></div><span class="meta" style="min-width:36px;text-align:right">${pct}%</span></div>
-      ${t.blocker ? `<div class="blk"><i class="ti ti-alert-triangle"></i>${t.blocker}</div>` : ''}
+      ${t.blocker ? `<div class="blk"><i class="ti ti-alert-triangle"></i>${t.blocker}
+      <button class="bg_" style="margin-left:auto;flex-shrink:0;border-color:var(--r400);color:var(--r700);font-size:13px;padding:3px 8px" onclick="openBlockerNotifyModal(${t.id})"><i class="ti ti-mail-forward"></i> Notifier</button>
+      </div>` : ''}
       ${t.note ? `<div style="font-size:14px;color:var(--txm);margin-top:7px;padding:7px 10px;background:var(--n50);border-radius:var(--rsm);border-left:3px solid var(--n400)"><i class="ti ti-notes" style="font-size:14px"></i> ${t.note}</div>` : ''}
       ${t.lastUpdatedBy ? `<div class="meta" style="margin-top:4px;font-size:14px">Mis à jour par <strong>${t.lastUpdatedBy}</strong> le ${fmtDate(t.lastUpdatedAt)}</div>` : ''}
       <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:10px;flex-wrap:wrap">
@@ -1328,6 +1335,78 @@ function sendEmail() {
       alert('Erreur lors de l\'envoi. Vérifiez la configuration EmailJS.\n' + JSON.stringify(err));
     });
 }
+
+var _blockerTaskId = null;
+
+function openBlockerNotifyModal(taskId) {
+  var t = tasks.find(function(x){ return x.id === taskId; });
+  if (!t) return;
+  _blockerTaskId = taskId;
+  document.getElementById('blk-task-title').textContent = t.title;
+  document.getElementById('blk-blocker-text').textContent = t.blocker || '';
+  document.getElementById('blk-extra-msg').value = '';
+  var allActive = accounts.filter(function(a){ return a.active !== false && a.email; });
+  var container = document.getElementById('blk-members-picker');
+  container.innerHTML = '';
+  if (!allActive.length) {
+    container.innerHTML = '<span style="font-size:14px;color:var(--txl)">Aucun membre avec e-mail configuré.</span>';
+  } else {
+    allActive.forEach(function(a) {
+      var c = mc(a.name);
+      var chip = document.createElement('span');
+      chip.className = 'mch';
+      chip.style.background = c.bg; chip.style.color = c.fg;
+      chip.dataset.email = a.email;
+      chip.dataset.name = a.name;
+      chip.innerHTML = a.name;
+      chip.onclick = function() {
+        chip.classList.toggle('sel');
+        chip.style.borderColor = chip.classList.contains('sel') ? 'var(--r400)' : c.bg;
+      };
+      container.appendChild(chip);
+    });
+  }
+  document.getElementById('blk-send-btn').disabled = false;
+  document.getElementById('blk-send-btn').innerHTML = '<i class="ti ti-send"></i> Envoyer';
+  document.getElementById('blk-send-btn').style.background = '';
+  document.getElementById('blocker-notify-modal').style.display = 'flex';
+}
+
+function sendBlockerNotif() {
+  var t = tasks.find(function(x){ return x.id === _blockerTaskId; });
+  if (!t) return;
+  var selected = Array.from(document.querySelectorAll('#blk-members-picker .mch.sel'));
+  if (!selected.length) { alert('Sélectionnez au moins un destinataire.'); return; }
+  var extraMsg = document.getElementById('blk-extra-msg').value.trim();
+  var msg = 'Point bloquant signalé sur la tâche :\n\nTâche : ' + t.title
+    + '\nAssignée à : ' + (t.members||[]).join(', ')
+    + '\nPoint bloquant : ' + (t.blocker||'')
+    + (t.date ? '\nÉchéance : ' + fmtDate(t.date) : '')
+    + (extraMsg ? '\n\n' + extraMsg : '')
+    + '\n\nMerci de proposer une solution rapidement.';
+  var btn = document.getElementById('blk-send-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Envoi…';
+  var promises = selected.map(function(chip) {
+    return emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      to_email: chip.dataset.email, to_name: chip.dataset.name,
+      subject: '[BLOQUÉ] ' + t.title, message: msg, from_name: currentUser.name
+    });
+  });
+  Promise.all(promises)
+    .then(function() {
+      btn.innerHTML = '<i class="ti ti-check"></i> Envoyé !';
+      btn.style.background = 'var(--g700)';
+      showToast('Notification(s) envoyée(s) ✓');
+      setTimeout(function(){ closeModal('blocker-notify-modal'); }, 1500);
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-send"></i> Envoyer';
+      alert('Erreur : ' + JSON.stringify(err));
+    });
+}
+
 function closeModal(id) { document.getElementById(id).style.display='none'; }
 
 // ═══════════════════════════════════════════════════════
@@ -1365,11 +1444,40 @@ function renderPresence() {
   names.forEach(m => { const o=document.createElement('option'); o.value=m; o.textContent=m; pm.appendChild(o); });
   pm.value = currentUser.name;
 }
+  
 function addPresence() {
   const m=document.getElementById('p-member').value, s=document.getElementById('p-status').value;
-  if(!m)return; presences=presences.filter(p=>p.member!==m); presences.push({member:m,status:s}); saveData(); renderPresence();
+  if(!m)return;
+  archivePreviousDayPresences();
+  presences=presences.filter(p=>p.member!==m);
+  presences.push({member:m,status:s,date:new Date().toISOString().slice(0,10)});
+  saveData(); renderPresence();
 }
+  
 function removePresence(name) { presences=presences.filter(p=>p.member!==name); saveData(); renderPresence(); }
+
+function archivePreviousDayPresences() {
+  if (!presences.length) return;
+  const today = new Date().toISOString().slice(0,10);
+  const presenceDate = presences.find(p => p.date) ? presences.find(p => p.date).date : null;
+  if (!presenceDate || presenceDate === today) return;
+  const existing = presenceHistory.find(h => h.date === presenceDate);
+  if (!existing) {
+    presenceHistory.unshift({ date: presenceDate, entries: presences.map(p => ({member:p.member, status:p.status})) });
+    if (presenceHistory.length > 90) presenceHistory = presenceHistory.slice(0, 90);
+  }
+  presences = [];
+}
+
+function checkDailyPresenceReset() {
+  const today = new Date().toISOString().slice(0,10);
+  const lastCheck = localStorage.getItem('_presence_last_check');
+  if (lastCheck && lastCheck !== today && presences.length && _firebaseLoaded) {
+    archivePreviousDayPresences();
+    if (presences.length === 0) { saveData(); showToast('Présences remises à zéro (nouveau jour).'); }
+  }
+  localStorage.setItem('_presence_last_check', today);
+}
 
 // ═══════════════════════════════════════════════════════
 // ABSENCES
@@ -1826,6 +1934,13 @@ function saveProgress(){
   saveData();updateBadges();refreshTaskList();
   closeModal('prog-modal');
   showToast('Avancement mis a jour.');
+  if (t.status === 'blocked' && t.blocker) {
+  setTimeout(function() {
+    if (confirm('Tâche bloquée. Notifier des membres pour obtenir de l\'aide ?')) {
+      openBlockerNotifyModal(t.id);
+      }
+    }, 300);
+  }
 }
 
 function doChangePw(){
@@ -2408,22 +2523,47 @@ function renderReports() {
   });
   html += '</tbody></table>';
 
-  // ── PRÉSENCES ──
-  if (presences.length) {
-    html += '<div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-map-pin"></i> Présences</div>'
-      + '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px">'
+  // ── PRÉSENCES PAR JOUR ──
+var rptPresencesByDay = [];
+var today = new Date().toISOString().slice(0,10);
+if (presences.length && today >= dateFrom && today <= dateTo) {
+  rptPresencesByDay.push({ date: today, entries: presences.map(function(p){ return {member:p.member,status:p.status}; }) });
+}
+presenceHistory.forEach(function(h) {
+  if (h.date >= dateFrom && h.date <= dateTo) {
+    if (!rptPresencesByDay.find(function(x){ return x.date === h.date; })) {
+      rptPresencesByDay.push({ date: h.date, entries: h.entries || [] });
+    }
+  }
+});
+rptPresencesByDay.sort(function(a,b){ return a.date.localeCompare(b.date); });
+
+if (rptPresencesByDay.length) {
+  html += '<div class="sect" style="margin-bottom:12px;font-size:16px"><i class="ti ti-map-pin"></i> Présences par jour</div>';
+  rptPresencesByDay.forEach(function(day) {
+    var dateLabel = new Date(day.date).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    var presentC = day.entries.filter(function(e){return e.status==='present';}).length;
+    var remoteC  = day.entries.filter(function(e){return e.status==='remote';}).length;
+    var absentC  = day.entries.filter(function(e){return e.status==='absent';}).length;
+    html += '<div style="margin-bottom:14px">'
+      + '<div style="background:var(--t900);color:white;padding:7px 12px;border-radius:var(--rsm) var(--rsm) 0 0;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between">'
+      + '<span><i class="ti ti-calendar-event"></i> ' + dateLabel + '</span>'
+      + '<span style="font-size:13px;opacity:.8">🏢 '+presentC+' · 🏠 '+remoteC+' · ❌ '+absentC+'</span>'
+      + '</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:14px;border:1px solid var(--bd);border-top:none">'
       + '<thead><tr style="background:var(--t500);color:white">'
-      + '<th style="padding:7px 10px">Membre</th>'
-      + '<th style="padding:7px 10px;text-align:center">Statut</th>'
+      + '<th style="padding:6px 10px;text-align:left">Membre</th>'
+      + '<th style="padding:6px 10px;text-align:center">Statut</th>'
       + '</tr></thead><tbody>';
-    presences.forEach(function(p, i) {
+    day.entries.forEach(function(p, i) {
       html += '<tr style="background:'+(i%2?'var(--n50)':'white')+'">'
-        + '<td style="padding:7px 10px"><div style="display:flex;align-items:center;gap:7px">'+av(p.member,'avxs')+'<strong>'+p.member+'</strong></div></td>'
-        + '<td style="padding:7px 10px;text-align:center"><span class="bdg '+PC[p.status]+'">'+PL[p.status]+'</span></td>'
+        + '<td style="padding:6px 10px"><div style="display:flex;align-items:center;gap:7px">'+av(p.member,'avxs')+'<strong>'+p.member+'</strong></div></td>'
+        + '<td style="padding:6px 10px;text-align:center"><span class="bdg '+PC[p.status]+'">'+PL[p.status]+'</span></td>'
         + '</tr>';
     });
-    html += '</tbody></table>';
-  }
+    html += '</tbody></table></div>';
+  });
+}
 
   // ── ABSENCES ──
   if (rptAbsences.length) {
@@ -3175,6 +3315,34 @@ if (restoreSession()) {
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="bg_" onclick="closeModal('opitem-modal')">Annuler</button>
       <button class="bp" onclick="doAddOpTask()"><i class="ti ti-plus"></i> Créer les occurrences</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOTIFICATION BLOCAGE -->
+<div class="mov" id="blocker-notify-modal" style="display:none" onclick="if(event.target===this)closeModal('blocker-notify-modal')">
+  <div class="mbox md">
+    <div class="mhd">
+      <div class="mtt"><i class="ti ti-mail-forward" style="color:var(--r700)"></i> Notifier un point bloquant</div>
+      <button class="bg_" onclick="closeModal('blocker-notify-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div style="background:var(--r50);border:1px solid var(--r400);border-radius:var(--rmd);padding:12px 14px;margin-bottom:14px">
+      <div style="font-size:14px;color:var(--txm);font-weight:600;margin-bottom:4px">Tâche bloquée</div>
+      <div id="blk-task-title" style="font-size:15px;font-weight:700;margin-bottom:6px"></div>
+      <div style="font-size:14px;color:var(--r700)"><i class="ti ti-alert-triangle"></i> <span id="blk-blocker-text"></span></div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px">Notifier (sélectionnez les membres) *</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;padding:10px;border:1px solid var(--bds);border-radius:var(--rsm);min-height:48px;background:var(--sf)" id="blk-members-picker"></div>
+      <div style="font-size:13px;color:var(--txl);margin-top:5px">Seuls les membres avec e-mail configuré apparaissent.</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:14px;font-weight:700;color:var(--txm);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px">Message additionnel <span style="font-weight:400;text-transform:none">(optionnel)</span></div>
+      <textarea id="blk-extra-msg" rows="2" placeholder="Ex : Besoin de votre avis avant vendredi…" style="width:100%;padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;resize:vertical"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="bg_" onclick="closeModal('blocker-notify-modal')">Annuler</button>
+      <button class="bp bpd" id="blk-send-btn" onclick="sendBlockerNotif()"><i class="ti ti-send"></i> Envoyer</button>
     </div>
   </div>
 </div>
