@@ -692,7 +692,7 @@ function startRealtimeSync() {
       const d = s.val();
       if (d && Array.isArray(d) && d.length >= 1) {
         accounts = d;
-        try { localStorage.setItem(K_ACCOUNTS, JSON.stringify(accounts)); } catch (e) {}
+        try { localStorage.setItem(K_ACCOUNTS, JSON.stringify(accounts)); } catch(e) {}
       }
     });
 
@@ -725,7 +725,7 @@ function startRealtimeSync() {
           tasks, presences, absences, cuts,
           archivedTasks, opTasks, trashedTasks, observations, presenceHistory
         }));
-      } catch (e) {}
+      } catch(e) {}
 
       const active = document.querySelector('.sec.active');
       if (active) {
@@ -738,13 +738,23 @@ function startRealtimeSync() {
         }[id];
         if (fn) fn();
       }
+      
       updateBadges();
+
+      // ─── CORRECTION : FORCER LE MAINTIEN DE L'AFFICHAGE DU PSEUDO-ÉLÉMENT HTML ───
+      // Cette astuce force le moteur graphique du navigateur à recalculer le style de la page active.
+      const currentHTMLVisibility = document.documentElement.style.display;
+      document.documentElement.style.display = 'none';
+      document.documentElement.offsetHeight; // force le reflow
+      document.documentElement.style.display = currentHTMLVisibility;
+      // ─────────────────────────────────────────────────────────────────────────────
+
       if (d._by && currentUser && d._by !== currentUser.name) {
         showToast('Mis à jour par ' + d._by);
       }
     });
 
-  } catch (e) {
+  } catch(e) {
     setSyncUI('err', 'Hors ligne');
     console.warn('Firebase non disponible:', e);
   }
