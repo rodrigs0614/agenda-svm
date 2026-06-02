@@ -329,6 +329,31 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
   position: relative;
 } 
 
+/* ── LOGO EN ARRIÈRE-PLAN ── */
+body::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px;
+  height: 520px;
+  background-image: url('data:image/png;base64,iVBOR...');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  opacity: 0.06;
+  filter: blur(2px) grayscale(30%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* S'assurer que tout le contenu passe au-dessus */
+.header, .nav-bar, .main, #login-screen, #app {
+  position: relative;
+  z-index: 1;
+}
+  
 </style>
 </head>
 <body>
