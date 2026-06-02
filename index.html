@@ -376,7 +376,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
   </header>
   <nav class="nav-bar" id="nav-bar">
     <button class="nav-btn active" onclick="showSec('overview',this)"><i class="ti ti-layout-dashboard"></i> Vue d'ensemble</button>
-    <button class="nav-btn" onclick="showSec('tasks',this)"><i class="ti ti-list-check"></i> Travaux <span class="nb-badge" id="nb-tasks" style="display:none"></span></button>
+    <button class="nav-btn" onclick="showSec('tasks',this)"><i class="ti ti-list-"></i> Travaux <span class="nb-badge" id="nb-tasks" style="display:none"></span></button>
     <button class="nav-btn" onclick="showSec('presence',this)"><i class="ti ti-users"></i> Présences</button>
     <button class="nav-btn" onclick="showSec('absences',this)"><i class="ti ti-calendar-off"></i> Absences <span class="nb-badge" id="nb-abs" style="display:none"></span></button>
     <button class="nav-btn" onclick="showSec('power',this)"><i class="ti ti-building-community"></i> Infrastructure <span class="nb" id="nb-cut" style="display:none">!</span></button>
@@ -792,7 +792,6 @@ function startApp() {
   renderOverview();
   updateBadges();
   checkDailyPresenceReset();
-  setInterval(checkDailyPresenceReset, 60000);
   startRealtimeSync();
 }
 
@@ -1470,13 +1469,50 @@ function archivePreviousDayPresences() {
 }
 
 function checkDailyPresenceReset() {
-  const today = new Date().toISOString().slice(0,10);
+  const now = new Date();
+  const today = now.toISOString().slice(0,10);
+
+  // ── Archiver si on est un nouveau jour (ex: connexion le lendemain matin) ──
   const lastCheck = localStorage.getItem('_presence_last_check');
   if (lastCheck && lastCheck !== today && presences.length && _firebaseLoaded) {
     archivePreviousDayPresences();
     if (presences.length === 0) { saveData(); showToast('Présences remises à zéro (nouveau jour).'); }
   }
   localStorage.setItem('_presence_last_check', today);
+
+  // ── Planifier le reset automatique à 23h59m59s ──
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const s = now.getSeconds();
+  const secondsUntilReset = (23 - h) * 3600 + (59 - m) * 60 + (59 - s);
+
+  // Si on est exactement à 23h59m59s (±1s de marge), on archive et remet à zéro
+  if (h === 23 && m === 59 && s >= 58) {
+    if (presences.length && _firebaseLoaded) {
+      // Archiver les présences du jour dans presenceHistory
+      const existing = presenceHistory.find(function(x){ return x.date === today; });
+      if (!existing) {
+        presenceHistory.unshift({
+          date: today,
+          entries: presences.map(function(p){ return {member:p.member, status:p.status}; })
+        });
+        if (presenceHistory.length > 90) presenceHistory = presenceHistory.slice(0, 90);
+      }
+      presences = [];
+      saveData();
+      showToast('✓ Présences du ' + fmtDate(today) + ' archivées et remises à zéro.');
+      renderOverview();
+      // Re-rendre la section présences si active
+      const active = document.querySelector('.sec.active');
+      if (active && active.id === 'sec-presence') renderPresence();
+    }
+    // Replanifier pour le lendemain (dans ~1 seconde, puis boucle normale)
+    setTimeout(checkDailyPresenceReset, 2000);
+    return;
+  }
+
+  // Replanifier dans 30 secondes (assez précis, pas trop gourmand)
+  setTimeout(checkDailyPresenceReset, 30000);
 }
 
 // ═══════════════════════════════════════════════════════
