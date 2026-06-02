@@ -328,9 +328,7 @@ hr{border:none;border-top:1px solid var(--bd);margin:14px 0;}
 .nav-btn {
   position: relative;
 } 
-
-/* ── LOGO EN ARRIÈRE-PLAN ── */
-body::before {
+html::before {
   content: '';
   position: fixed;
   top: 50%;
@@ -342,8 +340,8 @@ body::before {
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
-  opacity: 0.06;
-  filter: blur(2px) grayscale(30%);
+  opacity: 0.08;
+  filter: blur(1px) grayscale(20%);
   z-index: 0;
   pointer-events: none;
 }
