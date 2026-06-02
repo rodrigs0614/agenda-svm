@@ -973,7 +973,7 @@ function renderOverview() {
 
   // Alertes coupures
   if (activeCut) main += `<div class="alrt alrt-cut"><i class="ti ti-bolt-off"></i><div><strong>Coupure électrique en cours</strong> - depuis ${activeCut.start}${activeCut.note?' · '+activeCut.note:''}</div></div>`;
-  if (activeNet) main += `<div class="alrt" style="background:var(--b50);border:1px solid var(--b600)"><i class="ti ti-wifi-off" style="color:var(--b600)"></i><div><strong>Coupure internet en cours</strong> - depuis ${activeNet.start}${activeNet.note?' · '+activeNet.note:''}</div></div>`;
+  if (activeNet) main += `<div class="alrt" style="background:var(--b50);border:1px solid var(--b600)"><i class="ti ti-wifi-off" style="color:var(--b600)"></i><div><strong>Problème de connexion internet en cours</strong> - depuis ${activeNet.start}${activeNet.note?' · '+activeNet.note:''}</div></div>`;
 
   // KPIs
   main += `<div class="stgd">
@@ -1543,7 +1543,7 @@ function renderCuts() {
 
   if (acNet) html += `<div class="alrt" style="background:var(--b50);border:1px solid var(--b600);margin-bottom:14px">
     <i class="ti ti-wifi-off" style="color:var(--b600)"></i>
-    <div style="flex:1"><strong>Coupure internet en cours</strong> - depuis ${acNet.start}${acNet.note?' · '+acNet.note:''}</div>
+    <div style="flex:1"><strong>Problème de connexion internet en cours</strong> - depuis ${acNet.start}${acNet.note?' · '+acNet.note:''}</div>
     <button class="bg_ bgd" onclick="endCut(${acNet.id})" style="flex-shrink:0"><i class="ti ti-player-stop"></i> Terminer</button>
   </div>`;
 
@@ -1554,7 +1554,7 @@ function renderCuts() {
         <label>Type d'incident *</label>
         <select id="c-type" style="padding:8px 11px;border:1px solid var(--bds);border-radius:var(--rsm);font-size:15px;font-family:inherit;background:var(--sf);color:var(--tx)">
           <option value="electric">⚡ Coupure électrique</option>
-          <option value="internet">🌐 Coupure internet</option>
+          <option value="internet">🌐 Problème de connexion internet</option>
         </select>
       </div>
       <div class="fi"><label>Date *</label><input type="date" id="c-date"></div>
